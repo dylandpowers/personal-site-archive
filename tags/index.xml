@@ -5,12 +5,68 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 27 Aug 2019 17:25:06 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Fri, 19 Jun 2020 18:13:27 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://dylandpowers.github.io/tags/</link>
     </image>
+    
+    <item>
+      <title>Expo</title>
+      <link>https://dylandpowers.github.io/tags/expo/</link>
+      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/expo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Firebase</title>
+      <link>https://dylandpowers.github.io/tags/firebase/</link>
+      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/firebase/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Firestore</title>
+      <link>https://dylandpowers.github.io/tags/firestore/</link>
+      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/firestore/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Material UI</title>
+      <link>https://dylandpowers.github.io/tags/material-ui/</link>
+      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/material-ui/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Paper</title>
+      <link>https://dylandpowers.github.io/tags/paper/</link>
+      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/paper/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>React Native</title>
+      <link>https://dylandpowers.github.io/tags/react-native/</link>
+      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/react-native/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Redux</title>
+      <link>https://dylandpowers.github.io/tags/redux/</link>
+      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/redux/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Brooklyn</title>

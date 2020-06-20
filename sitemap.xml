@@ -3,8 +3,91 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://dylandpowers.github.io/authors/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/categories/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/authors/dylan-powers/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://dylandpowers.github.io/</loc>
-    <lastmod>2020-02-09T18:55:28-05:00</lastmod>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/expo/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/firebase/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/firestore/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/material-ui/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/categories/mobile/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/paper/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/project/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/react-native/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/project/react-native-messenger/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/redux/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/</loc>
+    <lastmod>2020-06-19T18:13:27-04:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -78,12 +161,6 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/tags/</loc>
-    <lastmod>2019-08-27T17:25:06-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/post/tips-for-a-summer-in-new-york/</loc>
     <lastmod>2019-08-27T17:25:06-04:00</lastmod>
   </url>
@@ -95,20 +172,8 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/authors/</loc>
-    <lastmod>2019-08-15T13:33:00-06:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/post/books-i-read-this-summer/</loc>
     <lastmod>2019-08-15T13:33:00-06:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/authors/dylan-powers/</loc>
-    <lastmod>2019-08-15T13:33:00-06:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -198,12 +263,6 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/project/</loc>
-    <lastmod>2019-04-20T17:10:21-06:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/project/alexa-transloc-skill/</loc>
     <lastmod>2019-03-20T13:19:46-06:00</lastmod>
   </url>
@@ -215,11 +274,6 @@
   
   <url>
     <loc>https://dylandpowers.github.io/authors/admin/</loc>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/categories/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
