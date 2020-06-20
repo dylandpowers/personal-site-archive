@@ -5,12 +5,84 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Fri, 19 Jun 2020 18:13:27 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 20 Jun 2020 16:05:06 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://dylandpowers.github.io/tags/</link>
     </image>
+    
+    <item>
+      <title>Apple</title>
+      <link>https://dylandpowers.github.io/tags/apple/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/apple/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cocoa</title>
+      <link>https://dylandpowers.github.io/tags/cocoa/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/cocoa/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cocoapods</title>
+      <link>https://dylandpowers.github.io/tags/cocoapods/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/cocoapods/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pods</title>
+      <link>https://dylandpowers.github.io/tags/pods/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/pods/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Progress</title>
+      <link>https://dylandpowers.github.io/tags/progress/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/progress/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Segmented</title>
+      <link>https://dylandpowers.github.io/tags/segmented/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/segmented/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Swift</title>
+      <link>https://dylandpowers.github.io/tags/swift/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/swift/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>UIView</title>
+      <link>https://dylandpowers.github.io/tags/uiview/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/uiview/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>XCode</title>
+      <link>https://dylandpowers.github.io/tags/xcode/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/xcode/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Expo</title>
@@ -153,14 +225,6 @@
       <link>https://dylandpowers.github.io/tags/amazon/</link>
       <pubDate>Thu, 15 Aug 2019 13:33:00 -0600</pubDate>
       <guid>https://dylandpowers.github.io/tags/amazon/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>apple</title>
-      <link>https://dylandpowers.github.io/tags/apple/</link>
-      <pubDate>Thu, 15 Aug 2019 13:33:00 -0600</pubDate>
-      <guid>https://dylandpowers.github.io/tags/apple/</guid>
       <description></description>
     </item>
     
