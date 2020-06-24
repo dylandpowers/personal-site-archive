@@ -19,8 +19,6 @@
       <guid>https://dylandpowers.github.io/post/how-to-use-react-redux-firebase/</guid>
       <description>
 
-&lt;h1 id=&#34;how-to-use-react-redux-firebase&#34;&gt;How to Use React-Redux-Firebase&lt;/h1&gt;
-
 &lt;p&gt;In this post, I will show you how to use the &lt;a href=&#34;https://www.npmjs.com/package/react-redux-firebase&#34; target=&#34;_blank&#34;&gt;react-redux-firebase&lt;/a&gt; package to incorporate Redux bindings for Firebase into your React project. This allows you to incorporate Firebase and Firestore data  into global state without any extra work, as well as handle auth in a super simple way. If you are unfamiliar with &lt;a href=&#34;https://reactjs.org/&#34; target=&#34;_blank&#34;&gt;React&lt;/a&gt;, &lt;a href=&#34;https://redux.js.org&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt;, or &lt;a href=&#34;https://firebase.google.com/&#34; target=&#34;_blank&#34;&gt;Firebase&lt;/a&gt;, please spend some time familiarizing yourself with those before jumping in.&lt;/p&gt;
 
 &lt;p&gt;This is &lt;strong&gt;not&lt;/strong&gt; a beginning-to-end tutorial; rather, I will show you how the &lt;code&gt;react-redux-firebase&lt;/code&gt; (RRF) package to make your app flow much simpler. For setup instructions, check out &lt;a href=&#34;https://www.npmjs.com/package/react-redux-firebase&#34; target=&#34;_blank&#34;&gt;the documentation&lt;/a&gt;.&lt;/p&gt;
