@@ -162,7 +162,7 @@ export default function Component() {
 &lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
 import { useFirestoreConnect } from &#39;react-redux-firebase&#39;;
 
-export default function Component({ todoId }) {
+export default function Component() {
 	
   useFirestoreConnect({
     collection: &#39;todos&#39;
