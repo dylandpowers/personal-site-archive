@@ -5,12 +5,100 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 20 Jun 2020 16:05:06 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 24 Jun 2020 10:25:29 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://dylandpowers.github.io/tags/</link>
     </image>
+    
+    <item>
+      <title>Auth</title>
+      <link>https://dylandpowers.github.io/tags/auth/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/auth/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Authentication</title>
+      <link>https://dylandpowers.github.io/tags/authentication/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/authentication/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Firebase</title>
+      <link>https://dylandpowers.github.io/tags/firebase/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/firebase/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://dylandpowers.github.io/tags/javascript/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>React</title>
+      <link>https://dylandpowers.github.io/tags/react/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/react/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>React-Redux</title>
+      <link>https://dylandpowers.github.io/tags/react-redux/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/react-redux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>React-Redux-Firebase</title>
+      <link>https://dylandpowers.github.io/tags/react-redux-firebase/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/react-redux-firebase/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Redux</title>
+      <link>https://dylandpowers.github.io/tags/redux/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/redux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>User</title>
+      <link>https://dylandpowers.github.io/tags/user/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/user/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>useFirebaseConnect</title>
+      <link>https://dylandpowers.github.io/tags/usefirebaseconnect/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/usefirebaseconnect/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>useFirestoreConnect</title>
+      <link>https://dylandpowers.github.io/tags/usefirestoreconnect/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/usefirestoreconnect/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Apple</title>
@@ -93,14 +181,6 @@
     </item>
     
     <item>
-      <title>Firebase</title>
-      <link>https://dylandpowers.github.io/tags/firebase/</link>
-      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/firebase/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Firestore</title>
       <link>https://dylandpowers.github.io/tags/firestore/</link>
       <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
@@ -129,14 +209,6 @@
       <link>https://dylandpowers.github.io/tags/react-native/</link>
       <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
       <guid>https://dylandpowers.github.io/tags/react-native/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Redux</title>
-      <link>https://dylandpowers.github.io/tags/redux/</link>
-      <pubDate>Fri, 19 Jun 2020 18:13:27 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/redux/</guid>
       <description></description>
     </item>
     
