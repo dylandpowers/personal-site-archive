@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>React | Dylan Powers</title>
+    <link>https://dylandpowers.github.io/categories/react/</link>
+      <atom:link href="https://dylandpowers.github.io/categories/react/index.xml" rel="self" type="application/rss+xml" />
+    <description>React</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 24 Jun 2020 10:25:29 -0400</lastBuildDate>
+    <image>
+      <url>https://dylandpowers.github.io/img/icon-192.png</url>
+      <title>React</title>
+      <link>https://dylandpowers.github.io/categories/react/</link>
+    </image>
+    
+    <item>
+      <title>How to Use React-Redux-Firebase</title>
+      <link>https://dylandpowers.github.io/post/how-to-use-react-redux-firebase/</link>
+      <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/post/how-to-use-react-redux-firebase/</guid>
+      <description>
+
+&lt;h1 id=&#34;how-to-use-react-redux-firebase&#34;&gt;How to Use React-Redux-Firebase&lt;/h1&gt;
+
+&lt;p&gt;In this post, I will show you how to use the &lt;a href=&#34;https://www.npmjs.com/package/react-redux-firebase&#34; target=&#34;_blank&#34;&gt;react-redux-firebase&lt;/a&gt; package to incorporate Redux bindings for Firebase into your React project. This allows you to incorporate Firebase and Firestore data  into global state without any extra work, as well as handle auth in a super simple way. If you are unfamiliar with &lt;a href=&#34;https://reactjs.org/&#34; target=&#34;_blank&#34;&gt;React&lt;/a&gt;, &lt;a href=&#34;https://redux.js.org&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt;, or &lt;a href=&#34;https://firebase.google.com/&#34; target=&#34;_blank&#34;&gt;Firebase&lt;/a&gt;, please spend some time familiarizing yourself with those before jumping in.&lt;/p&gt;
+
+&lt;p&gt;This is &lt;strong&gt;not&lt;/strong&gt; a beginning-to-end tutorial; rather, I will show you how the &lt;code&gt;react-redux-firebase&lt;/code&gt; (RRF) package to make your app flow much simpler. For setup instructions, check out &lt;a href=&#34;https://www.npmjs.com/package/react-redux-firebase&#34; target=&#34;_blank&#34;&gt;the documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&#34;auth&#34;&gt;Auth&lt;/h1&gt;
+
+&lt;h3 id=&#34;sign-in&#34;&gt;Sign In&lt;/h3&gt;
+
+&lt;p&gt;First, I will show you how this package makes auth in your application so much simpler. Without RRF, you would have to perform the sign in flow and then &lt;code&gt;dispatch&lt;/code&gt; an action to the store with the user information; then, any time you needed that, you would have to use a &lt;code&gt;useSelector&lt;/code&gt; hook to get that sign in information. It might look something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import firebase from &#39;firebase&#39;;
+import { useDispatch } from &#39;react-redux&#39;;
+
+export default function Component() {
+	
+  const dispatch = useDispatch();
+	
+  function signIn(email, password) {
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) =&amp;gt; dispatch({
+        type: &#39;AUTH&#39;,
+        user: userCredential
+      })).catch((err) =&amp;gt; console.error(err));
+  }
+
+  function signOut() {
+    firebase.auth().signOut()
+      .then(() =&amp;gt; dispatch({
+        type: &#39;AUTH&#39;,
+        user: undefined
+      })).catch((err) =&amp;gt; console.error(err));
+  }
+
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then when you want to query for the currently signed-in user in another component, you would do something like&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const user = useSelector((state) =&amp;gt; state.auth);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;However, when you use the &lt;code&gt;useFirebase&lt;/code&gt; hook provided by &lt;code&gt;react-redux-firebase&lt;/code&gt;, you don&amp;rsquo;t have to dispatch any actions:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import { useFirebase } from &#39;react-redux-firebase&#39;;
+
+export default function Component() {
+	
+  const firebase = useFirebase();
+
+  function signIn(email, password) {
+    firebase.signIn({
+      email,
+      password
+    }).catch((err) =&amp;gt; console.error(err));
+  }
+
+  function signOut() {
+    firebase.signOut()
+      .catch((err) =&amp;gt; console.error(err));
+  }
+
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That&amp;rsquo;s it! No extra state for you to handle, RRF does it all internally. Then, simply query for the currently signed-in user as such:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const user = useSelector((state) =&amp;gt; state.firebase.auth);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;registration&#34;&gt;Registration&lt;/h3&gt;
+
+&lt;p&gt;If you also want to store some extra data on the side, such as user &lt;code&gt;firstName&lt;/code&gt; and &lt;code&gt;lastName&lt;/code&gt;, you specify that when you sign up a user, as the second argument to the &lt;code&gt;createUser()&lt;/code&gt; call. &lt;strong&gt;This makes that information readily available in the store as part of the&lt;/strong&gt; &lt;code&gt;profile&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import { useFirebase } from &#39;react-redux-firebase&#39;;
+
+export default function Component() {
+	
+  const firebase = useFirebase();
+
+  function register(email, password, firstName, lastName) {
+    firebase.createUser({
+      email,
+      password
+    },
+    {
+      email,
+      firstName,
+      lastName
+    }).catch((err) =&amp;gt; console.error(err));
+  }
+
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In this example, &lt;code&gt;email&lt;/code&gt;, &lt;code&gt;firstName&lt;/code&gt;, and &lt;code&gt;lastName&lt;/code&gt; are all stored as part of the user&amp;rsquo;s &lt;code&gt;profile&lt;/code&gt;. You can access this information anywhere using the &lt;code&gt;profile&lt;/code&gt; part of the store:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const { email, firstName, lastName } = useSelector((state) =&amp;gt; state.firebase.profile);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Isn&amp;rsquo;t that awesome?&lt;/p&gt;
+
+&lt;h1 id=&#34;data-storage&#34;&gt;Data Storage&lt;/h1&gt;
+
+&lt;h3 id=&#34;cloud-firestore&#34;&gt;Cloud Firestore&lt;/h3&gt;
+
+&lt;p&gt;Firestore, being a document-oriented database, is my preference when developing an app on top of Firebase. The Firestore JavaScript SDK provides listeners that automatically listen for changes in Firestore documents. However, if you want to listen for changes to an entire collection and update state accordingly, the code becomes quite clunky:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import { useDispatch, useSelector } from &#39;react-redux&#39;;
+import firebase from &#39;firebase&#39;;
+
+export default function Component() {
+  const dispatch = useDispatch();
+
+  const todos = useSelector((state) =&amp;gt; state.todos);
+
+  firebase.firestore().collection(&#39;todos&#39;)
+    .onSnapshot((querySnapshot) =&amp;gt; {
+      const updatedTodos = {};
+      querySnapshot.forEach((doc) =&amp;gt; {
+        updatedTodos[doc.id] = doc.data();
+      });
+      dispatch({
+        type: &#39;TODOS_UPDATED&#39;,
+        todos: updatedTodos
+      });
+    });
+
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;However, with RRF&amp;rsquo;s &lt;code&gt;useFirestoreConnect&lt;/code&gt; hook, you can attach a listener that will automatically listen and unlisten as needed, &lt;em&gt;and&lt;/em&gt; you can make the data a part of Redux state.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import { useFirestoreConnect } from &#39;react-redux-firebase&#39;;
+
+export default function Component({ todoId }) {
+	
+  useFirestoreConnect({
+    collection: &#39;todos&#39;
+  });
+
+  const todos = useSelector((state) =&amp;gt; state.firestore.data.todos);
+
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the two above examples, both &lt;code&gt;todos&lt;/code&gt; variables with evaluate to the same thing; there are two obvious differences:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;The first example involves much more code, and is much harder to read.&lt;/li&gt;
+&lt;li&gt;The second example requires no manual global state management, as that is managed by the hook.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;This extremely useful hook also offers three other really cool features:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;If you have a nested collection, you can choose how the listener stores the collection as part of global state. For example, if you have a nested collection &lt;code&gt;baz&lt;/code&gt; which is located at &lt;code&gt;foo/bar/baz&lt;/code&gt;, then without this feature you would have to select the collection as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const baz = useSelector((state) =&amp;gt; state.firestore.data.foo.bar.baz);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;However, using the &lt;code&gt;storeAs&lt;/code&gt; argument, you can easily change it to anything you like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;useFirestoreConnect({
+  collection: &#39;foo/bar/baz&#39;,
+  storeAs: &#39;baz&#39;
+});
+
+const baz = useSelector((state) =&amp;gt; state.firestore.data.baz);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;If you use the &lt;code&gt;ordered&lt;/code&gt; property of &lt;code&gt;firestore&lt;/code&gt; instead of &lt;code&gt;data&lt;/code&gt;, the data will become sorted. To change how the data is sorted, pass an &lt;code&gt;orderBy&lt;/code&gt; argument to the hook:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;useFirestoreConnect({
+  collection: &#39;foo/bar/baz&#39;,
+  orderBy: &#39;createdAt&#39;,
+  storeAs: &#39;baz&#39;
+});
+
+const baz = useSelector((state) =&amp;gt; state.firestore.ordered.baz);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;If you just want to listen to a specific document (rather than an entire collection), that&amp;rsquo;s entirely possible too. You will still have to select the individual document, but the listener will only listen to the single document, not the entire collection:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;useFirestoreConnect({
+  collection: &#39;foo&#39;,
+  doc: &#39;bar&#39;
+});
+
+const bar = useSelector((state) =&amp;gt; state.firestore.data.foo[&#39;bar&#39;]);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Absolutely amazing.&lt;/p&gt;
+
+&lt;h3 id=&#34;real-time-database&#34;&gt;Real-time Database&lt;/h3&gt;
+
+&lt;p&gt;The custom hook &lt;code&gt;useFirebaseConnect&lt;/code&gt; for listening to the real-time database is very similar to the above example, with a few differences based on the general difference between the two query languages. Before RRF, you would have to fetch data from a path like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import { useDispatch, useSelector } from &#39;react-redux&#39;;
+import firebase from &#39;firebase&#39;;
+
+export default function Component() {
+	
+  const dispatch = useDispatch();
+
+  const todos = useSelector((state) =&amp;gt; state.todos);
+
+  firebase.database().ref(&#39;todos&#39;)
+    .on(&#39;value&#39;, (snapshot) =&amp;gt; {
+      dispatch({
+        type: &#39;TODOS_UPDATED&#39;,
+        todos: snapshot.val()
+      });
+    });
+
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;However, by using the &lt;code&gt;useFirebaseConnect&lt;/code&gt; hook, we no longer have to manually manage global state. Instead, the hook manages listening and unlistening as well as updating our global state:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import { useSelector } from &#39;react-redux&#39;;
+import { useFirebaseConnect } from &#39;react-redux-firebase&#39;;
+
+export default function Component() {
+	
+  useFirebaseConnect({
+    path: &#39;todos&#39;
+  });
+
+  const todos = useSelector((state) =&amp;gt; state.firebase.data.todos);
+
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Isn&amp;rsquo;t that much cleaner? You can also use special &lt;a href=&#34;https://firebase.google.com/docs/reference/js/firebase.database.Query&#34; target=&#34;_blank&#34;&gt;query parameters&lt;/a&gt; to change how the data is sorted, among other things:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;useFirebaseConnect({
+  path: &#39;todos&#39;,
+  queryParams: [&amp;quot;orderByKey&amp;quot;]
+});
+
+const todos = useSelector((state) =&amp;gt; state.firebase.ordered.todos);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Basically, anything that you could do with the standard SDK, the hook exposes to you as well.&lt;/p&gt;
+
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;If you&amp;rsquo;re developing an app with React, Redux, and Firebase, then you should be using this library to make your code much cleaner. Auth has never been simpler. Plus, the custom Firebase and Firestore hooks do so much extra leg work for you, so you can focus on writing application code.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Note: header image taken from &lt;a href=&#34;https://www.youtube.com/watch?v=TlpX0aMYmrk&#34; target=&#34;_blank&#34;&gt;this tutorial&lt;/a&gt; from &lt;a href=&#34;https://www.youtube.com/channel/UCIWTUpwIzh_P73LlbX20VQA&#34; target=&#34;_blank&#34;&gt;Aberraouf Zine&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
