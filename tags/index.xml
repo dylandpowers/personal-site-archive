@@ -133,14 +133,6 @@
     </item>
     
     <item>
-      <title>Apple</title>
-      <link>https://dylandpowers.github.io/tags/apple/</link>
-      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/apple/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Cocoa</title>
       <link>https://dylandpowers.github.io/tags/cocoa/</link>
       <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
@@ -201,6 +193,14 @@
       <link>https://dylandpowers.github.io/tags/xcode/</link>
       <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
       <guid>https://dylandpowers.github.io/tags/xcode/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>apple</title>
+      <link>https://dylandpowers.github.io/tags/apple/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/apple/</guid>
       <description></description>
     </item>
     
