@@ -4,24 +4,94 @@
   
   <url>
     <loc>https://dylandpowers.github.io/tags/auth/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/authentication/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://dylandpowers.github.io/categories/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://dylandpowers.github.io/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/jsx/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/jwt/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/javascript/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/post/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/post/protected-routes-in-react/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/categories/react/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/react/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/react-router-dom/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/redux/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/security/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/categories/tutorials/</loc>
+    <lastmod>2020-09-08T10:49:45-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/authentication/</loc>
     <lastmod>2020-06-24T10:25:29-04:00</lastmod>
     <priority>0</priority>
   </url>
@@ -38,29 +108,6 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/tags/javascript/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/post/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/categories/react/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/react/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/tags/react-redux/</loc>
     <lastmod>2020-06-24T10:25:29-04:00</lastmod>
     <priority>0</priority>
@@ -68,18 +115,6 @@
   
   <url>
     <loc>https://dylandpowers.github.io/tags/react-redux-firebase/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/redux/</loc>
-    <lastmod>2020-06-24T10:25:29-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/</loc>
     <lastmod>2020-06-24T10:25:29-04:00</lastmod>
     <priority>0</priority>
   </url>

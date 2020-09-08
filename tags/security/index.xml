@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security | Dylan Powers</title>
+    <link>https://dylandpowers.github.io/tags/security/</link>
+      <atom:link href="https://dylandpowers.github.io/tags/security/index.xml" rel="self" type="application/rss+xml" />
+    <description>Security</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 08 Sep 2020 10:49:45 -0400</lastBuildDate>
+    <image>
+      <url>https://dylandpowers.github.io/img/icon-192.png</url>
+      <title>Security</title>
+      <link>https://dylandpowers.github.io/tags/security/</link>
+    </image>
+    
+    <item>
+      <title>Protected Routes in React using React-Router-Dom</title>
+      <link>https://dylandpowers.github.io/post/protected-routes-in-react/</link>
+      <pubDate>Tue, 08 Sep 2020 10:49:45 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/post/protected-routes-in-react/</guid>
+      <description>
+
+&lt;p&gt;If you have ever made a modern single-page web app using React, odds are you used &lt;a href=&#34;https://reactrouter.com/&#34; target=&#34;_blank&#34;&gt;react-router-dom&lt;/a&gt; for client-side routing. In this tutorial, I will demonstrate how to protect routes such that only logged-in users can navigate to certain places. For example, you don&amp;rsquo;t want every user to be able to navigate to &lt;code&gt;/dashboard&lt;/code&gt;, but anybody should be able to hit &lt;code&gt;/login&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This tutorial assumes that you have basic familiarity with react-router-dom and how to set up a basic router. If not, please read its &lt;a href=&#34;https://reactrouter.com/web/guides/quick-start&#34; target=&#34;_blank&#34;&gt;quick start page&lt;/a&gt; before moving on. This article also assumes that you have a simple way to determine if a user is logged in or not, whether that be through &lt;a href=&#34;https://jwt.io/&#34; target=&#34;_blank&#34;&gt;JSON web tokens&lt;/a&gt;, &lt;a href=&#34;https://redux.js.org/&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt;, or something else.&lt;/p&gt;
+
+&lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;
+
+&lt;p&gt;A traditional React router without protected routes might look something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import {
+  BrowserRouter,
+  Switch,
+  Route
+} from &#39;react-router-dom&#39;;
+
+import LoginPage from &#39;./components/LoginPage&#39;;
+import DashboardPage from &#39;./components/DashboardPage&#39;;
+
+export default function Router() {
+  return (
+    &amp;lt;BrowserRouter&amp;gt;
+      &amp;lt;Switch&amp;gt;
+        &amp;lt;Route to=&amp;quot;/login&amp;quot; component={LoginPage} /&amp;gt;
+        &amp;lt;Route to=&amp;quot;/dashboard&amp;quot; component={DashboardPage} /&amp;gt;
+        &amp;lt;Route component={DashboardPage} /&amp;gt;
+      &amp;lt;/Switch&amp;gt;
+    &amp;lt;/BrowserRouter&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There is an issue with this setup; if a user tries to navigate to &lt;code&gt;/dashboard&lt;/code&gt;, they &lt;strong&gt;will&lt;/strong&gt; be able to do so without logging in. Especially if the dashboard contains sensitive information, this is dangerous behavior. To remedy this, we will be replacing the &lt;code&gt;Route&lt;/code&gt; components with references to our new &lt;code&gt;ProtectedRoute&lt;/code&gt; components, which will redirect to a different page (in our case, &lt;code&gt;/login&lt;/code&gt;) if the user is not logged in.&lt;/p&gt;
+
+&lt;h1 id=&#34;creating-the-component&#34;&gt;Creating the Component&lt;/h1&gt;
+
+&lt;p&gt;First, we will create the &lt;code&gt;ProtectedRoute&lt;/code&gt; component. In this tutorial I will be using a functional component, but class-based components work as well. Create a new file &lt;code&gt;ProtectedRoute.js&lt;/code&gt; and place the following inside of it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;export default function ProtectedRoute({ component: Component, ...rest }) { }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This means that our &lt;code&gt;ProtectedRoute&lt;/code&gt; will expect a &lt;code&gt;component&lt;/code&gt; prop, much like how &lt;code&gt;Route&lt;/code&gt; from react-router-dom takes a &lt;code&gt;component&lt;/code&gt; prop. The &lt;code&gt;...rest&lt;/code&gt; part refers to the rest of the props that can be passed to &lt;code&gt;ProtectedRoute&lt;/code&gt; besides the &lt;code&gt;component&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h1 id=&#34;importing-auth-logic&#34;&gt;Importing Auth Logic&lt;/h1&gt;
+
+&lt;p&gt;Next, we need to import auth logic into this module to determine whether or not the user is logged in. As I mentioned earlier, I use JSON web tokens, but as long as you have a function that returns a boolean indicating whether or not the user is logged in, everything will work great. At this point, our file will look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import { isAuthenticated } from &#39;../auth/jwt&#39;;
+
+export default function ProtectedRoute({ component: Component, ...rest }) { }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;protecting-the-route&#34;&gt;Protecting the Route&lt;/h1&gt;
+
+&lt;p&gt;These next 5 lines of code are where the real magic happens. We will be using react-router-dom&amp;rsquo;s &lt;a href=&#34;https://reactrouter.com/web/api/Redirect&#34; target=&#34;_blank&#34;&gt;Redirect&lt;/a&gt; component to redirect to a universally accessible page if the user is not logged in. Otherwise, we will return its &lt;a href=&#34;https://reactrouter.com/web/api/Route&#34; target=&#34;_blank&#34;&gt;Route&lt;/a&gt; component, which is what you see in a regular React router.&lt;/p&gt;
+
+&lt;p&gt;We will pass the &lt;code&gt;...rest&lt;/code&gt; parameter to the &lt;code&gt;Route&lt;/code&gt; component, which means that everything that we pass to &lt;code&gt;ProtectedRoute&lt;/code&gt; (except for the &lt;code&gt;component&lt;/code&gt; prop) will then be passed to the &lt;code&gt;Route&lt;/code&gt; component. We will take advantage of &lt;code&gt;Route&lt;/code&gt;&amp;rsquo;s &lt;code&gt;render&lt;/code&gt; prop to make it render the component passed in to our protected route:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;&amp;lt;Route {...rest} render={(props) =&amp;gt; &amp;lt;Component {...props} /&amp;gt;} /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Of course, we will only return this route if the user is logged in. If not, we will return a &lt;code&gt;Redirect&lt;/code&gt; to the login page. After adding the logic and the imports in the file, it should look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import { Redirect, Route } from &#39;react-router-dom&#39;;
+
+export default function ProtectedRoute({ component: Component, ...rest }) {
+  return isAuthenticated() ? (
+    &amp;lt;Route {...rest} render={(props) =&amp;gt; &amp;lt;Component {...props} /&amp;gt;} /&amp;gt;
+  ) : (
+    &amp;lt;Redirect to=&amp;quot;/login&amp;quot; /&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Alternatively, if you do not want to &lt;em&gt;always&lt;/em&gt; redirect to the login page, consider adding adding a prop like &lt;code&gt;redirectRoute&lt;/code&gt; to the component:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;export default function ProtectedRoute({ component: Component, redirectRoute, ...rest }) {
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And then the redirect component would read &lt;code&gt;&amp;lt;Redirect to={redirectRoute} /&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h1 id=&#34;putting-it-all-together&#34;&gt;Putting it All Together&lt;/h1&gt;
+
+&lt;p&gt;Now, anytime we want to protect a route, we can use our &lt;code&gt;ProtectedRoute&lt;/code&gt; component instead of the provided &lt;code&gt;Route&lt;/code&gt; component. As a result, the router shown in the overview would now look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
+import {
+  BrowserRouter,
+  Switch,
+  Route
+} from &#39;react-router-dom&#39;;
+
+import LoginPage from &#39;./components/LoginPage&#39;;
+import DashboardPage from &#39;./components/DashboardPage&#39;;
+import ProtectedRoute from &#39;./utils/ProtectedRoute&#39;;
+
+export default function Router() {
+  return (
+    &amp;lt;BrowserRouter&amp;gt;
+      &amp;lt;Switch&amp;gt;
+        &amp;lt;Route to=&amp;quot;/login&amp;quot; component={LoginPage} /&amp;gt;
+        &amp;lt;ProtectedRoute to=&amp;quot;/dashboard&amp;quot; component={DashboardPage} /&amp;gt;
+        &amp;lt;ProtectedRoute component={DashboardPage} /&amp;gt;
+      &amp;lt;/Switch&amp;gt;
+    &amp;lt;/BrowserRouter&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Voilà! You now have the ability to make protected routes in React. Go protect those web apps!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
