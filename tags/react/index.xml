@@ -5,12 +5,168 @@
     <link>https://dylandpowers.github.io/tags/react/</link>
       <atom:link href="https://dylandpowers.github.io/tags/react/index.xml" rel="self" type="application/rss+xml" />
     <description>React</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 08 Sep 2020 10:49:45 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 02 Feb 2021 21:03:31 -0500</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>React</title>
       <link>https://dylandpowers.github.io/tags/react/</link>
     </image>
+    
+    <item>
+      <title>Redux Without Redux: How to Create Redux-like Functionality Using React</title>
+      <link>https://dylandpowers.github.io/post/redux-without-redux-how-to-create-redux-like-functionality-using-react/</link>
+      <pubDate>Tue, 02 Feb 2021 21:03:31 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/post/redux-without-redux-how-to-create-redux-like-functionality-using-react/</guid>
+      <description>
+
+&lt;p&gt;When it comes to frontend state management libraries, it doesn&amp;rsquo;t get much better than good ol&amp;rsquo; &lt;a href=&#34;https://redux.js.org/&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt;. It allows you to define one or more reducers, dispatch updates to a global state, and subscribe to only the parts of state that you care about in each a component.&lt;/p&gt;
+
+&lt;p&gt;However, as I have continued to incorporate Redux into smaller personal projects, I have found some of its features to be superfluous to my needs. For example, for small projects that make use of Ajax, I sometimes prefer to separate the global state from the Ajax calls. This makes something like &lt;a href=&#34;https://github.com/reduxjs/redux-thunk&#34; target=&#34;_blank&#34;&gt;redux-thunk&lt;/a&gt; unnecessary, meaning that I would not make use of any Redux middleware (fun fact: the redux-thunk library is only &lt;a href=&#34;https://github.com/reduxjs/redux-thunk/blob/master/src/index.js&#34; target=&#34;_blank&#34;&gt;14 lines of source code&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;Fortunately, implementing a basic Redux is &lt;em&gt;much&lt;/em&gt; simpler than you might think! We just need a custom reducer and a couple of React hooks. This tutorial will show you how to create a simple global state, along with a dispatcher and a way to update that global state. We will be using functional components in this tutorial, and we will create a simple counter which can be incremented and decremented. Let&amp;rsquo;s get started!&lt;/p&gt;
+
+&lt;h1 id=&#34;the-reducer&#34;&gt;The Reducer&lt;/h1&gt;
+
+&lt;p&gt;For starters, a reducer is just a function which accepts a current state and an action and then based on that action, returns a new state. That&amp;rsquo;s it. However, without some active management, you would have to keep track of the current state and pass it to the reducer every time you wanted to dispatch an action.&lt;/p&gt;
+
+&lt;p&gt;Fortunately, React already covers a lot of the ground for us with the &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usereducer&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;useReducer&lt;/code&gt;&lt;/a&gt; hook. It accepts two arguments: a reducer and an initial state (it also optionally accepts a lazy state initialization function). The reducer must have the signature described above:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function reducer(state, action) {
+  return state; // some new state
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To begin with, we&amp;rsquo;ll define our reducer in its own file. We will also define the action types for incrementing, decrementing, and setting the counter:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// reducer.js
+const INCREMENT = &#39;INCREMENT&#39;;
+const DECREMENT = &#39;DECREMENT&#39;;
+const SET_COUNT = &#39;SET_COUNT&#39;;
+
+export default function counter(state, action) {
+  switch (action.type) {
+    case INCREMENT:
+      return state + 1;
+    case DECREMENT:
+      return state - 1;
+    case SET_COUNT:
+      return action.count;
+    default:
+      throw new Error(`Action type ${action.type} not recognized`);
+  }
+} 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;rsquo;ll also want to make some &lt;em&gt;action creators,&lt;/em&gt; which simplify the process of constructing an action from outside of the scope of the reducer. Actions are just objects which have a &lt;code&gt;type&lt;/code&gt; property and, optionally, other properties. To avoid having to create the action object inside of a component, we define certain action creators in the reducer:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// reducer.js
+export function increment() {
+  return {
+    type: INCREMENT
+  };
+}
+
+export function decrement() {
+  return {
+    type: DECREMENT
+  };
+}
+
+export function setCount(count) {
+  return {
+    type: SET_COUNT,
+    count
+  };
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With the reducer done, we can now begin to make our Redux functionality using a couple useful hooks.&lt;/p&gt;
+
+&lt;h1 id=&#34;incorporating-the-reducer&#34;&gt;Incorporating the Reducer&lt;/h1&gt;
+
+&lt;p&gt;The &lt;code&gt;useReducer&lt;/code&gt; hook returns a &lt;code&gt;dispatch&lt;/code&gt; function and a reference to the current state. The &lt;code&gt;dispatch&lt;/code&gt; function takes care of automatically passing in the current state to the reducer, although we still have to supply the action (this emulates Redux behavior).&lt;/p&gt;
+
+&lt;p&gt;In our top-level component where we want the global state to live, we declare our &lt;code&gt;dispatch&lt;/code&gt; function and our global state using this hook:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// TopLevelComponent.jsx
+import React, { useReducer } from &#39;react&#39;;
+import reducer from &#39;./reducer&#39;;
+
+export default function TopLevelComponent(props) {
+  const [count, dispatch] = useReducer(reducer, 0);
+
+  return (
+    &amp;lt;p&amp;gt;The current count is {count}.&amp;lt;/p&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then, any time an action is dispatched using the &lt;code&gt;dispatch&lt;/code&gt; function returned above, the global &lt;code&gt;count&lt;/code&gt; will be updated! Now this is beginning to look a little like Redux. However, if the &lt;code&gt;dispatch&lt;/code&gt; function were simply passed down through props, you might think that this looks like plain React: passing down callbacks to update state in a parent component. And you would be right. Using another hook, we can make this app even more Redux-like.&lt;/p&gt;
+
+&lt;h1 id=&#34;making-dispatch-available-everywhere&#34;&gt;Making &lt;code&gt;dispatch&lt;/code&gt; Available Everywhere&lt;/h1&gt;
+
+&lt;p&gt;To further emulate Redux, we should make the &lt;code&gt;dispatch&lt;/code&gt; function available from any child component without directly passing it down through props. In the parent component, we can provide a context whose value is the &lt;code&gt;dispatch&lt;/code&gt; function. In order to be able to access this context later, we will declare it in the reducer file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// reducer.js
+import { createContext } from &#39;react&#39;;
+
+export const CounterContext = createContext(null);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then, in our top-level component, we will wrap all children in a context provider that will provide the &lt;code&gt;dispatch&lt;/code&gt; function to all child components:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// TopLevelComponent.jsx
+import React, { useReducer } from &#39;react&#39;;
+import reducer, { CounterContext } from &#39;./reducer&#39;;
+
+export default function TopLevelComponent(props) {
+  const [count, dispatch] = useReducer(reducer, 0);
+
+  return (
+    &amp;lt;CounterContext.Provider value={dispatch}&amp;gt;
+      &amp;lt;p&amp;gt;The current count is {count}.&amp;lt;/p&amp;gt;
+    &amp;lt;/CounterContext.Provider&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, any child component will have access to the &lt;code&gt;dispatch&lt;/code&gt; function, which they can use to update the &lt;code&gt;count&lt;/code&gt; state globally! If you wish to access &lt;code&gt;count&lt;/code&gt; in child components as well, it would be trivial to make another context to provide that value anywhere.&lt;/p&gt;
+
+&lt;h1 id=&#34;dispatching-actions-from-child-components&#34;&gt;Dispatching Actions from Child Components&lt;/h1&gt;
+
+&lt;p&gt;Now, for the pièce de résistance! By using the &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usecontext&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;useContext&lt;/code&gt;&lt;/a&gt; hook, we can access the value of the created context from any child component and &lt;code&gt;dispatch&lt;/code&gt; actions to the global state, just like Redux:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// ChildComponent.jsx
+import React, { useContext } from &#39;react&#39;;
+import { CounterContext, increment, decrement } from &#39;./reducer&#39;;
+
+export default function ChildComponent(props) {
+  const dispatch = useContext(CounterContext);
+
+  return (
+    &amp;lt;div&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; dispatch(increment())}&amp;gt;+&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; dispatch(decrement())}&amp;gt;-&amp;lt;/button&amp;gt;
+    &amp;lt;/div&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see, now we can access the &lt;code&gt;dispatch&lt;/code&gt; function from anywhere to dispatch actions to the global state without having to pass down callbacks as props.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;As you can see, we have now covered all of our bases in terms of basic Redux functionality. We can:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Define a reducer which updates a global state&lt;/li&gt;
+&lt;li&gt;Dispatch actions to update that global state&lt;/li&gt;
+&lt;li&gt;Access the &lt;code&gt;dispatch&lt;/code&gt; function from any child component&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For simple projects, this quasi-Redux implements a lot of the basic functionality without having to incorporate the whole library. Thanks for reading 😄!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Protected Routes in React using React-Router-Dom</title>
