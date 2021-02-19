@@ -3,14 +3,73 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://dylandpowers.github.io/authors/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://dylandpowers.github.io/categories/</loc>
-    <lastmod>2021-02-02T21:03:31-05:00</lastmod>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/authors/dylan-powers/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://dylandpowers.github.io/</loc>
-    <lastmod>2021-02-02T21:03:31-05:00</lastmod>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/categories/frontend/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/heroku/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/project/koru-meditation/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/project/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/react/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/redux/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/website/</loc>
+    <lastmod>2021-02-17T22:57:04-05:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -50,19 +109,7 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/tags/react/</loc>
-    <lastmod>2021-02-02T21:03:31-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/tags/react-redux/</loc>
-    <lastmod>2021-02-02T21:03:31-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/redux/</loc>
     <lastmod>2021-02-02T21:03:31-05:00</lastmod>
     <priority>0</priority>
   </url>
@@ -70,12 +117,6 @@
   <url>
     <loc>https://dylandpowers.github.io/post/redux-without-redux-how-to-create-redux-like-functionality-using-react/</loc>
     <lastmod>2021-02-02T21:03:31-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/</loc>
-    <lastmod>2021-02-02T21:03:31-05:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -178,12 +219,6 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/authors/</loc>
-    <lastmod>2020-06-20T16:05:06-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/tags/cocoa/</loc>
     <lastmod>2020-06-20T16:05:06-04:00</lastmod>
     <priority>0</priority>
@@ -191,12 +226,6 @@
   
   <url>
     <loc>https://dylandpowers.github.io/tags/cocoapods/</loc>
-    <lastmod>2020-06-20T16:05:06-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/authors/dylan-powers/</loc>
     <lastmod>2020-06-20T16:05:06-04:00</lastmod>
     <priority>0</priority>
   </url>
@@ -220,12 +249,6 @@
   
   <url>
     <loc>https://dylandpowers.github.io/tags/progress/</loc>
-    <lastmod>2020-06-20T16:05:06-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/project/</loc>
     <lastmod>2020-06-20T16:05:06-04:00</lastmod>
     <priority>0</priority>
   </url>

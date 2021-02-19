@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Frontend | Dylan Powers</title>
+    <link>https://dylandpowers.github.io/categories/frontend/</link>
+      <atom:link href="https://dylandpowers.github.io/categories/frontend/index.xml" rel="self" type="application/rss+xml" />
+    <description>Frontend</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 17 Feb 2021 22:57:04 -0500</lastBuildDate>
+    <image>
+      <url>https://dylandpowers.github.io/img/icon-192.png</url>
+      <title>Frontend</title>
+      <link>https://dylandpowers.github.io/categories/frontend/</link>
+    </image>
+    
+    <item>
+      <title>Koru Meditation</title>
+      <link>https://dylandpowers.github.io/project/koru-meditation/</link>
+      <pubDate>Wed, 17 Feb 2021 22:57:04 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/project/koru-meditation/</guid>
+      <description>&lt;p&gt;Find the website &lt;a href=&#34;http://www.korumeditation.com/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;This is a website much like the popular Koru Meditation app. I discovered &lt;a href=&#34;https://korumindfulness.org/&#34; target=&#34;_blank&#34;&gt;Koru&lt;/a&gt; while a student at Duke University when I took a free four-session class to learn how to meditate with mindfulness. The app helped me to track my meditation sessions, and it was also stock-full of guided meditations. However, I grew tired of constantly having to use my phone, especially as I wanted to type more and more in my reflections.&lt;/p&gt;
+
+&lt;p&gt;So, I set out to make a website! The website has many of the same features as the app:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The ability to run through a full meditation session. This involves writing down two gratitudes, selecting the meditation type and length, meditating, reflecting, selecting skills used and selecting a mindful action for the day. Here is the first stage:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;meditation.png&#34; alt=&#34;Meditation Screen&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A calendar to track past meditation sessions. Each day may hold multiple sessions.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;calendar.png&#34; alt=&#34;Calendar&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Additionally, when clicking on a session, a drawer will expand showing the details of that session.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;drawer.png&#34; alt=&#34;Drawer&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A gratitude river, which shows all public gratitudes in the last 24 hours. Users can choose to not show their gratitudes on the river by marking them as private.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;river.png&#34; alt=&#34;Gratitude River&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The website also has an authentication system where users can sign up, log in, and log out.&lt;/p&gt;
+
+&lt;p&gt;I built the website with the MERN stack (&lt;a href=&#34;https://www.mongodb.com/&#34; target=&#34;_blank&#34;&gt;MongoDB&lt;/a&gt;, &lt;a href=&#34;https://expressjs.com/&#34; target=&#34;_blank&#34;&gt;ExpressJS&lt;/a&gt;, &lt;a href=&#34;https://reactjs.org/&#34; target=&#34;_blank&#34;&gt;React&lt;/a&gt;, &lt;a href=&#34;https://nodejs.org/en/&#34; target=&#34;_blank&#34;&gt;Node.js&lt;/a&gt;). It is hosted on &lt;a href=&#34;https://heroku.com&#34; target=&#34;_blank&#34;&gt;Heroku&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The frontend uses &lt;a href=&#34;https://redux.js.org/&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt; for state management and &lt;a href=&#34;https://styled-components.com/&#34; target=&#34;_blank&#34;&gt;styled-components&lt;/a&gt; for css-in-js styling. It also uses &lt;a href=&#34;https://github.com/reduxjs/redux-thunk&#34; target=&#34;_blank&#34;&gt;Redux thunk&lt;/a&gt;, an awesome library for dispatching asynchronous actions in Redux.&lt;/p&gt;
+
+&lt;p&gt;The backend uses &lt;a href=&#34;http://www.passportjs.org/&#34; target=&#34;_blank&#34;&gt;Passport&lt;/a&gt; for identity management.&lt;/p&gt;
+
+&lt;p&gt;For more details look at &lt;a href=&#34;https://github.com/dylandpowers/koru&#34; target=&#34;_blank&#34;&gt;the code&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

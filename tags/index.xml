@@ -5,12 +5,44 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 02 Feb 2021 21:03:31 -0500</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 17 Feb 2021 22:57:04 -0500</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://dylandpowers.github.io/tags/</link>
     </image>
+    
+    <item>
+      <title>Heroku</title>
+      <link>https://dylandpowers.github.io/tags/heroku/</link>
+      <pubDate>Wed, 17 Feb 2021 22:57:04 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/heroku/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>React</title>
+      <link>https://dylandpowers.github.io/tags/react/</link>
+      <pubDate>Wed, 17 Feb 2021 22:57:04 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/react/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Redux</title>
+      <link>https://dylandpowers.github.io/tags/redux/</link>
+      <pubDate>Wed, 17 Feb 2021 22:57:04 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/redux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Website</title>
+      <link>https://dylandpowers.github.io/tags/website/</link>
+      <pubDate>Wed, 17 Feb 2021 22:57:04 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/website/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Frontend</title>
@@ -45,26 +77,10 @@
     </item>
     
     <item>
-      <title>React</title>
-      <link>https://dylandpowers.github.io/tags/react/</link>
-      <pubDate>Tue, 02 Feb 2021 21:03:31 -0500</pubDate>
-      <guid>https://dylandpowers.github.io/tags/react/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>React-Redux</title>
       <link>https://dylandpowers.github.io/tags/react-redux/</link>
       <pubDate>Tue, 02 Feb 2021 21:03:31 -0500</pubDate>
       <guid>https://dylandpowers.github.io/tags/react-redux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Redux</title>
-      <link>https://dylandpowers.github.io/tags/redux/</link>
-      <pubDate>Tue, 02 Feb 2021 21:03:31 -0500</pubDate>
-      <guid>https://dylandpowers.github.io/tags/redux/</guid>
       <description></description>
     </item>
     
