@@ -5,12 +5,175 @@
     <link>https://dylandpowers.github.io/tags/react/</link>
       <atom:link href="https://dylandpowers.github.io/tags/react/index.xml" rel="self" type="application/rss+xml" />
     <description>React</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 17 Feb 2021 22:57:04 -0500</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 09 May 2021 22:49:47 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>React</title>
       <link>https://dylandpowers.github.io/tags/react/</link>
     </image>
+    
+    <item>
+      <title>Using Context to Prevent Unnecessary Re Renders</title>
+      <link>https://dylandpowers.github.io/post/using-context-to-prevent-unnecessary-re-renders/</link>
+      <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/post/using-context-to-prevent-unnecessary-re-renders/</guid>
+      <description>
+
+&lt;p&gt;With the rising popularity of React, we are in an era of the most responsive user interfaces we have ever seen. React uses a virtual DOM, and for every render it runs calculations to determine which parts of the actual DOM need to get updated. This means that React &lt;em&gt;only re-renders&lt;/em&gt; components that need to be re-rendered, and nothing more.&lt;/p&gt;
+
+&lt;p&gt;However, that doesn&amp;rsquo;t mean we shouldn&amp;rsquo;t introduce optimizations of our own! Too many re-renders can lead to performance issues, so we should optimize wherever we can. One common pitfall I see in React applications is what I call &lt;em&gt;messenger components&lt;/em&gt;, which are components that pass some props from a parent to a child, but do not actually do anything with those props. For example, consider the following three components.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Parent(props) {
+  const foo = 1;
+  const bar = 2;
+
+  return (
+    &amp;lt;Child foo={foo} bar={bar} /&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Child(props) {
+  return (
+    &amp;lt;&amp;gt;
+      &amp;lt;p&amp;gt;Foo is {props.foo}&amp;lt;/p&amp;gt;
+      &amp;lt;C bar={props.bar} /&amp;gt;
+    &amp;lt;/&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Grandchild(props) {
+  return (
+    &amp;lt;p&amp;gt;Bar is {props.bar}&amp;lt;/p&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In this situation, &lt;code&gt;Child&lt;/code&gt; receives both &lt;code&gt;foo&lt;/code&gt; and &lt;code&gt;bar&lt;/code&gt; as props, but only truly &amp;ldquo;cares&amp;rdquo; about the value of &lt;code&gt;foo&lt;/code&gt;; &lt;code&gt;Grandchild&lt;/code&gt; cares about the value of &lt;code&gt;bar&lt;/code&gt;. In this case, &lt;code&gt;Child&lt;/code&gt; is a messenger component for the &lt;code&gt;bar&lt;/code&gt; prop. &lt;code&gt;Child&lt;/code&gt; should only re-render when the value of &lt;code&gt;foo&lt;/code&gt; updates, but in this case it will also re-render when &lt;code&gt;bar&lt;/code&gt; updates. How can we fix this?&lt;/p&gt;
+
+&lt;h1 id=&#34;the-context-api&#34;&gt;The Context API&lt;/h1&gt;
+
+&lt;p&gt;Using React&amp;rsquo;s &lt;a href=&#34;https://reactjs.org/docs/context.html&#34; target=&#34;_blank&#34;&gt;Context API&lt;/a&gt;, we can broadcast changes to values, and only components that directly subscribe to that piece of context will receive the new value. This solves the problem of messenger components re-rendering unnecessarily, because we no longer need to pass props down - we can simply directly subscribe to the value in &lt;code&gt;Grandchild&lt;/code&gt;. To demonstrate this, I will add &lt;a href=&#34;https://reactjs.org/docs/glossary.html#refs&#34; target=&#34;_blank&#34;&gt;refs&lt;/a&gt; to show the number of re-renders for each component before and after adding context.&lt;/p&gt;
+
+&lt;h1 id=&#34;before&#34;&gt;Before&lt;/h1&gt;
+
+&lt;p&gt;Using the current system of prop drilling, we can see how &lt;code&gt;Child&lt;/code&gt; will re-render every time either prop is updated. If you like, use &lt;a href=&#34;https://github.com/facebook/create-react-app&#34; target=&#34;_blank&#34;&gt;create-react-app&lt;/a&gt; to bootstrap an app to see the renders in action.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Parent(props) {
+  const [foo, setFoo] = useState(0);
+  const [bar, setBar] = useState(0);
+
+  function incrementFoo() {
+    setFoo((prev) =&amp;gt; prev + 1);
+  }
+
+  function incrementBar() {
+    setBar((prev) =&amp;gt; prev + 1);
+  }
+
+  return (
+    &amp;lt;&amp;gt;
+      &amp;lt;button onClick={incrementFoo}&amp;gt;Increment Foo&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={incrementBar}&amp;gt;Increment Bar&amp;lt;/button&amp;gt;
+      &amp;lt;Child foo={foo} bar={bar} /&amp;gt;
+    &amp;lt;/&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Child(props) {
+  const renders = useRef(0);
+
+  return (
+    &amp;lt;&amp;gt;
+      &amp;lt;p&amp;gt;Foo (in Child): {props.foo}&amp;lt;/p&amp;gt;
+      &amp;lt;p&amp;gt;Child renders: {renders.current++}&amp;lt;/p&amp;gt;
+      &amp;lt;Grandchild bar={bar} /&amp;gt;
+    &amp;lt;/&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Grandchild(props) {
+  const renders = useRef(0);
+
+  return (
+    &amp;lt;&amp;gt;
+      &amp;lt;p&amp;gt;Bar (in Grandchild): {props.bar}&amp;lt;/p&amp;gt;
+      &amp;lt;p&amp;gt;Grandchild renders: {renders.current++}&amp;lt;/p&amp;gt;
+    &amp;lt;/&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you run this application, you will notice that the number of renders for the &lt;code&gt;Child&lt;/code&gt; and &lt;code&gt;Grandchild&lt;/code&gt; components will always be the same. However, since &lt;code&gt;Child&lt;/code&gt; doesn&amp;rsquo;t need to update when &lt;code&gt;bar&lt;/code&gt; updates, the number of re-renders shouldn&amp;rsquo;t be the same for the two components.&lt;/p&gt;
+
+&lt;p&gt;But wait, why don&amp;rsquo;t we just memoize &lt;code&gt;Child&lt;/code&gt; so that it only re-renders when &lt;code&gt;foo&lt;/code&gt; updates? Beware of this approach, because it is only half of the solution! Memoizing &lt;code&gt;Child&lt;/code&gt; to not re-render when &lt;code&gt;bar&lt;/code&gt; is updated leaves &lt;em&gt;nothing to re-render &lt;code&gt;Grandchild&lt;/code&gt;,&lt;/em&gt; so this will result in unintended consequences: &lt;code&gt;Grandchild&lt;/code&gt; would only re-render when &lt;code&gt;foo&lt;/code&gt; is updated.&lt;/p&gt;
+
+&lt;h1 id=&#34;after&#34;&gt;After&lt;/h1&gt;
+
+&lt;p&gt;Using a combination of memoization and the Context API, we can prevent &lt;code&gt;Child&lt;/code&gt; from re-rendering unnecessarily. The following application demonstrates this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const BarContext = createContext(null);
+
+function Parent(props) {
+  const [foo, setFoo] = useState(0);
+  const [bar, setBar] = useState(0);
+
+  function incrementFoo() {
+    setFoo((prev) =&amp;gt; prev + 1);
+  }
+
+  function incrementBar() {
+    setBar((prev) =&amp;gt; prev + 1);
+  }
+
+  return (
+    &amp;lt;BarContext.Provider value={bar}&amp;gt;
+      &amp;lt;button onClick={incrementFoo}&amp;gt;Increment Foo&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={incrementBar}&amp;gt;Increment Bar&amp;lt;/button&amp;gt;
+      &amp;lt;MemoizedChild foo={foo} /&amp;gt;
+    &amp;lt;/BarContext.Provider&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Child(props) {
+  const renders = useRef(0);
+
+  return (
+    &amp;lt;&amp;gt;
+      &amp;lt;p&amp;gt;Foo (in Child): {props.foo}&amp;lt;/p&amp;gt;
+      &amp;lt;p&amp;gt;Child renders: {renders.current++}&amp;lt;/p&amp;gt;
+      &amp;lt;Grandchild /&amp;gt;
+    &amp;lt;/&amp;gt;
+  );
+}
+
+const MemoizedChild = memo(Child);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Grandchild(props) {
+  const renders = useRef(0);
+  const bar = useContext(BarContext);
+
+  return (
+    &amp;lt;&amp;gt;
+      &amp;lt;p&amp;gt;Bar (in Grandchild): {bar}&amp;lt;/p&amp;gt;
+      &amp;lt;p&amp;gt;Grandchild renders: {renders.current++}&amp;lt;/p&amp;gt;
+    &amp;lt;/&amp;gt;
+    );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see, we made two updates. First, we used a piece of context to hold the reference to &lt;code&gt;bar&lt;/code&gt;, and we have &lt;code&gt;Grandchild&lt;/code&gt; subscribe to that piece of context using the &lt;code&gt;useContext&lt;/code&gt; hook. However, this is only half of the equation; if we do not memoize &lt;code&gt;Child&lt;/code&gt;, then anytime &lt;code&gt;bar&lt;/code&gt; is updated in &lt;code&gt;Parent&lt;/code&gt;, &lt;strong&gt;&lt;code&gt;Child&lt;/code&gt; will re-render.&lt;/strong&gt; In order to prevent this, we use the &lt;a href=&#34;https://reactjs.org/docs/react-api.html#reactmemo&#34; target=&#34;_blank&#34;&gt;memo&lt;/a&gt; function to create a memoized version of the &lt;code&gt;Child&lt;/code&gt; component that will only re-render when the props change.&lt;/p&gt;
+
+&lt;p&gt;And voila! We have successfully eliminated unnecessary messenger re-renders with the Context API and some simple memoization.&lt;/p&gt;
+
+&lt;p&gt;I would be remiss not to say that for most applications, re-renders don&amp;rsquo;t cause much of a performance issue because most applications don&amp;rsquo;t involve a lot of front-end computation. However, for applications with a lot of animations or drag-and-drops, it&amp;rsquo;s more than worth it to eliminate unnecessary re-renders wherever you can. Happy coding!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Koru Meditation</title>

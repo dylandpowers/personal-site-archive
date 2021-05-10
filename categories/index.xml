@@ -5,7 +5,7 @@
     <link>https://dylandpowers.github.io/categories/</link>
       <atom:link href="https://dylandpowers.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 17 Feb 2021 22:57:04 -0500</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 09 May 2021 22:49:47 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Categories</title>
@@ -13,18 +13,18 @@
     </image>
     
     <item>
-      <title>Frontend</title>
-      <link>https://dylandpowers.github.io/categories/frontend/</link>
-      <pubDate>Wed, 17 Feb 2021 22:57:04 -0500</pubDate>
-      <guid>https://dylandpowers.github.io/categories/frontend/</guid>
+      <title>React</title>
+      <link>https://dylandpowers.github.io/categories/react/</link>
+      <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/categories/react/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>React</title>
-      <link>https://dylandpowers.github.io/categories/react/</link>
-      <pubDate>Tue, 02 Feb 2021 21:03:31 -0500</pubDate>
-      <guid>https://dylandpowers.github.io/categories/react/</guid>
+      <title>Frontend</title>
+      <link>https://dylandpowers.github.io/categories/frontend/</link>
+      <pubDate>Wed, 17 Feb 2021 22:57:04 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/categories/frontend/</guid>
       <description></description>
     </item>
     
