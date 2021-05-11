@@ -37,7 +37,7 @@
   return (
     &amp;lt;&amp;gt;
       &amp;lt;p&amp;gt;Foo is {props.foo}&amp;lt;/p&amp;gt;
-      &amp;lt;C bar={props.bar} /&amp;gt;
+      &amp;lt;Grandchild bar={props.bar} /&amp;gt;
     &amp;lt;/&amp;gt;
   );
 }

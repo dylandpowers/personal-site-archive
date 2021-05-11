@@ -56,13 +56,13 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/tags/react/</loc>
+    <loc>https://dylandpowers.github.io/categories/react/</loc>
     <lastmod>2021-05-09T22:49:47-04:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/categories/react/</loc>
+    <loc>https://dylandpowers.github.io/tags/react/</loc>
     <lastmod>2021-05-09T22:49:47-04:00</lastmod>
     <priority>0</priority>
   </url>
@@ -236,6 +236,12 @@
   </url>
   
   <url>
+    <loc>https://dylandpowers.github.io/tags/apple/</loc>
+    <lastmod>2020-06-20T16:05:06-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://dylandpowers.github.io/tags/cocoa/</loc>
     <lastmod>2020-06-20T16:05:06-04:00</lastmod>
     <priority>0</priority>
@@ -290,12 +296,6 @@
   
   <url>
     <loc>https://dylandpowers.github.io/tags/xcode/</loc>
-    <lastmod>2020-06-20T16:05:06-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/apple/</loc>
     <lastmod>2020-06-20T16:05:06-04:00</lastmod>
     <priority>0</priority>
   </url>
