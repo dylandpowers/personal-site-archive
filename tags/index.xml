@@ -5,12 +5,52 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 09 May 2021 22:49:47 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 08 Aug 2021 16:20:12 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://dylandpowers.github.io/tags/</link>
     </image>
+    
+    <item>
+      <title>Frontend</title>
+      <link>https://dylandpowers.github.io/tags/frontend/</link>
+      <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/frontend/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JSX</title>
+      <link>https://dylandpowers.github.io/tags/jsx/</link>
+      <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/jsx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Javascript</title>
+      <link>https://dylandpowers.github.io/tags/javascript/</link>
+      <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>NPM</title>
+      <link>https://dylandpowers.github.io/tags/npm/</link>
+      <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/npm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>React</title>
+      <link>https://dylandpowers.github.io/tags/react/</link>
+      <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/react/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Components</title>
@@ -29,42 +69,10 @@
     </item>
     
     <item>
-      <title>Frontend</title>
-      <link>https://dylandpowers.github.io/tags/frontend/</link>
-      <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/frontend/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Hooks</title>
       <link>https://dylandpowers.github.io/tags/hooks/</link>
       <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
       <guid>https://dylandpowers.github.io/tags/hooks/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JSX</title>
-      <link>https://dylandpowers.github.io/tags/jsx/</link>
-      <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/jsx/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JavaScript</title>
-      <link>https://dylandpowers.github.io/tags/javascript/</link>
-      <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/javascript/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>React</title>
-      <link>https://dylandpowers.github.io/tags/react/</link>
-      <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/react/</guid>
       <description></description>
     </item>
     

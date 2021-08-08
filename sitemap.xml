@@ -4,7 +4,65 @@
   
   <url>
     <loc>https://dylandpowers.github.io/categories/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/post/essential-npm-packages-for-react-beginners/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/frontend/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/jsx/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/javascript/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/npm/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/post/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/react/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/categories/react/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/</loc>
+    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -21,54 +79,7 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/frontend/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/tags/hooks/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/jsx/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/javascript/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/post/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/categories/react/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/react/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/</loc>
     <lastmod>2021-05-09T22:49:47-04:00</lastmod>
     <priority>0</priority>
   </url>
