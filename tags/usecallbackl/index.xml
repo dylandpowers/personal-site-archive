@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>useCallbackl | Dylan Powers</title>
+    <link>https://dylandpowers.github.io/tags/usecallbackl/</link>
+      <atom:link href="https://dylandpowers.github.io/tags/usecallbackl/index.xml" rel="self" type="application/rss+xml" />
+    <description>useCallbackl</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 15 Aug 2021 21:10:54 -0400</lastBuildDate>
+    <image>
+      <url>https://dylandpowers.github.io/img/icon-192.png</url>
+      <title>useCallbackl</title>
+      <link>https://dylandpowers.github.io/tags/usecallbackl/</link>
+    </image>
+    
+    <item>
+      <title>When to Use useCallback</title>
+      <link>https://dylandpowers.github.io/post/when-to-use-usecallback/</link>
+      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/post/when-to-use-usecallback/</guid>
+      <description>
+
+&lt;p&gt;I&amp;rsquo;ve worked with React a lot over the past few years. The more I work with it, the more I notice common mistakes that can slow down rendering as they pile up. Granted, in small applications (like most side projects), usually the rendering slowness will go unnoticed due to the size of the application. However, for larger applications, thinking about rendering speed becomes important.&lt;/p&gt;
+
+&lt;p&gt;One issue I see often is wrapping all function declarations in a component inside of a &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usecallback&#34; target=&#34;_blank&#34;&gt;useCallback&lt;/a&gt; hook. As per the React docs:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;useCallback&lt;/code&gt; will return a memoized version of the callback that only changes if one of the dependencies has changed.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Essentially, without &lt;code&gt;useCallback&lt;/code&gt;, the function will be recreated on every render. It&amp;rsquo;s important to remember that in JavaScript, functions are first-class objects just like a normal &lt;code&gt;Object&lt;/code&gt; is. This essentially just means that the function can be stored as a variable, passed as an argument to a function, and returned from a function.&lt;/p&gt;
+
+&lt;h1 id=&#34;without-usecallback&#34;&gt;Without &lt;code&gt;useCallback&lt;/code&gt;&lt;/h1&gt;
+
+&lt;p&gt;Let&amp;rsquo;s say we have a function &lt;code&gt;createUser&lt;/code&gt; that is going to create a user by making an API call. The user details are stored in pieces of state within the component.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// SignupPage.jsx
+const [email, setEmail] = useState(&#39;&#39;);
+const [password, setPassword] = useState(&#39;&#39;);
+
+const createUser = () =&amp;gt; {
+  UserAPI.createUser(email, password);
+  redirectToHome();
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We will return some JSX that will render the &lt;code&gt;input&lt;/code&gt; elements, so we don&amp;rsquo;t need to rely on other components to render the input form. Whenever a piece of state changes, React will re-render the component. This will recreate (among other things) all functions not wrapped in a &lt;code&gt;useCallback&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This means that the &lt;code&gt;createUser&lt;/code&gt; function above is created once for each render. This can become a larger performance hit in larger applications, but I&amp;rsquo;ll show in the next section why it isn&amp;rsquo;t the end of the world for this case.&lt;/p&gt;
+
+&lt;h1 id=&#34;with-usecallback&#34;&gt;With &lt;code&gt;useCallback&lt;/code&gt;&lt;/h1&gt;
+
+&lt;p&gt;Alternatively, we can wrap the function in a &lt;code&gt;useCallback&lt;/code&gt; hook provided by the React library. This means that the function will not be re-evaluated unless something in the dependency array changes. Assuming that &lt;code&gt;UserAPI&lt;/code&gt; and the &lt;code&gt;redirectToHome&lt;/code&gt; function are both created outside of the component, we just need to declare &lt;code&gt;email&lt;/code&gt; and &lt;code&gt;password&lt;/code&gt; as dependencies.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// SignupPage.jsx
+const [email, setEmail] = useState(&#39;&#39;);
+const [password, setPassword] = useState(&#39;&#39;);
+
+const createUser = useCallback(() =&amp;gt; {
+  UserAPI.createUser(email, password);
+  redirectToHome();
+}, [email, password]);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This means that, unless the &lt;code&gt;email&lt;/code&gt; or &lt;code&gt;password&lt;/code&gt; state changes, we will not recreate the &lt;code&gt;createUser&lt;/code&gt; function. For example, if we had some &lt;code&gt;showInfoModal&lt;/code&gt; state that would show some information about signing up, we could change that state without recreating the &lt;code&gt;createUser&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;p&gt;This seems like an improvement, right? Consider the fact that the above code is actually identical to the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// SignupPage.jsx
+const [email, setEmail] = useState(&#39;&#39;);
+const [password, setPassword] = useState(&#39;&#39;);
+
+const nonMemoizedCreateUser = () =&amp;gt; {
+  UserAPI.createUser(email, password);
+  redirectToHome();
+};
+
+const createUser = useCallback(nonMemoizedCreateUser, [email, password]);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So, the original function is actually still created, and we are doing even more work than before! In this instance, it seems quite wasteful. However, there are situations where &lt;code&gt;useCallback&lt;/code&gt; is worth the extra cost.&lt;/p&gt;
+
+&lt;h1 id=&#34;use-it-with-memoized-components&#34;&gt;Use it With Memoized Components&lt;/h1&gt;
+
+&lt;p&gt;The best use case for &lt;code&gt;useCallback&lt;/code&gt; is when creating memoized components; that is, components wrapped in an extra &lt;code&gt;React.memo()&lt;/code&gt; function. This means that the component will not re-render unless the props &lt;em&gt;actually&lt;/em&gt; change (or, of course,
+component-held state changes).&lt;/p&gt;
+
+&lt;p&gt;Consider a situation where we have a separate &lt;code&gt;Button&lt;/code&gt; component which will call the passed-in function when clicked. This component has a single prop representing the &lt;code&gt;createUser&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React, { memo } from &#39;react&#39;;
+
+const Button = (props) =&amp;gt; {
+  return (
+    &amp;lt;button onclick={props.createUser}&amp;gt;Create User&amp;lt;/button&amp;gt;
+  );
+};
+
+export default memo(Button);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This means that the &lt;code&gt;Button&lt;/code&gt; component will not re-render unless the props change (React by default defines a &amp;ldquo;change&amp;rdquo; by shallowly comparing the current props to the previous props). If in the &lt;code&gt;SignupPage&lt;/code&gt; component we do not wrap the function in a &lt;code&gt;useCallback&lt;/code&gt;, then the reference will change every time, causing the &lt;code&gt;Button&lt;/code&gt; component to re-render every time that the &lt;code&gt;SignupPage&lt;/code&gt; component re-renders. However, if we wrap the prop in a &lt;code&gt;useCallback&lt;/code&gt;, then we have much more fine-grained control over when the &lt;code&gt;Button&lt;/code&gt; component re-renders.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;When making decisions on whether or not to use &lt;code&gt;useCallback&lt;/code&gt;, there are always several factors at play. However, when relying on memoized components, wrapping function props in &lt;code&gt;useCallback&lt;/code&gt;s is always a safe bet.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

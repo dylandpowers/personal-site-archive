@@ -3,13 +3,59 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://dylandpowers.github.io/categories/</loc>
-    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
+    <loc>https://dylandpowers.github.io/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/</loc>
+    <loc>https://dylandpowers.github.io/tags/frontend/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/hooks/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/javascript/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/post/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/react/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/post/when-to-use-usecallback/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/usecallbackl/</loc>
+    <lastmod>2021-08-15T21:10:54-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/categories/</loc>
     <lastmod>2021-08-08T16:20:12-04:00</lastmod>
     <priority>0</priority>
   </url>
@@ -20,19 +66,7 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/tags/frontend/</loc>
-    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/tags/jsx/</loc>
-    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/javascript/</loc>
     <lastmod>2021-08-08T16:20:12-04:00</lastmod>
     <priority>0</priority>
   </url>
@@ -44,24 +78,7 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/post/</loc>
-    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/react/</loc>
-    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/categories/react/</loc>
-    <lastmod>2021-08-08T16:20:12-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/</loc>
     <lastmod>2021-08-08T16:20:12-04:00</lastmod>
     <priority>0</priority>
   </url>
@@ -74,12 +91,6 @@
   
   <url>
     <loc>https://dylandpowers.github.io/tags/context/</loc>
-    <lastmod>2021-05-09T22:49:47-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dylandpowers.github.io/tags/hooks/</loc>
     <lastmod>2021-05-09T22:49:47-04:00</lastmod>
     <priority>0</priority>
   </url>
@@ -247,12 +258,6 @@
   </url>
   
   <url>
-    <loc>https://dylandpowers.github.io/tags/apple/</loc>
-    <lastmod>2020-06-20T16:05:06-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://dylandpowers.github.io/tags/cocoa/</loc>
     <lastmod>2020-06-20T16:05:06-04:00</lastmod>
     <priority>0</priority>
@@ -307,6 +312,12 @@
   
   <url>
     <loc>https://dylandpowers.github.io/tags/xcode/</loc>
+    <lastmod>2020-06-20T16:05:06-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dylandpowers.github.io/tags/apple/</loc>
     <lastmod>2020-06-20T16:05:06-04:00</lastmod>
     <priority>0</priority>
   </url>

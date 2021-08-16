@@ -5,7 +5,7 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 08 Aug 2021 16:20:12 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 15 Aug 2021 21:10:54 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
@@ -15,8 +15,40 @@
     <item>
       <title>Frontend</title>
       <link>https://dylandpowers.github.io/tags/frontend/</link>
-      <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
+      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
       <guid>https://dylandpowers.github.io/tags/frontend/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hooks</title>
+      <link>https://dylandpowers.github.io/tags/hooks/</link>
+      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/hooks/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Javascript</title>
+      <link>https://dylandpowers.github.io/tags/javascript/</link>
+      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>React</title>
+      <link>https://dylandpowers.github.io/tags/react/</link>
+      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/react/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>useCallbackl</title>
+      <link>https://dylandpowers.github.io/tags/usecallbackl/</link>
+      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/usecallbackl/</guid>
       <description></description>
     </item>
     
@@ -29,26 +61,10 @@
     </item>
     
     <item>
-      <title>Javascript</title>
-      <link>https://dylandpowers.github.io/tags/javascript/</link>
-      <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/javascript/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>NPM</title>
       <link>https://dylandpowers.github.io/tags/npm/</link>
       <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
       <guid>https://dylandpowers.github.io/tags/npm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>React</title>
-      <link>https://dylandpowers.github.io/tags/react/</link>
-      <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/react/</guid>
       <description></description>
     </item>
     
@@ -65,14 +81,6 @@
       <link>https://dylandpowers.github.io/tags/context/</link>
       <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
       <guid>https://dylandpowers.github.io/tags/context/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hooks</title>
-      <link>https://dylandpowers.github.io/tags/hooks/</link>
-      <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/hooks/</guid>
       <description></description>
     </item>
     
@@ -205,14 +213,6 @@
     </item>
     
     <item>
-      <title>Apple</title>
-      <link>https://dylandpowers.github.io/tags/apple/</link>
-      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/apple/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Cocoa</title>
       <link>https://dylandpowers.github.io/tags/cocoa/</link>
       <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
@@ -273,6 +273,14 @@
       <link>https://dylandpowers.github.io/tags/xcode/</link>
       <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
       <guid>https://dylandpowers.github.io/tags/xcode/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>apple</title>
+      <link>https://dylandpowers.github.io/tags/apple/</link>
+      <pubDate>Sat, 20 Jun 2020 16:05:06 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/apple/</guid>
       <description></description>
     </item>
     
