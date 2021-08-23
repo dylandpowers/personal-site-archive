@@ -5,12 +5,60 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 15 Aug 2021 21:10:54 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Aug 2021 21:18:51 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://dylandpowers.github.io/tags/</link>
     </image>
+    
+    <item>
+      <title>Camera</title>
+      <link>https://dylandpowers.github.io/tags/camera/</link>
+      <pubDate>Sun, 22 Aug 2021 21:18:51 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/camera/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Laptop</title>
+      <link>https://dylandpowers.github.io/tags/laptop/</link>
+      <pubDate>Sun, 22 Aug 2021 21:18:51 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/laptop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Microphone</title>
+      <link>https://dylandpowers.github.io/tags/microphone/</link>
+      <pubDate>Sun, 22 Aug 2021 21:18:51 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/microphone/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Monitor</title>
+      <link>https://dylandpowers.github.io/tags/monitor/</link>
+      <pubDate>Sun, 22 Aug 2021 21:18:51 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/monitor/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Setup</title>
+      <link>https://dylandpowers.github.io/tags/setup/</link>
+      <pubDate>Sun, 22 Aug 2021 21:18:51 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/setup/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>WFH</title>
+      <link>https://dylandpowers.github.io/tags/wfh/</link>
+      <pubDate>Sun, 22 Aug 2021 21:18:51 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/wfh/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Frontend</title>
