@@ -253,7 +253,7 @@ export default function List(props) {
 
 &lt;p&gt;However, that doesn&amp;rsquo;t mean we shouldn&amp;rsquo;t introduce optimizations of our own! Too many re-renders can lead to performance issues, so we should optimize wherever we can. One common pitfall I see in React applications is what I call &lt;em&gt;messenger components&lt;/em&gt;, which are components that pass some props from a parent to a child, but do not actually do anything with those props. For example, consider the following three components.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Parent(props) {
+&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;fun ction Parent(props) {
   const foo = 1;
   const bar = 2;
 
