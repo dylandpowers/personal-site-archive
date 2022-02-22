@@ -5,7 +5,7 @@
     <link>https://dylandpowers.github.io/categories/</link>
       <atom:link href="https://dylandpowers.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Aug 2021 21:18:51 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 21 Feb 2022 18:48:03 -0500</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Categories</title>
@@ -13,18 +13,18 @@
     </image>
     
     <item>
-      <title>Other</title>
-      <link>https://dylandpowers.github.io/categories/other/</link>
-      <pubDate>Sun, 22 Aug 2021 21:18:51 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/categories/other/</guid>
+      <title>React</title>
+      <link>https://dylandpowers.github.io/categories/react/</link>
+      <pubDate>Mon, 21 Feb 2022 18:48:03 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/categories/react/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>React</title>
-      <link>https://dylandpowers.github.io/categories/react/</link>
-      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/categories/react/</guid>
+      <title>Other</title>
+      <link>https://dylandpowers.github.io/categories/other/</link>
+      <pubDate>Sun, 22 Aug 2021 21:18:51 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/categories/other/</guid>
       <description></description>
     </item>
     

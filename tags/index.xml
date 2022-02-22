@@ -5,12 +5,60 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Aug 2021 21:18:51 -0400</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 21 Feb 2022 18:48:03 -0500</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://dylandpowers.github.io/tags/</link>
     </image>
+    
+    <item>
+      <title>Frontend</title>
+      <link>https://dylandpowers.github.io/tags/frontend/</link>
+      <pubDate>Mon, 21 Feb 2022 18:48:03 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/frontend/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MUI</title>
+      <link>https://dylandpowers.github.io/tags/mui/</link>
+      <pubDate>Mon, 21 Feb 2022 18:48:03 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/mui/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Material</title>
+      <link>https://dylandpowers.github.io/tags/material/</link>
+      <pubDate>Mon, 21 Feb 2022 18:48:03 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/material/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>React</title>
+      <link>https://dylandpowers.github.io/tags/react/</link>
+      <pubDate>Mon, 21 Feb 2022 18:48:03 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/react/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>TSX</title>
+      <link>https://dylandpowers.github.io/tags/tsx/</link>
+      <pubDate>Mon, 21 Feb 2022 18:48:03 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/tsx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Typescript</title>
+      <link>https://dylandpowers.github.io/tags/typescript/</link>
+      <pubDate>Mon, 21 Feb 2022 18:48:03 -0500</pubDate>
+      <guid>https://dylandpowers.github.io/tags/typescript/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Camera</title>
@@ -61,14 +109,6 @@
     </item>
     
     <item>
-      <title>Frontend</title>
-      <link>https://dylandpowers.github.io/tags/frontend/</link>
-      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/frontend/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Hooks</title>
       <link>https://dylandpowers.github.io/tags/hooks/</link>
       <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
@@ -81,14 +121,6 @@
       <link>https://dylandpowers.github.io/tags/javascript/</link>
       <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
       <guid>https://dylandpowers.github.io/tags/javascript/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>React</title>
-      <link>https://dylandpowers.github.io/tags/react/</link>
-      <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
-      <guid>https://dylandpowers.github.io/tags/react/</guid>
       <description></description>
     </item>
     
