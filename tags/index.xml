@@ -5,12 +5,52 @@
     <link>https://dylandpowers.github.io/tags/</link>
       <atom:link href="https://dylandpowers.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 21 Feb 2022 18:48:03 -0500</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 16 May 2022 19:42:35 -0400</lastBuildDate>
     <image>
       <url>https://dylandpowers.github.io/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://dylandpowers.github.io/tags/</link>
     </image>
+    
+    <item>
+      <title>Algorithms</title>
+      <link>https://dylandpowers.github.io/tags/algorithms/</link>
+      <pubDate>Mon, 16 May 2022 19:42:35 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/algorithms/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Coding</title>
+      <link>https://dylandpowers.github.io/tags/coding/</link>
+      <pubDate>Mon, 16 May 2022 19:42:35 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/coding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data Structures</title>
+      <link>https://dylandpowers.github.io/tags/data-structures/</link>
+      <pubDate>Mon, 16 May 2022 19:42:35 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/data-structures/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Interview</title>
+      <link>https://dylandpowers.github.io/tags/interview/</link>
+      <pubDate>Mon, 16 May 2022 19:42:35 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/interview/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Software Engineering</title>
+      <link>https://dylandpowers.github.io/tags/software-engineering/</link>
+      <pubDate>Mon, 16 May 2022 19:42:35 -0400</pubDate>
+      <guid>https://dylandpowers.github.io/tags/software-engineering/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Frontend</title>
