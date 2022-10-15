@@ -83,7 +83,7 @@ Extensions allow you to add functionality to an already existing class. In one o
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -581,27 +581,17 @@ Extensions allow you to add functionality to an already existing class. In one o
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>Today we’re going to talk about what I think is Swift’s coolest feature — extensions.</p>
-
-<p>Extensions allow you to add functionality to an already existing class. In one of my recent projects, I implemented an <a href="https://en.wikipedia.org/wiki/Optical_character_recognition" target="_blank">OCR</a> model that could read text (specifically, a credit card number) from a picture that the user took with the back camera. Unfortunately, if the image wasn’t oriented upwards, the OCR fails, as we would expect. As such, I needed a convenient way to change the orientation of the image with ease.</p>
-
-<p><img src="featured.jpg" alt="Credit cards" /></p>
-
-<p>I quickly found some <a href="https://gist.github.com/schickling/b5d86cb070130f80bb40" target="_blank">code</a> that could easily convert an image (thanks to GitHub user Johannes Schickling for this). Here are the workflows with and without extensions:</p>
-
+      <p>Today we’re going to talk about what I think is Swift’s coolest feature — extensions.</p>
+<p>Extensions allow you to add functionality to an already existing class. In one of my recent projects, I implemented an <a href="https://en.wikipedia.org/wiki/Optical_character_recognition">OCR</a> model that could read text (specifically, a credit card number) from a picture that the user took with the back camera. Unfortunately, if the image wasn’t oriented upwards, the OCR fails, as we would expect. As such, I needed a convenient way to change the orientation of the image with ease.</p>
+<p><img src="featured.jpg" alt="Credit cards"></p>
+<p>I quickly found some <a href="https://gist.github.com/schickling/b5d86cb070130f80bb40">code</a> that could easily convert an image (thanks to GitHub user Johannes Schickling for this). Here are the workflows with and without extensions:</p>
 <h2 id="without-extensions">Without Extensions</h2>
-
 <p>Without extensions, the workflow is similar to that of any typical Object-Oriented language. The developer would create a class that performed the orientation fix, and name it accordingly:</p>
-
 <pre><code>class ImageOrientationFixer {
     init() { }
 }
 </code></pre>
-
 <p>The user would then write a method that takes the image as a parameter, and returns an image with the new fixed orientation.</p>
-
 <pre><code>class ImageOrientationFixer {
     init() { }
 
@@ -610,30 +600,25 @@ Extensions allow you to add functionality to an already existing class. In one o
     }
 }
 </code></pre>
-
 <p>There are two major problems with this:</p>
-
 <ol>
-<li><p>In every subsequent class that requires this functionality, we would have to instantiate a new <code>ImageOrientationFixer</code> . A quick solution would be to just make the method <code>static</code> , which leads into</p></li>
-
-<li><p>This requires passing the image object to the fixer on every call. Any situation where a client calls a function, passes it a mutable object, and receives the same (modified) object in return is a <strong>blatant</strong> code smell, and indicative of a poorly designed API.</p></li>
+<li>
+<p>In every subsequent class that requires this functionality, we would have to instantiate a new <code>ImageOrientationFixer</code> . A quick solution would be to just make the method <code>static</code> , which leads into</p>
+</li>
+<li>
+<p>This requires passing the image object to the fixer on every call. Any situation where a client calls a function, passes it a mutable object, and receives the same (modified) object in return is a <strong>blatant</strong> code smell, and indicative of a poorly designed API.</p>
+</li>
 </ol>
-
 <p>Alternatively, the method <em>could</em> return void and simply change some attributes of the image along the way. However, since the callee can still change the image at will, this is still a code smell.</p>
-
 <h2 id="with-extensions">With Extensions</h2>
-
 <p>Extensions fix both of the problems outlined above. Instead of creating a new class that does this, we can <strong>add that functionality to Swift’s <code>UIImage</code> class.</strong> This means that we can just directly call our new function on the image object itself. This solves the problems outlined above, because the client then never gives up control of the image object. The declaration looks like this:</p>
-
 <pre><code>extension UIImage {
     func changeOrientationToUpright() {
         // code to correct the orientation
     }
 }
 </code></pre>
-
 <p>Then, anytime I want to change the orientation of some <code>image</code> object that I have, I simply call <code>image.changeOrientationToUpright()</code> and all my dreams come true.</p>
-
 <p>Extensions have a multitude of use cases, all of which make any mobile developer’s life much easier. Most importantly, they eliminate cases where a client would otherwise pass a mutable object to another class for processing. If you haven’t already, give Extensions a shot!</p>
 
     </div>
@@ -793,7 +778,7 @@ Extensions allow you to add functionality to an already existing class. In one o
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

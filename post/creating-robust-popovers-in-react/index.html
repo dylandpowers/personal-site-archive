@@ -82,7 +82,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -571,71 +571,53 @@
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>Popovers are a crucial part of any modern web application. Simply put, a popover is a small modal that pops over the screen when the user hovers or clicks somewhere. Usually this comes in the form of a menu, but it could also be a drawer popping out from the left or right side of the screen.</p>
-
-<p>When creating a web application, developers usually reach for a component library like <a href="https://mui.com/" target="_blank">Material UI</a> or <a href="https://ant.design/docs/react/introduce" target="_blank">Antd</a>. Recently when playing around with Material (hereafter referred to as MUI), I reached for the <a href="https://mui.com/components/popover/" target="_blank">Popover</a> component. Here, I’ll discuss the implementation details of this component as to uncover one crucial limitation that necessitated my own custom implementation.</p>
-
+      <p>Popovers are a crucial part of any modern web application. Simply put, a popover is a small modal that pops over the screen when the user hovers or clicks somewhere. Usually this comes in the form of a menu, but it could also be a drawer popping out from the left or right side of the screen.</p>
+<p>When creating a web application, developers usually reach for a component library like <a href="https://mui.com/">Material UI</a> or <a href="https://ant.design/docs/react/introduce">Antd</a>. Recently when playing around with Material (hereafter referred to as MUI), I reached for the <a href="https://mui.com/components/popover/">Popover</a> component. Here, I’ll discuss the implementation details of this component as to uncover one crucial limitation that necessitated my own custom implementation.</p>
 <h1 id="mui-popover-implementation">MUI Popover Implementation</h1>
-
 <p>The way the MUI popover component works is by first receiving an anchor element as a prop. The anchor element is usually whatever <code>div</code> the click or hover event is coming from; MUI uses this to determine where to place the popover. However, the popover itself does not get attached anywhere in the hierarchy of the anchor element. Instead, it gets attached to a new <code>div</code> which is a sibling of the root element (usually where <code>ReactDOM.render</code> is first called).</p>
-
 <p>Let’s call this new <code>div</code> <code>root-sibling</code>. This new <code>div</code> will take up the entire width and height of the viewport. The reason for this is to register a custom click handler that will cause the popover to close whenever the user clicks anywhere on the screen outside of the popover. Without knowing specifics, I’m assuming this click handler is registered on mount.</p>
-
 <p>This behavior introduces a crucial limitation - out of the box, we cannot allow the screen to continue to process hover events when the popover is open. For example, say we have a menu which opens a different popover for each menu item on hover. If we use the MUI popover out of the box, then those other menu items will be masked by <code>root-sibling</code> whenever any popover is open, and nothing will happen when the user hovers those elements.</p>
-
 <p>Furthermore, setting <code>pointer-events: none</code> on <code>root-sibling</code> will not work, because this will cause the popover to just always stay open no matter where the user clicks (I believe the escape key would still work, though). So what are we to do if we want the hover behavior to be preserved?</p>
-
 <h1 id="custom-implementation">Custom Implementation</h1>
-
 <p>In order to continue to process other hover events <em>and</em> close the popover whenever the user clicks outside of it, I used a combination of the <code>pointer-events: none</code> styling and a custom click handler.</p>
-
 <p>First, we should style the <code>Popover</code> MUI component with <code>pointer-events: none</code>. However, we need to take care to still process the click events inside of the popover, otherwise the user will not be able to interact with menu elements. So, on the highest-level <code>div</code> inside of the <code>Popover</code> component, make sure to style with <code>pointer-events: auto</code>.</p>
+<p>Next, we need to register a custom click handler which will cause the popover to be closed whenever the user clicks outside of it. We will register this on the highest-level <code>div</code> inside of the component. We will first need a ref for that <code>div</code>, so that we can check where the click is. Use React’s <a href="https://reactjs.org/docs/hooks-reference.html#useref"><code>useRef</code></a> hook to generate that ref, and then pass it to that <code>div</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// PopoverContent.tsx
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">PopoverContent</span>() {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ref</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>&lt;<span style="color:#f92672">HTMLElement</span> <span style="color:#960050;background-color:#1e0010">|</span> <span style="color:#a6e22e">null</span>&gt;(<span style="color:#66d9ef">null</span>);
 
-<p>Next, we need to register a custom click handler which will cause the popover to be closed whenever the user clicks outside of it. We will register this on the highest-level <code>div</code> inside of the component. We will first need a ref for that <code>div</code>, so that we can check where the click is. Use React’s <a href="https://reactjs.org/docs/hooks-reference.html#useref" target="_blank"><code>useRef</code></a> hook to generate that ref, and then pass it to that <code>div</code>:</p>
-
-<pre><code class="language-jsx">// PopoverContent.tsx
-export default function PopoverContent() {
-  const ref = useRef&lt;HTMLElement | null&gt;(null);
-
-  return (
-    &lt;div ref={ref}&gt;
-      Content goes here
-    &lt;/div&gt;
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">ref</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">ref</span>}&gt;
+      <span style="color:#a6e22e">Content</span> <span style="color:#a6e22e">goes</span> <span style="color:#a6e22e">here</span>
+    &lt;/<span style="color:#f92672">div</span>&gt;
   );
 }
-</code></pre>
+</code></pre></div><p>Then, on mount, we will register the click handler. We can grab the bounding rectangle for the ref, and then use that to check where the click is. If the click is outside of that rectangle, then we should close the popover, most likely using some prop. We also need to make sure to remove the click handler on unmount. We can do all of this inside of a <a href="https://reactjs.org/docs/hooks-reference.html#useeffect"><code>useEffect</code></a> hook:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// PopoverContent.tsx
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">handleClose</span> }<span style="color:#f92672">:</span> { <span style="color:#a6e22e">handleClose</span><span style="color:#f92672">:</span> () =&gt; <span style="color:#66d9ef">void</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">props</span>;
 
-<p>Then, on mount, we will register the click handler. We can grab the bounding rectangle for the ref, and then use that to check where the click is. If the click is outside of that rectangle, then we should close the popover, most likely using some prop. We also need to make sure to remove the click handler on unmount. We can do all of this inside of a <a href="https://reactjs.org/docs/hooks-reference.html#useeffect" target="_blank"><code>useEffect</code></a> hook:</p>
-
-<pre><code class="language-jsx">// PopoverContent.tsx
-const { handleClose }: { handleClose: () =&gt; void } = props;
-
-useEffect(() =&gt; {
-  if (!ref || !ref.current) {
-    return;
+<span style="color:#a6e22e">useEffect</span>(() =&gt; {
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">ref</span> <span style="color:#f92672">||</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">ref</span>.<span style="color:#a6e22e">current</span>) {
+    <span style="color:#66d9ef">return</span>;
   }
 
-  const rect: DOMRect = ref.current.getBoundingClientRect();
-  const eventListener = (event: MouseEvent) =&gt; {
-    if (
-      event.clientX &lt; rect.left ||
-      event.clientX &gt; rect.right ||
-      event.clientY &lt; rect.top ||
-      event.clientY &gt; rect.bottom
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">rect</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">DOMRect</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ref</span>.<span style="color:#a6e22e">current</span>.<span style="color:#a6e22e">getBoundingClientRect</span>();
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">eventListener</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">event</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">MouseEvent</span>) =&gt; {
+    <span style="color:#66d9ef">if</span> (
+      <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">clientX</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">rect</span>.<span style="color:#a6e22e">left</span> <span style="color:#f92672">||</span>
+      <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">clientX</span> <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">rect</span>.<span style="color:#a6e22e">right</span> <span style="color:#f92672">||</span>
+      <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">clientY</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">rect</span>.<span style="color:#a6e22e">top</span> <span style="color:#f92672">||</span>
+      <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">clientY</span> <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">rect</span>.<span style="color:#a6e22e">bottom</span>
     ) {
-      handleClose();
+      <span style="color:#a6e22e">handleClose</span>();
     }
   };
 
-  document.addEventListener(&quot;mousedown&quot;, eventListener);
+  document.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;mousedown&#34;</span>, <span style="color:#a6e22e">eventListener</span>);
 
-  return () =&gt; document.removeEventListener(&quot;mousedown&quot;, eventListener);
-}, [ref, ref.current]);
-</code></pre>
-
-<p>And there we have it! Now we will be able to successfully process hover events while preserving the desired click behavior.</p>
+  <span style="color:#66d9ef">return</span> () =&gt; document.<span style="color:#a6e22e">removeEventListener</span>(<span style="color:#e6db74">&#34;mousedown&#34;</span>, <span style="color:#a6e22e">eventListener</span>);
+}, [<span style="color:#a6e22e">ref</span>, <span style="color:#a6e22e">ref</span>.<span style="color:#a6e22e">current</span>]);
+</code></pre></div><p>And there we have it! Now we will be able to successfully process hover events while preserving the desired click behavior.</p>
 
     </div>
 
@@ -687,7 +669,7 @@ useEffect(() =&gt; {
   <div class="media author-card" itemscope itemtype="http://schema.org/Person">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_2.png" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_3.png" itemprop="image" alt="Avatar">
     
 
     <div class="media-body">
@@ -878,7 +860,7 @@ useEffect(() =&gt; {
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

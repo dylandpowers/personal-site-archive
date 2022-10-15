@@ -82,7 +82,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -571,90 +571,62 @@
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>I&rsquo;ve worked with React a lot over the past few years. The more I work with it, the more I notice common mistakes that can slow down rendering as they pile up. Granted, in small applications (like most side projects), usually the rendering slowness will go unnoticed due to the size of the application. However, for larger applications, thinking about rendering speed becomes important.</p>
-
-<p>One issue I see often is wrapping all function declarations in a component inside of a <a href="https://reactjs.org/docs/hooks-reference.html#usecallback" target="_blank">useCallback</a> hook. As per the React docs:</p>
-
+      <p>I&rsquo;ve worked with React a lot over the past few years. The more I work with it, the more I notice common mistakes that can slow down rendering as they pile up. Granted, in small applications (like most side projects), usually the rendering slowness will go unnoticed due to the size of the application. However, for larger applications, thinking about rendering speed becomes important.</p>
+<p>One issue I see often is wrapping all function declarations in a component inside of a <a href="https://reactjs.org/docs/hooks-reference.html#usecallback">useCallback</a> hook. As per the React docs:</p>
 <blockquote>
 <p><code>useCallback</code> will return a memoized version of the callback that only changes if one of the dependencies has changed.</p>
 </blockquote>
-
 <p>Essentially, without <code>useCallback</code>, the function will be recreated on every render. It&rsquo;s important to remember that in JavaScript, functions are first-class objects just like a normal <code>Object</code> is. This essentially just means that the function can be stored as a variable, passed as an argument to a function, and returned from a function.</p>
-
 <h1 id="without-usecallback">Without <code>useCallback</code></h1>
-
 <p>Let&rsquo;s say we have a function <code>createUser</code> that is going to create a user by making an API call. The user details are stored in pieces of state within the component.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// SignupPage.jsx
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">setEmail</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#e6db74">&#39;&#39;</span>);
+<span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">password</span>, <span style="color:#a6e22e">setPassword</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#e6db74">&#39;&#39;</span>);
 
-<pre><code class="language-jsx">// SignupPage.jsx
-const [email, setEmail] = useState('');
-const [password, setPassword] = useState('');
-
-const createUser = () =&gt; {
-  UserAPI.createUser(email, password);
-  redirectToHome();
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">createUser</span> <span style="color:#f92672">=</span> () =&gt; {
+  <span style="color:#a6e22e">UserAPI</span>.<span style="color:#a6e22e">createUser</span>(<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>);
+  <span style="color:#a6e22e">redirectToHome</span>();
 };
-</code></pre>
-
-<p>We will return some JSX that will render the <code>input</code> elements, so we don&rsquo;t need to rely on other components to render the input form. Whenever a piece of state changes, React will re-render the component. This will recreate (among other things) all functions not wrapped in a <code>useCallback</code>.</p>
-
+</code></pre></div><p>We will return some JSX that will render the <code>input</code> elements, so we don&rsquo;t need to rely on other components to render the input form. Whenever a piece of state changes, React will re-render the component. This will recreate (among other things) all functions not wrapped in a <code>useCallback</code>.</p>
 <p>This means that the <code>createUser</code> function above is created once for each render. This can become a larger performance hit in larger applications, but I&rsquo;ll show in the next section why it isn&rsquo;t the end of the world for this case.</p>
-
 <h1 id="with-usecallback">With <code>useCallback</code></h1>
-
 <p>Alternatively, we can wrap the function in a <code>useCallback</code> hook provided by the React library. This means that the function will not be re-evaluated unless something in the dependency array changes. Assuming that <code>UserAPI</code> and the <code>redirectToHome</code> function are both created outside of the component, we just need to declare <code>email</code> and <code>password</code> as dependencies.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// SignupPage.jsx
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">setEmail</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#e6db74">&#39;&#39;</span>);
+<span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">password</span>, <span style="color:#a6e22e">setPassword</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#e6db74">&#39;&#39;</span>);
 
-<pre><code class="language-jsx">// SignupPage.jsx
-const [email, setEmail] = useState('');
-const [password, setPassword] = useState('');
-
-const createUser = useCallback(() =&gt; {
-  UserAPI.createUser(email, password);
-  redirectToHome();
-}, [email, password]);
-</code></pre>
-
-<p>This means that, unless the <code>email</code> or <code>password</code> state changes, we will not recreate the <code>createUser</code> function. For example, if we had some <code>showInfoModal</code> state that would show some information about signing up, we could change that state without recreating the <code>createUser</code> function.</p>
-
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">createUser</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span>(() =&gt; {
+  <span style="color:#a6e22e">UserAPI</span>.<span style="color:#a6e22e">createUser</span>(<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>);
+  <span style="color:#a6e22e">redirectToHome</span>();
+}, [<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>]);
+</code></pre></div><p>This means that, unless the <code>email</code> or <code>password</code> state changes, we will not recreate the <code>createUser</code> function. For example, if we had some <code>showInfoModal</code> state that would show some information about signing up, we could change that state without recreating the <code>createUser</code> function.</p>
 <p>This seems like an improvement, right? Consider the fact that the above code is actually identical to the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// SignupPage.jsx
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">setEmail</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#e6db74">&#39;&#39;</span>);
+<span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">password</span>, <span style="color:#a6e22e">setPassword</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#e6db74">&#39;&#39;</span>);
 
-<pre><code class="language-jsx">// SignupPage.jsx
-const [email, setEmail] = useState('');
-const [password, setPassword] = useState('');
-
-const nonMemoizedCreateUser = () =&gt; {
-  UserAPI.createUser(email, password);
-  redirectToHome();
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">nonMemoizedCreateUser</span> <span style="color:#f92672">=</span> () =&gt; {
+  <span style="color:#a6e22e">UserAPI</span>.<span style="color:#a6e22e">createUser</span>(<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>);
+  <span style="color:#a6e22e">redirectToHome</span>();
 };
 
-const createUser = useCallback(nonMemoizedCreateUser, [email, password]);
-</code></pre>
-
-<p>So, the original function is actually still created, and we are doing even more work than before! In this instance, it seems quite wasteful. However, there are situations where <code>useCallback</code> is worth the extra cost.</p>
-
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">createUser</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span>(<span style="color:#a6e22e">nonMemoizedCreateUser</span>, [<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>]);
+</code></pre></div><p>So, the original function is actually still created, and we are doing even more work than before! In this instance, it seems quite wasteful. However, there are situations where <code>useCallback</code> is worth the extra cost.</p>
 <h1 id="use-it-with-memoized-components">Use it With Memoized Components</h1>
-
 <p>The best use case for <code>useCallback</code> is when creating memoized components; that is, components wrapped in an extra <code>React.memo()</code> function. This means that the component will not re-render unless the props <em>actually</em> change (or, of course,
 component-held state changes).</p>
-
 <p>Consider a situation where we have a separate <code>Button</code> component which will call the passed-in function when clicked. This component has a single prop representing the <code>createUser</code> function.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">memo</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
 
-<pre><code class="language-jsx">import React, { memo } from 'react';
-
-const Button = (props) =&gt; {
-  return (
-    &lt;button onclick={props.createUser}&gt;Create User&lt;/button&gt;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Button</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">props</span>) =&gt; {
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onclick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">createUser</span>}&gt;<span style="color:#a6e22e">Create</span> <span style="color:#a6e22e">User</span>&lt;/<span style="color:#f92672">button</span>&gt;
   );
 };
 
-export default memo(Button);
-</code></pre>
-
-<p>This means that the <code>Button</code> component will not re-render unless the props change (React by default defines a &ldquo;change&rdquo; by shallowly comparing the current props to the previous props). If in the <code>SignupPage</code> component we do not wrap the function in a <code>useCallback</code>, then the reference will change every time, causing the <code>Button</code> component to re-render every time that the <code>SignupPage</code> component re-renders. However, if we wrap the prop in a <code>useCallback</code>, then we have much more fine-grained control over when the <code>Button</code> component re-renders.</p>
-
-<hr />
-
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">memo</span>(<span style="color:#a6e22e">Button</span>);
+</code></pre></div><p>This means that the <code>Button</code> component will not re-render unless the props change (React by default defines a &ldquo;change&rdquo; by shallowly comparing the current props to the previous props). If in the <code>SignupPage</code> component we do not wrap the function in a <code>useCallback</code>, then the reference will change every time, causing the <code>Button</code> component to re-render every time that the <code>SignupPage</code> component re-renders. However, if we wrap the prop in a <code>useCallback</code>, then we have much more fine-grained control over when the <code>Button</code> component re-renders.</p>
+<hr>
 <p>When making decisions on whether or not to use <code>useCallback</code>, there are always several factors at play. However, when relying on memoized components, wrapping function props in <code>useCallback</code>s is always a safe bet.</p>
 
     </div>
@@ -705,7 +677,7 @@ export default memo(Button);
   <div class="media author-card" itemscope itemtype="http://schema.org/Person">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_2.png" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_3.png" itemprop="image" alt="Avatar">
     
 
     <div class="media-body">
@@ -896,7 +868,7 @@ export default memo(Button);
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

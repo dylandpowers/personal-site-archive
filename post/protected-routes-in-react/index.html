@@ -82,7 +82,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -571,120 +571,86 @@
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>If you have ever made a modern single-page web app using React, odds are you used <a href="https://reactrouter.com/" target="_blank">react-router-dom</a> for client-side routing. In this tutorial, I will demonstrate how to protect routes such that only logged-in users can navigate to certain places. For example, you don&rsquo;t want every user to be able to navigate to <code>/dashboard</code>, but anybody should be able to hit <code>/login</code>.</p>
-
-<p>This tutorial assumes that you have basic familiarity with react-router-dom and how to set up a basic router. If not, please read its <a href="https://reactrouter.com/web/guides/quick-start" target="_blank">quick start page</a> before moving on. This article also assumes that you have a simple way to determine if a user is logged in or not, whether that be through <a href="https://jwt.io/" target="_blank">JSON web tokens</a>, <a href="https://redux.js.org/" target="_blank">Redux</a>, or something else.</p>
-
+      <p>If you have ever made a modern single-page web app using React, odds are you used <a href="https://reactrouter.com/">react-router-dom</a> for client-side routing. In this tutorial, I will demonstrate how to protect routes such that only logged-in users can navigate to certain places. For example, you don&rsquo;t want every user to be able to navigate to <code>/dashboard</code>, but anybody should be able to hit <code>/login</code>.</p>
+<p>This tutorial assumes that you have basic familiarity with react-router-dom and how to set up a basic router. If not, please read its <a href="https://reactrouter.com/web/guides/quick-start">quick start page</a> before moving on. This article also assumes that you have a simple way to determine if a user is logged in or not, whether that be through <a href="https://jwt.io/">JSON web tokens</a>, <a href="https://redux.js.org/">Redux</a>, or something else.</p>
 <h1 id="overview">Overview</h1>
-
 <p>A traditional React router without protected routes might look something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> {
+  <span style="color:#a6e22e">BrowserRouter</span>,
+  <span style="color:#a6e22e">Switch</span>,
+  <span style="color:#a6e22e">Route</span>
+} <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-router-dom&#39;</span>;
 
-<pre><code class="language-jsx">import React from 'react';
-import {
-  BrowserRouter,
-  Switch,
-  Route
-} from 'react-router-dom';
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LoginPage</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./components/LoginPage&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">DashboardPage</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./components/DashboardPage&#39;</span>;
 
-import LoginPage from './components/LoginPage';
-import DashboardPage from './components/DashboardPage';
-
-export default function Router() {
-  return (
-    &lt;BrowserRouter&gt;
-      &lt;Switch&gt;
-        &lt;Route to=&quot;/login&quot; component={LoginPage} /&gt;
-        &lt;Route to=&quot;/dashboard&quot; component={DashboardPage} /&gt;
-        &lt;Route component={DashboardPage} /&gt;
-      &lt;/Switch&gt;
-    &lt;/BrowserRouter&gt;
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Router</span>() {
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">BrowserRouter</span>&gt;
+      &lt;<span style="color:#f92672">Switch</span>&gt;
+        &lt;<span style="color:#f92672">Route</span> <span style="color:#a6e22e">to</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/login&#34;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">LoginPage</span>} /&gt;
+        &lt;<span style="color:#f92672">Route</span> <span style="color:#a6e22e">to</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/dashboard&#34;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">DashboardPage</span>} /&gt;
+        &lt;<span style="color:#f92672">Route</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">DashboardPage</span>} /&gt;
+      &lt;/<span style="color:#f92672">Switch</span>&gt;
+    &lt;/<span style="color:#f92672">BrowserRouter</span>&gt;
   );
 }
-</code></pre>
-
-<p>There is an issue with this setup; if a user tries to navigate to <code>/dashboard</code>, they <strong>will</strong> be able to do so without logging in. Especially if the dashboard contains sensitive information, this is dangerous behavior. To remedy this, we will be replacing the <code>Route</code> components with references to our new <code>ProtectedRoute</code> components, which will redirect to a different page (in our case, <code>/login</code>) if the user is not logged in.</p>
-
+</code></pre></div><p>There is an issue with this setup; if a user tries to navigate to <code>/dashboard</code>, they <strong>will</strong> be able to do so without logging in. Especially if the dashboard contains sensitive information, this is dangerous behavior. To remedy this, we will be replacing the <code>Route</code> components with references to our new <code>ProtectedRoute</code> components, which will redirect to a different page (in our case, <code>/login</code>) if the user is not logged in.</p>
 <h1 id="creating-the-component">Creating the Component</h1>
-
 <p>First, we will create the <code>ProtectedRoute</code> component. In this tutorial I will be using a functional component, but class-based components work as well. Create a new file <code>ProtectedRoute.js</code> and place the following inside of it:</p>
-
-<pre><code class="language-jsx">export default function ProtectedRoute({ component: Component, ...rest }) { }
-</code></pre>
-
-<p>This means that our <code>ProtectedRoute</code> will expect a <code>component</code> prop, much like how <code>Route</code> from react-router-dom takes a <code>component</code> prop. The <code>...rest</code> part refers to the rest of the props that can be passed to <code>ProtectedRoute</code> besides the <code>component</code>.</p>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ProtectedRoute</span>({ <span style="color:#a6e22e">component</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">Component</span>, ...<span style="color:#a6e22e">rest</span> }) { }
+</code></pre></div><p>This means that our <code>ProtectedRoute</code> will expect a <code>component</code> prop, much like how <code>Route</code> from react-router-dom takes a <code>component</code> prop. The <code>...rest</code> part refers to the rest of the props that can be passed to <code>ProtectedRoute</code> besides the <code>component</code>.</p>
 <h1 id="importing-auth-logic">Importing Auth Logic</h1>
-
 <p>Next, we need to import auth logic into this module to determine whether or not the user is logged in. As I mentioned earlier, I use JSON web tokens, but as long as you have a function that returns a boolean indicating whether or not the user is logged in, everything will work great. At this point, our file will look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">isAuthenticated</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;../auth/jwt&#39;</span>;
 
-<pre><code class="language-jsx">import { isAuthenticated } from '../auth/jwt';
-
-export default function ProtectedRoute({ component: Component, ...rest }) { }
-</code></pre>
-
-<h1 id="protecting-the-route">Protecting the Route</h1>
-
-<p>These next 5 lines of code are where the real magic happens. We will be using react-router-dom&rsquo;s <a href="https://reactrouter.com/web/api/Redirect" target="_blank">Redirect</a> component to redirect to a universally accessible page if the user is not logged in. Otherwise, we will return its <a href="https://reactrouter.com/web/api/Route" target="_blank">Route</a> component, which is what you see in a regular React router.</p>
-
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ProtectedRoute</span>({ <span style="color:#a6e22e">component</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">Component</span>, ...<span style="color:#a6e22e">rest</span> }) { }
+</code></pre></div><h1 id="protecting-the-route">Protecting the Route</h1>
+<p>These next 5 lines of code are where the real magic happens. We will be using react-router-dom&rsquo;s <a href="https://reactrouter.com/web/api/Redirect">Redirect</a> component to redirect to a universally accessible page if the user is not logged in. Otherwise, we will return its <a href="https://reactrouter.com/web/api/Route">Route</a> component, which is what you see in a regular React router.</p>
 <p>We will pass the <code>...rest</code> parameter to the <code>Route</code> component, which means that everything that we pass to <code>ProtectedRoute</code> (except for the <code>component</code> prop) will then be passed to the <code>Route</code> component. We will take advantage of <code>Route</code>&rsquo;s <code>render</code> prop to make it render the component passed in to our protected route:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx">&lt;<span style="color:#f92672">Route</span> {<span style="color:#a6e22e">...rest</span>} <span style="color:#a6e22e">render</span><span style="color:#f92672">=</span>{(<span style="color:#a6e22e">props</span>) =&gt; &lt;<span style="color:#f92672">Component</span> {<span style="color:#a6e22e">...props</span>} /&gt;} /&gt;
+</code></pre></div><p>Of course, we will only return this route if the user is logged in. If not, we will return a <code>Redirect</code> to the login page. After adding the logic and the imports in the file, it should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">Redirect</span>, <span style="color:#a6e22e">Route</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-router-dom&#39;</span>;
 
-<pre><code class="language-jsx">&lt;Route {...rest} render={(props) =&gt; &lt;Component {...props} /&gt;} /&gt;
-</code></pre>
-
-<p>Of course, we will only return this route if the user is logged in. If not, we will return a <code>Redirect</code> to the login page. After adding the logic and the imports in the file, it should look like this:</p>
-
-<pre><code class="language-jsx">import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
-
-export default function ProtectedRoute({ component: Component, ...rest }) {
-  return isAuthenticated() ? (
-    &lt;Route {...rest} render={(props) =&gt; &lt;Component {...props} /&gt;} /&gt;
-  ) : (
-    &lt;Redirect to=&quot;/login&quot; /&gt;
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ProtectedRoute</span>({ <span style="color:#a6e22e">component</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">Component</span>, ...<span style="color:#a6e22e">rest</span> }) {
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">isAuthenticated</span>() <span style="color:#f92672">?</span> (
+    &lt;<span style="color:#f92672">Route</span> {<span style="color:#a6e22e">...rest</span>} <span style="color:#a6e22e">render</span><span style="color:#f92672">=</span>{(<span style="color:#a6e22e">props</span>) =&gt; &lt;<span style="color:#f92672">Component</span> {<span style="color:#a6e22e">...props</span>} /&gt;} /&gt;
+  ) <span style="color:#f92672">:</span> (
+    &lt;<span style="color:#f92672">Redirect</span> <span style="color:#a6e22e">to</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/login&#34;</span> /&gt;
   );
 }
-</code></pre>
-
-<p>Alternatively, if you do not want to <em>always</em> redirect to the login page, consider adding adding a prop like <code>redirectRoute</code> to the component:</p>
-
-<pre><code class="language-jsx">export default function ProtectedRoute({ component: Component, redirectRoute, ...rest }) {
-  // ...
-}
-</code></pre>
-
-<p>And then the redirect component would read <code>&lt;Redirect to={redirectRoute} /&gt;</code>.</p>
-
+</code></pre></div><p>Alternatively, if you do not want to <em>always</em> redirect to the login page, consider adding adding a prop like <code>redirectRoute</code> to the component:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ProtectedRoute</span>({ <span style="color:#a6e22e">component</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">Component</span>, <span style="color:#a6e22e">redirectRoute</span>, ...<span style="color:#a6e22e">rest</span> }) {
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>And then the redirect component would read <code>&lt;Redirect to={redirectRoute} /&gt;</code>.</p>
 <h1 id="putting-it-all-together">Putting it All Together</h1>
-
 <p>Now, anytime we want to protect a route, we can use our <code>ProtectedRoute</code> component instead of the provided <code>Route</code> component. As a result, the router shown in the overview would now look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> {
+  <span style="color:#a6e22e">BrowserRouter</span>,
+  <span style="color:#a6e22e">Switch</span>,
+  <span style="color:#a6e22e">Route</span>
+} <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-router-dom&#39;</span>;
 
-<pre><code class="language-jsx">import React from 'react';
-import {
-  BrowserRouter,
-  Switch,
-  Route
-} from 'react-router-dom';
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LoginPage</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./components/LoginPage&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">DashboardPage</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./components/DashboardPage&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">ProtectedRoute</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./utils/ProtectedRoute&#39;</span>;
 
-import LoginPage from './components/LoginPage';
-import DashboardPage from './components/DashboardPage';
-import ProtectedRoute from './utils/ProtectedRoute';
-
-export default function Router() {
-  return (
-    &lt;BrowserRouter&gt;
-      &lt;Switch&gt;
-        &lt;Route to=&quot;/login&quot; component={LoginPage} /&gt;
-        &lt;ProtectedRoute to=&quot;/dashboard&quot; component={DashboardPage} /&gt;
-        &lt;ProtectedRoute component={DashboardPage} /&gt;
-      &lt;/Switch&gt;
-    &lt;/BrowserRouter&gt;
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Router</span>() {
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">BrowserRouter</span>&gt;
+      &lt;<span style="color:#f92672">Switch</span>&gt;
+        &lt;<span style="color:#f92672">Route</span> <span style="color:#a6e22e">to</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/login&#34;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">LoginPage</span>} /&gt;
+        &lt;<span style="color:#f92672">ProtectedRoute</span> <span style="color:#a6e22e">to</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/dashboard&#34;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">DashboardPage</span>} /&gt;
+        &lt;<span style="color:#f92672">ProtectedRoute</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">DashboardPage</span>} /&gt;
+      &lt;/<span style="color:#f92672">Switch</span>&gt;
+    &lt;/<span style="color:#f92672">BrowserRouter</span>&gt;
   );
 }
-</code></pre>
-
-<p>Voilà! You now have the ability to make protected routes in React. Go protect those web apps!</p>
+</code></pre></div><p>Voilà! You now have the ability to make protected routes in React. Go protect those web apps!</p>
 
     </div>
 
@@ -740,7 +706,7 @@ export default function Router() {
   <div class="media author-card" itemscope itemtype="http://schema.org/Person">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_2.png" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_3.png" itemprop="image" alt="Avatar">
     
 
     <div class="media-body">
@@ -925,7 +891,7 @@ export default function Router() {
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

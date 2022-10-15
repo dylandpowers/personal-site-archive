@@ -82,7 +82,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -571,160 +571,127 @@
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>With the rising popularity of React, we are in an era of the most responsive user interfaces we have ever seen. React uses a virtual DOM, and for every render it runs calculations to determine which parts of the actual DOM need to get updated. This means that React <em>only re-renders</em> components that need to be re-rendered, and nothing more.</p>
-
+      <p>With the rising popularity of React, we are in an era of the most responsive user interfaces we have ever seen. React uses a virtual DOM, and for every render it runs calculations to determine which parts of the actual DOM need to get updated. This means that React <em>only re-renders</em> components that need to be re-rendered, and nothing more.</p>
 <p>However, that doesn&rsquo;t mean we shouldn&rsquo;t introduce optimizations of our own! Too many re-renders can lead to performance issues, so we should optimize wherever we can. One common pitfall I see in React applications is what I call <em>messenger components</em>, which are components that pass some props from a parent to a child, but do not actually do anything with those props. For example, consider the following three components.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#a6e22e">fun</span> <span style="color:#a6e22e">ction</span> <span style="color:#a6e22e">Parent</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">foo</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">bar</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
 
-<pre><code class="language-jsx">fun ction Parent(props) {
-  const foo = 1;
-  const bar = 2;
-
-  return (
-    &lt;Child foo={foo} bar={bar} /&gt;
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">Child</span> <span style="color:#a6e22e">foo</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">foo</span>} <span style="color:#a6e22e">bar</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">bar</span>} /&gt;
   );
 }
-</code></pre>
-
-<pre><code class="language-jsx">function Child(props) {
-  return (
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Child</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">return</span> (
     &lt;&gt;
-      &lt;p&gt;Foo is {props.foo}&lt;/p&gt;
-      &lt;Grandchild bar={props.bar} /&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Foo</span> <span style="color:#a6e22e">is</span> {<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">foo</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">Grandchild</span> <span style="color:#a6e22e">bar</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">bar</span>} /&gt;
     &lt;/&gt;
   );
 }
-</code></pre>
-
-<pre><code class="language-jsx">function Grandchild(props) {
-  return (
-    &lt;p&gt;Bar is {props.bar}&lt;/p&gt;
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Grandchild</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Bar</span> <span style="color:#a6e22e">is</span> {<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">bar</span>}&lt;/<span style="color:#f92672">p</span>&gt;
   );
 }
-</code></pre>
-
-<p>In this situation, <code>Child</code> receives both <code>foo</code> and <code>bar</code> as props, but only truly &ldquo;cares&rdquo; about the value of <code>foo</code>; <code>Grandchild</code> cares about the value of <code>bar</code>. In this case, <code>Child</code> is a messenger component for the <code>bar</code> prop. <code>Child</code> should only re-render when the value of <code>foo</code> updates, but in this case it will also re-render when <code>bar</code> updates. How can we fix this?</p>
-
+</code></pre></div><p>In this situation, <code>Child</code> receives both <code>foo</code> and <code>bar</code> as props, but only truly &ldquo;cares&rdquo; about the value of <code>foo</code>; <code>Grandchild</code> cares about the value of <code>bar</code>. In this case, <code>Child</code> is a messenger component for the <code>bar</code> prop. <code>Child</code> should only re-render when the value of <code>foo</code> updates, but in this case it will also re-render when <code>bar</code> updates. How can we fix this?</p>
 <h1 id="the-context-api">The Context API</h1>
-
-<p>Using React&rsquo;s <a href="https://reactjs.org/docs/context.html" target="_blank">Context API</a>, we can broadcast changes to values, and only components that directly subscribe to that piece of context will receive the new value. This solves the problem of messenger components re-rendering unnecessarily, because we no longer need to pass props down - we can simply directly subscribe to the value in <code>Grandchild</code>. To demonstrate this, I will add <a href="https://reactjs.org/docs/glossary.html#refs" target="_blank">refs</a> to show the number of re-renders for each component before and after adding context.</p>
-
+<p>Using React&rsquo;s <a href="https://reactjs.org/docs/context.html">Context API</a>, we can broadcast changes to values, and only components that directly subscribe to that piece of context will receive the new value. This solves the problem of messenger components re-rendering unnecessarily, because we no longer need to pass props down - we can simply directly subscribe to the value in <code>Grandchild</code>. To demonstrate this, I will add <a href="https://reactjs.org/docs/glossary.html#refs">refs</a> to show the number of re-renders for each component before and after adding context.</p>
 <h1 id="before">Before</h1>
+<p>Using the current system of prop drilling, we can see how <code>Child</code> will re-render every time either prop is updated. If you like, use <a href="https://github.com/facebook/create-react-app">create-react-app</a> to bootstrap an app to see the renders in action.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Parent</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">foo</span>, <span style="color:#a6e22e">setFoo</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">0</span>);
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">bar</span>, <span style="color:#a6e22e">setBar</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">0</span>);
 
-<p>Using the current system of prop drilling, we can see how <code>Child</code> will re-render every time either prop is updated. If you like, use <a href="https://github.com/facebook/create-react-app" target="_blank">create-react-app</a> to bootstrap an app to see the renders in action.</p>
-
-<pre><code class="language-jsx">function Parent(props) {
-  const [foo, setFoo] = useState(0);
-  const [bar, setBar] = useState(0);
-
-  function incrementFoo() {
-    setFoo((prev) =&gt; prev + 1);
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">incrementFoo</span>() {
+    <span style="color:#a6e22e">setFoo</span>((<span style="color:#a6e22e">prev</span>) =&gt; <span style="color:#a6e22e">prev</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
   }
 
-  function incrementBar() {
-    setBar((prev) =&gt; prev + 1);
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">incrementBar</span>() {
+    <span style="color:#a6e22e">setBar</span>((<span style="color:#a6e22e">prev</span>) =&gt; <span style="color:#a6e22e">prev</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
   }
 
-  return (
+  <span style="color:#66d9ef">return</span> (
     &lt;&gt;
-      &lt;button onClick={incrementFoo}&gt;Increment Foo&lt;/button&gt;
-      &lt;button onClick={incrementBar}&gt;Increment Bar&lt;/button&gt;
-      &lt;Child foo={foo} bar={bar} /&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">incrementFoo</span>}&gt;<span style="color:#a6e22e">Increment</span> <span style="color:#a6e22e">Foo</span>&lt;/<span style="color:#f92672">button</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">incrementBar</span>}&gt;<span style="color:#a6e22e">Increment</span> <span style="color:#a6e22e">Bar</span>&lt;/<span style="color:#f92672">button</span>&gt;
+      &lt;<span style="color:#f92672">Child</span> <span style="color:#a6e22e">foo</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">foo</span>} <span style="color:#a6e22e">bar</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">bar</span>} /&gt;
     &lt;/&gt;
   );
 }
-</code></pre>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Child</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">renders</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>(<span style="color:#ae81ff">0</span>);
 
-<pre><code class="language-jsx">function Child(props) {
-  const renders = useRef(0);
-
-  return (
+  <span style="color:#66d9ef">return</span> (
     &lt;&gt;
-      &lt;p&gt;Foo (in Child): {props.foo}&lt;/p&gt;
-      &lt;p&gt;Child renders: {renders.current++}&lt;/p&gt;
-      &lt;Grandchild bar={bar} /&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Foo</span> (<span style="color:#66d9ef">in</span> <span style="color:#a6e22e">Child</span>)<span style="color:#f92672">:</span> {<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">foo</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Child</span> <span style="color:#a6e22e">renders</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">renders</span>.<span style="color:#a6e22e">current</span><span style="color:#f92672">++</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">Grandchild</span> <span style="color:#a6e22e">bar</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">bar</span>} /&gt;
     &lt;/&gt;
   );
 }
-</code></pre>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Grandchild</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">renders</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>(<span style="color:#ae81ff">0</span>);
 
-<pre><code class="language-jsx">function Grandchild(props) {
-  const renders = useRef(0);
-
-  return (
+  <span style="color:#66d9ef">return</span> (
     &lt;&gt;
-      &lt;p&gt;Bar (in Grandchild): {props.bar}&lt;/p&gt;
-      &lt;p&gt;Grandchild renders: {renders.current++}&lt;/p&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Bar</span> (<span style="color:#66d9ef">in</span> <span style="color:#a6e22e">Grandchild</span>)<span style="color:#f92672">:</span> {<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">bar</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Grandchild</span> <span style="color:#a6e22e">renders</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">renders</span>.<span style="color:#a6e22e">current</span><span style="color:#f92672">++</span>}&lt;/<span style="color:#f92672">p</span>&gt;
     &lt;/&gt;
   );
 }
-</code></pre>
-
-<p>If you run this application, you will notice that the number of renders for the <code>Child</code> and <code>Grandchild</code> components will always be the same. However, since <code>Child</code> doesn&rsquo;t need to update when <code>bar</code> updates, the number of re-renders shouldn&rsquo;t be the same for the two components.</p>
-
+</code></pre></div><p>If you run this application, you will notice that the number of renders for the <code>Child</code> and <code>Grandchild</code> components will always be the same. However, since <code>Child</code> doesn&rsquo;t need to update when <code>bar</code> updates, the number of re-renders shouldn&rsquo;t be the same for the two components.</p>
 <p>But wait, why don&rsquo;t we just memoize <code>Child</code> so that it only re-renders when <code>foo</code> updates? Beware of this approach, because it is only half of the solution! Memoizing <code>Child</code> to not re-render when <code>bar</code> is updated leaves <em>nothing to re-render <code>Grandchild</code>,</em> so this will result in unintended consequences: <code>Grandchild</code> would only re-render when <code>foo</code> is updated.</p>
-
 <h1 id="after">After</h1>
-
 <p>Using a combination of memoization and the Context API, we can prevent <code>Child</code> from re-rendering unnecessarily. The following application demonstrates this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">BarContext</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">createContext</span>(<span style="color:#66d9ef">null</span>);
 
-<pre><code class="language-jsx">const BarContext = createContext(null);
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Parent</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">foo</span>, <span style="color:#a6e22e">setFoo</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">0</span>);
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">bar</span>, <span style="color:#a6e22e">setBar</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">0</span>);
 
-function Parent(props) {
-  const [foo, setFoo] = useState(0);
-  const [bar, setBar] = useState(0);
-
-  function incrementFoo() {
-    setFoo((prev) =&gt; prev + 1);
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">incrementFoo</span>() {
+    <span style="color:#a6e22e">setFoo</span>((<span style="color:#a6e22e">prev</span>) =&gt; <span style="color:#a6e22e">prev</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
   }
 
-  function incrementBar() {
-    setBar((prev) =&gt; prev + 1);
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">incrementBar</span>() {
+    <span style="color:#a6e22e">setBar</span>((<span style="color:#a6e22e">prev</span>) =&gt; <span style="color:#a6e22e">prev</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
   }
 
-  return (
-    &lt;BarContext.Provider value={bar}&gt;
-      &lt;button onClick={incrementFoo}&gt;Increment Foo&lt;/button&gt;
-      &lt;button onClick={incrementBar}&gt;Increment Bar&lt;/button&gt;
-      &lt;MemoizedChild foo={foo} /&gt;
-    &lt;/BarContext.Provider&gt;
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">BarContext.Provider</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">bar</span>}&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">incrementFoo</span>}&gt;<span style="color:#a6e22e">Increment</span> <span style="color:#a6e22e">Foo</span>&lt;/<span style="color:#f92672">button</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">incrementBar</span>}&gt;<span style="color:#a6e22e">Increment</span> <span style="color:#a6e22e">Bar</span>&lt;/<span style="color:#f92672">button</span>&gt;
+      &lt;<span style="color:#f92672">MemoizedChild</span> <span style="color:#a6e22e">foo</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">foo</span>} /&gt;
+    &lt;/<span style="color:#f92672">BarContext.Provider</span>&gt;
   );
 }
-</code></pre>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Child</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">renders</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>(<span style="color:#ae81ff">0</span>);
 
-<pre><code class="language-jsx">function Child(props) {
-  const renders = useRef(0);
-
-  return (
+  <span style="color:#66d9ef">return</span> (
     &lt;&gt;
-      &lt;p&gt;Foo (in Child): {props.foo}&lt;/p&gt;
-      &lt;p&gt;Child renders: {renders.current++}&lt;/p&gt;
-      &lt;Grandchild /&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Foo</span> (<span style="color:#66d9ef">in</span> <span style="color:#a6e22e">Child</span>)<span style="color:#f92672">:</span> {<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">foo</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Child</span> <span style="color:#a6e22e">renders</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">renders</span>.<span style="color:#a6e22e">current</span><span style="color:#f92672">++</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">Grandchild</span> /&gt;
     &lt;/&gt;
   );
 }
 
-const MemoizedChild = memo(Child);
-</code></pre>
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">MemoizedChild</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">memo</span>(<span style="color:#a6e22e">Child</span>);
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Grandchild</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">renders</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>(<span style="color:#ae81ff">0</span>);
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">bar</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useContext</span>(<span style="color:#a6e22e">BarContext</span>);
 
-<pre><code class="language-jsx">function Grandchild(props) {
-  const renders = useRef(0);
-  const bar = useContext(BarContext);
-
-  return (
+  <span style="color:#66d9ef">return</span> (
     &lt;&gt;
-      &lt;p&gt;Bar (in Grandchild): {bar}&lt;/p&gt;
-      &lt;p&gt;Grandchild renders: {renders.current++}&lt;/p&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Bar</span> (<span style="color:#66d9ef">in</span> <span style="color:#a6e22e">Grandchild</span>)<span style="color:#f92672">:</span> {<span style="color:#a6e22e">bar</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Grandchild</span> <span style="color:#a6e22e">renders</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">renders</span>.<span style="color:#a6e22e">current</span><span style="color:#f92672">++</span>}&lt;/<span style="color:#f92672">p</span>&gt;
     &lt;/&gt;
     );
 }
-</code></pre>
-
-<p>As you can see, we made two updates. First, we used a piece of context to hold the reference to <code>bar</code>, and we have <code>Grandchild</code> subscribe to that piece of context using the <code>useContext</code> hook. However, this is only half of the equation; if we do not memoize <code>Child</code>, then anytime <code>bar</code> is updated in <code>Parent</code>, <strong><code>Child</code> will re-render.</strong> In order to prevent this, we use the <a href="https://reactjs.org/docs/react-api.html#reactmemo" target="_blank">memo</a> function to create a memoized version of the <code>Child</code> component that will only re-render when the props change.</p>
-
+</code></pre></div><p>As you can see, we made two updates. First, we used a piece of context to hold the reference to <code>bar</code>, and we have <code>Grandchild</code> subscribe to that piece of context using the <code>useContext</code> hook. However, this is only half of the equation; if we do not memoize <code>Child</code>, then anytime <code>bar</code> is updated in <code>Parent</code>, <strong><code>Child</code> will re-render.</strong> In order to prevent this, we use the <a href="https://reactjs.org/docs/react-api.html#reactmemo">memo</a> function to create a memoized version of the <code>Child</code> component that will only re-render when the props change.</p>
 <p>And voila! We have successfully eliminated unnecessary messenger re-renders with the Context API and some simple memoization.</p>
-
 <p>I would be remiss not to say that for most applications, re-renders don&rsquo;t cause much of a performance issue because most applications don&rsquo;t involve a lot of front-end computation. However, for applications with a lot of animations or drag-and-drops, it&rsquo;s more than worth it to eliminate unnecessary re-renders wherever you can. Happy coding!</p>
 
     </div>
@@ -779,7 +746,7 @@ const MemoizedChild = memo(Child);
   <div class="media author-card" itemscope itemtype="http://schema.org/Person">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_2.png" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_3.png" itemprop="image" alt="Avatar">
     
 
     <div class="media-body">
@@ -968,7 +935,7 @@ const MemoizedChild = memo(Child);
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

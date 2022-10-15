@@ -82,7 +82,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -571,93 +571,61 @@
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>When I was first starting out in React development, I had little to no knowledge about the ecosystem in general. Not knowing the necessary tools available in the ecosystem definitely led to increased time-to-completion for personal projects. In this post, I&rsquo;ll discuss NPM packages that I use every day in my personal React projects which have sped up development time drastically, and are great for beginners.</p>
-
-<h1 id="create-react-app-https-www-npmjs-com-package-create-react-app"><a href="https://www.npmjs.com/package/create-react-app" target="_blank">create-react-app</a></h1>
-
+      <p>When I was first starting out in React development, I had little to no knowledge about the ecosystem in general. Not knowing the necessary tools available in the ecosystem definitely led to increased time-to-completion for personal projects. In this post, I&rsquo;ll discuss NPM packages that I use every day in my personal React projects which have sped up development time drastically, and are great for beginners.</p>
+<h1 id="create-react-apphttpswwwnpmjscompackagecreate-react-app"><a href="https://www.npmjs.com/package/create-react-app">create-react-app</a></h1>
 <p>This is the #1 package out there for bootstrapping React applications. It allows you to create scaffolds for React applications with a simple command: <code>create-react-app &lt;project name&gt;</code>. This package is maintained by Facebook, so you can be sure that it will always contain the most recent optimizations.</p>
-
-<h1 id="antd-https-www-npmjs-com-package-antd"><a href="https://www.npmjs.com/package/antd" target="_blank">antd</a></h1>
-
-<p>The <code>antd</code> package, short for Ant Design, is a library of React components created by <a href="https://www.antgroup.com/en" target="_blank">Ant Financial</a>. Creating UI components can be an extremely time consuming part of development, and self-created components don&rsquo;t make for a great user experience if you don&rsquo;t have great design skills (like myself).</p>
-
-<p><code>antd</code> provides simple, out-of-the-box components for everything from lists to tables to rating systems. Everything is standardized which makes for a <em>great</em> user experience, and you can even override the CSS variables using something like <a href="https://www.npmjs.com/package/craco" target="_blank">craco</a>. I&rsquo;ve made several websites with <code>antd</code> components and I always have a great time using it.</p>
-
-<h1 id="styled-components-https-styled-components-com"><a href="https://styled-components.com/" target="_blank">styled-components</a></h1>
-
+<h1 id="antdhttpswwwnpmjscompackageantd"><a href="https://www.npmjs.com/package/antd">antd</a></h1>
+<p>The <code>antd</code> package, short for Ant Design, is a library of React components created by <a href="https://www.antgroup.com/en">Ant Financial</a>. Creating UI components can be an extremely time consuming part of development, and self-created components don&rsquo;t make for a great user experience if you don&rsquo;t have great design skills (like myself).</p>
+<p><code>antd</code> provides simple, out-of-the-box components for everything from lists to tables to rating systems. Everything is standardized which makes for a <em>great</em> user experience, and you can even override the CSS variables using something like <a href="https://www.npmjs.com/package/craco">craco</a>. I&rsquo;ve made several websites with <code>antd</code> components and I always have a great time using it.</p>
+<h1 id="styled-componentshttpsstyled-componentscom"><a href="https://styled-components.com/">styled-components</a></h1>
 <p><code>styled-components</code> is a library for styling React components (or standard HTML elements) directly in your component file. By default, it exports a function <code>styled</code> which accepts a React component as an argument and applies extra styling on top of it. For example, we can add extra styles to <code>antd</code>&rsquo;s <code>Button</code> component like so:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">Button</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;antd&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">styled</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;styled-components&#39;</span>;
 
-<pre><code class="language-jsx">import { Button } from 'antd';
-import styled from 'styled-components';
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">PaddedButton</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">styled</span>(<span style="color:#a6e22e">Button</span>)<span style="color:#e6db74">`
+</span><span style="color:#e6db74">  padding: 10px;
+</span><span style="color:#e6db74">`</span>;
+</code></pre></div><p>There is a short-hand for applying the styling on HTML elements where you can just use a <code>.</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">styled</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;styled-components&#39;</span>;
 
-const PaddedButton = styled(Button)`
-  padding: 10px;
-`;
-</code></pre>
-
-<p>There is a short-hand for applying the styling on HTML elements where you can just use a <code>.</code>:</p>
-
-<pre><code class="language-jsx">import styled from 'styled-components';
-
-const RedText = styled.p`
-  color: red;
-`;
-</code></pre>
-
-<p>I love <code>styled-components</code> because I can style the components in the way I need without ever leaving the component file. In my opinion, the close coupling of component&rsquo;s styles to their state management makes for a simpler development workflow.</p>
-
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">RedText</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">styled</span>.<span style="color:#a6e22e">p</span><span style="color:#e6db74">`
+</span><span style="color:#e6db74">  color: red;
+</span><span style="color:#e6db74">`</span>;
+</code></pre></div><p>I love <code>styled-components</code> because I can style the components in the way I need without ever leaving the component file. In my opinion, the close coupling of component&rsquo;s styles to their state management makes for a simpler development workflow.</p>
 <p><strong>Note:</strong> be sure to always define your styled components <em>outside</em> of the component that uses them, so that they aren&rsquo;t re-computed on every render.</p>
-
-<h1 id="react-router-dom-https-reactrouter-com"><a href="https://reactrouter.com/" target="_blank">react-router-dom</a></h1>
-
+<h1 id="react-router-domhttpsreactroutercom"><a href="https://reactrouter.com/">react-router-dom</a></h1>
 <p>This is simply the easiest and best routing package out there. It gives you a set of navigational components that you can use to declare different routes in your application like the main page, a <code>/login</code> page, a <code>/profile</code> page, etc. You declare your different routes with <code>Route</code> components, and then designate which component they should render:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">Route</span>, <span style="color:#a6e22e">Switch</span>, <span style="color:#a6e22e">Router</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-router-dom&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">LoginPage</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./LoginPage&#39;</span>;
 
-<pre><code class="language-jsx">import { Route, Switch, Router } from 'react-router-dom';
-import LoginPage from './LoginPage';
-
-export default function App(props) {
-  return (
-    &lt;Router&gt;
-      &lt;Switch&gt;
-        &lt;Route exact path=&quot;/login&quot; component={LoginPage} /&gt;
-      &lt;/Switch&gt;
-    &lt;/Router&gt;
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">Router</span>&gt;
+      &lt;<span style="color:#f92672">Switch</span>&gt;
+        &lt;<span style="color:#f92672">Route</span> <span style="color:#a6e22e">exact</span> <span style="color:#a6e22e">path</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/login&#34;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">LoginPage</span>} /&gt;
+      &lt;/<span style="color:#f92672">Switch</span>&gt;
+    &lt;/<span style="color:#f92672">Router</span>&gt;
   );
 }
-</code></pre>
-
-<p>I&rsquo;ve also written <a href="https://dylanpowers.me/post/protected-routes-in-react/" target="_blank">separate post</a> on how to make protected routes using this package.</p>
-
-<h1 id="firebase-https-www-npmjs-com-package-firebase"><a href="https://www.npmjs.com/package/firebase" target="_blank">firebase</a></h1>
-
+</code></pre></div><p>I&rsquo;ve also written <a href="https://dylanpowers.me/post/protected-routes-in-react/">separate post</a> on how to make protected routes using this package.</p>
+<h1 id="firebasehttpswwwnpmjscompackagefirebase"><a href="https://www.npmjs.com/package/firebase">firebase</a></h1>
 <p>Firebase is more just than a package - it provides tools for everything that basic applications need like authentication, storage, and much more. It provides a declarative and simple API that makes app development incredibly simple.</p>
-
-<p>To use this package, you&rsquo;ll need to create a firebase account and project. After that, you can set up authentication as well as a real-time datastore or a collection-like datastore similar to <a href="https://www.mongodb.com/" target="_blank">MongoDB</a>.</p>
-
-<h1 id="axios-https-www-npmjs-com-package-axios"><a href="https://www.npmjs.com/package/axios" target="_blank">axios</a></h1>
-
+<p>To use this package, you&rsquo;ll need to create a firebase account and project. After that, you can set up authentication as well as a real-time datastore or a collection-like datastore similar to <a href="https://www.mongodb.com/">MongoDB</a>.</p>
+<h1 id="axioshttpswwwnpmjscompackageaxios"><a href="https://www.npmjs.com/package/axios">axios</a></h1>
 <p>Axios is a simple HTTP client for making API requests from the browser. It&rsquo;s also promise-based which means you can add success callbacks with ease.</p>
-
-<h1 id="classnames-https-www-npmjs-com-package-classnames"><a href="https://www.npmjs.com/package/classnames" target="_blank">classnames</a></h1>
-
+<h1 id="classnameshttpswwwnpmjscompackageclassnames"><a href="https://www.npmjs.com/package/classnames">classnames</a></h1>
 <p>Classnames is an incredible simple yet extremely powerful library. It does one thing and it does it well - conditionally combining CSS class names based on a set of criteria. It exports a function which takes a single object argument where the keys are the class names and the values are booleans representing whether or not to apply the class name. Here&rsquo;s a simple example where something should have the <code>highlighted</code> class if a piece of state is <code>true</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">classNames</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;classnames&#39;</span>;
 
-<pre><code class="language-jsx">import classNames from 'classnames';
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">List</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">isHighlighted</span>, <span style="color:#a6e22e">setIsHighlighted</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#66d9ef">false</span>);
 
-export default function List(props) {
-  const [isHighlighted, setIsHighlighted] = useState(false);
-
-  const listItemClassName = classNames({
-    'list-item': true,
-    'highlighted': isHighlighted
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">listItemClassName</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">classNames</span>({
+    <span style="color:#e6db74">&#39;list-item&#39;</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+    <span style="color:#e6db74">&#39;highlighted&#39;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">isHighlighted</span>
   });
 }
-</code></pre>
-
-<hr />
-
+</code></pre></div><hr>
 <p>With these packages, you can supercharge your React development. Go out and develop!</p>
 
     </div>
@@ -708,7 +676,7 @@ export default function List(props) {
   <div class="media author-card" itemscope itemtype="http://schema.org/Person">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_2.png" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_3.png" itemprop="image" alt="Avatar">
     
 
     <div class="media-body">
@@ -899,7 +867,7 @@ export default function List(props) {
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

@@ -17,56 +17,33 @@
       <link>https://dylandpowers.github.io/post/what-coding-interviews-should-be/</link>
       <pubDate>Mon, 16 May 2022 19:42:35 -0400</pubDate>
       <guid>https://dylandpowers.github.io/post/what-coding-interviews-should-be/</guid>
-      <description>
-
-&lt;p&gt;Today at work, I needed to solve the knapsack problem for an important feature. I had to figure out how to put &lt;em&gt;n&lt;/em&gt; items into a knapsack of weight at most &lt;em&gt;W&lt;/em&gt;, and maximize the total cost.&lt;/p&gt;
-
+      <description>&lt;p&gt;Today at work, I needed to solve the knapsack problem for an important feature. I had to figure out how to put &lt;em&gt;n&lt;/em&gt; items into a knapsack of weight at most &lt;em&gt;W&lt;/em&gt;, and maximize the total cost.&lt;/p&gt;
 &lt;p&gt;After that, I was working on a feature with a graph, and I had to figure out the minimum number of nodes that could be removed while maintaining a connected network.&lt;/p&gt;
-
 &lt;p&gt;To wrap up the day, product asked me to find the longest common substring between two strings for a client.&lt;/p&gt;
-
-&lt;hr /&gt;
-
+&lt;hr&gt;
 &lt;p&gt;Actually, none of this happened. Most of my day &lt;em&gt;actually&lt;/em&gt; involves writing business logic for our system, discussing specifications with product, reviewing code, and monitoring deployments. I’m willing to bet that, if you’re a software engineer, your day looks somewhat like this as well, with some minor differences.&lt;/p&gt;
-
 &lt;p&gt;Unless you work at LeetCode, it’s unlikely that you encounter the problems I mentioned above more than once or twice a year, if at all. These are abstract topics that we scarcely see outside of coding interviews. However, we have widely accepted that coding interviews should and will be like this for the foreseeable future. I ask, though: why are tech companies often evaluating software engineers on their knowledge of dynamic programming, graph theory, and niche algorithms if they are scarcely used on the job?&lt;/p&gt;
-
 &lt;p&gt;I argue that knowledge of these topics is &lt;em&gt;not&lt;/em&gt; a direct indicator of how well somebody will perform on the job. I still believe we need to evaluate coding ability (obviously), but I think and know that we can do better than the current system. I’ll outline my thoughts here.&lt;/p&gt;
-
 &lt;h1 id=&#34;the-argument-for&#34;&gt;The Argument For&lt;/h1&gt;
-
 &lt;p&gt;The main argument for these types of interviews is that they demonstrate the candidate’s thinking style. Companies look for candidates who think out loud and who can translate their thoughts into code. I completely understand that. I think the ability to translate abstract concepts in your mind to code on the screen is the crux of software engineering.&lt;/p&gt;
-
 &lt;p&gt;Let me walk you through a typical coding interview. The candidate receives the prompt, and remembers the general approach for tackling these kinds of problems - an approach they likely learned on LeetCode. The candidate begins to outline their approach, pulling in learnings from previous LeetCode problems, and combining them to form a plan. Then, the candidate translates those thoughts into code and writes some test cases.&lt;/p&gt;
-
 &lt;p&gt;Yes, the candidate demonstrated the ability to translate their thoughts into code. But &lt;em&gt;what&lt;/em&gt; thoughts did they translate? Likely, they translated thoughts about past LeetCode problems and abstract concepts. Can we really say that those are thoughts that the candidate will have on the job? It’s more likely that thoughts on the job will be related to architecting systems, creating simple APIs for others to consume, reviewing code for style, designing database schemas, etc.&lt;/p&gt;
-
 &lt;h1 id=&#34;the-ideal-interview&#34;&gt;The Ideal Interview&lt;/h1&gt;
-
 &lt;p&gt;As I mentioned above, companies still need to assess software engineers on their ability to translate thoughts into code. Companies also need to get a glimpse into how a candidate reasons about a problem from start to finish. Finally, companies should still require a proficiency with basic data structures (maps, lists, queues, etc.). We can still accomplish this with a different style of interview.&lt;/p&gt;
-
-&lt;p&gt;In my opinion, the ideal engineer can write &lt;strong&gt;clean, maintainable code&lt;/strong&gt; with an &lt;strong&gt;easy-to-use API.&lt;/strong&gt; I propose that we begin to ask engineers more questions about designing entire &lt;strong&gt;classes&lt;/strong&gt; with multiple pieces of functionality&lt;strong&gt;,&lt;/strong&gt; rather than just implementing singular methods with a clear expected answer.&lt;/p&gt;
-
+&lt;p&gt;In my opinion, the ideal engineer can write &lt;strong&gt;clean, maintainable code&lt;/strong&gt; with an &lt;strong&gt;easy-to-use API.&lt;/strong&gt; I propose that we begin to ask engineers more questions about designing entire &lt;strong&gt;classes&lt;/strong&gt; with multiple pieces of functionality**,** rather than just implementing singular methods with a clear expected answer.&lt;/p&gt;
 &lt;p&gt;For example, a company could ask a candidate to design an in-memory message broker. We would expect methods for &lt;code&gt;enqueue&lt;/code&gt; and &lt;code&gt;poll&lt;/code&gt;, and we would encourage the candidate to add any other methods they see fit (maybe to get the number of currently enqueued messages),&lt;/p&gt;
-
 &lt;p&gt;In this scenario, there is no one correct answer, so a candidate would not fail solely because they did not generate the correct output. Instead, we would evaluate candidates more holistically:&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;How readable is the code? Are variables named well?&lt;/li&gt;
 &lt;li&gt;How maintainable is the code? Are pieces of functionality split out into methods?&lt;/li&gt;
 &lt;li&gt;How easy-to-use is the API? Could another team easily consume this?&lt;/li&gt;
 &lt;li&gt;Are implementation details hidden?&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;I believe that these assessments more accurately reflect skills that the candidate would actually use on the job.&lt;/p&gt;
-
-&lt;hr /&gt;
-
+&lt;hr&gt;
 &lt;p&gt;As an industry that powers so much of the world, we can and should do better with evaluating candidates. Companies often miss out on top talent just because a candidate can’t solve the knapsack problem, find the minimum number of nodes that can be removed to maintain a connected graph, or find the maximum length substring of two strings. Let’s start evaluating candidates on skill used on the job.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;em&gt;Header image courtesy of &lt;a href=&#34;https://www.imocha.io/platform/live-coding-interview&#34; target=&#34;_blank&#34;&gt;iMocha&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;em&gt;Header image courtesy of &lt;a href=&#34;https://www.imocha.io/platform/live-coding-interview&#34;&gt;iMocha&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 </description>
     </item>
     
@@ -75,55 +52,32 @@
       <link>https://dylandpowers.github.io/post/how-i-prepped-for-technical-interviews/</link>
       <pubDate>Mon, 18 Nov 2019 21:13:33 -0500</pubDate>
       <guid>https://dylandpowers.github.io/post/how-i-prepped-for-technical-interviews/</guid>
-      <description>
-
-&lt;p&gt;I spent the last 3-ish months recruiting for a full-time software engineering job. Along the way, I received a couple offers from some great companies. I wanted to share how I prepared for the stress-ball that is recruiting, with hopes that someone else can use this guide to make the process a little less taxing on the body and soul.&lt;/p&gt;
-
+      <description>&lt;p&gt;I spent the last 3-ish months recruiting for a full-time software engineering job. Along the way, I received a couple offers from some great companies. I wanted to share how I prepared for the stress-ball that is recruiting, with hopes that someone else can use this guide to make the process a little less taxing on the body and soul.&lt;/p&gt;
 &lt;h3 id=&#34;leetcode&#34;&gt;LeetCode&lt;/h3&gt;
-
-&lt;p&gt;Far and above, &lt;a href=&#34;https://leetcode.com/&#34; target=&#34;_blank&#34;&gt;LeetCode&lt;/a&gt; is the best way to prepare for any coding interview. However, in the past, I lacked any rhyme or reason to my approach on LeetCode; I would just filter the question list by questions that I had not solved yet, and pick randomly from that list. However, I somewhat-consciously leaned toward problems that seemed interesting, or that I knew I could solve in a reasonable amount of time. I knew that I needed to change this, so I turned toward mock interviews.&lt;/p&gt;
-
+&lt;p&gt;Far and above, &lt;a href=&#34;https://leetcode.com/&#34;&gt;LeetCode&lt;/a&gt; is the best way to prepare for any coding interview. However, in the past, I lacked any rhyme or reason to my approach on LeetCode; I would just filter the question list by questions that I had not solved yet, and pick randomly from that list. However, I somewhat-consciously leaned toward problems that seemed interesting, or that I knew I could solve in a reasonable amount of time. I knew that I needed to change this, so I turned toward mock interviews.&lt;/p&gt;
 &lt;h3 id=&#34;mock-interviews&#34;&gt;Mock Interviews&lt;/h3&gt;
-
 &lt;p&gt;To truly reflect the nature of the interview process, practice should be just as random as the interview. To best simulate this environment, I made extensive use of LeetCode&amp;rsquo;s mock interview feature. Currently, they only provide mock interviews from FAANG (and similar) companies. For each company, they provide mock interviews for online assessments (OAs), phone interviews, and on-site interviews.&lt;/p&gt;
-
 &lt;p&gt;The questions in the mock interviews are randomly sampled from a collection of questions that are typically asked in interviews for that company. Furthermore, each question &lt;em&gt;can&lt;/em&gt; be found on LeetCode outside of the mock interview feature. However, the best part about the mocks is that &lt;em&gt;you cannot view the answer during the interview&lt;/em&gt;.&lt;/p&gt;
-
 &lt;p&gt;Outside of the mocks, I would sometimes get frustrated by my lack of progress on the answer, and would immediately turn to the &amp;ldquo;Solution&amp;rdquo; or &amp;ldquo;Discussion&amp;rdquo; sections on LeetCode. With the inability  to do so, I found myself really persevering and digging deep to find the special tricks to solve the given problem. More often than not, I could arrive at the solution myself, which really reinforced the material.&lt;/p&gt;
-
 &lt;p&gt;Even if you are not preparing for a FAANG interview, I highly suggest using mock interviews regardless as they give you an accurate sample of what kinds of questions are often asked in the more difficult interviews.&lt;/p&gt;
-
 &lt;h3 id=&#34;study-guide&#34;&gt;Study Guide&lt;/h3&gt;
-
 &lt;p&gt;After each problem that I solved, I would write a detailed solution to it in my Google Doc study guide, which now rounds out at 36 pages in size 12 font. I realized, in addition to knowing how to code the solution to a given problem, it&amp;rsquo;s just as important to &lt;em&gt;be able to explain how you arrived at the answer in plain english&lt;/em&gt;. So, in addition to writing the code to solve the problem in the study guide, I would write 1-2 paragraphs of english explaining how to arrive at the solution.&lt;/p&gt;
-
 &lt;p&gt;Preparing this study guide really reinforced my knowledge of DSA concepts, especially binary trees. I found myself more easily solving difficult problems the longer this study guide became. If you would like a copy of the study guide, please email me and I will be happy to send it over!&lt;/p&gt;
-
 &lt;h3 id=&#34;verbal-communication&#34;&gt;Verbal Communication&lt;/h3&gt;
-
 &lt;p&gt;I would always do my mock interviews in the mornings before heading to campus. If my roommate was still home, I would have to walk out into the living room and say &amp;ldquo;if you hear me talking out loud, I promise I&amp;rsquo;m not talking to myself&amp;rdquo; (even though, in a way, I was). During each mock interview, I would verbally communicate my solutions as if my computer were the interviewer, since this is how real interviews happen. In the actual interview, communication of your thought process matters almost as much as the solution itself. However, LeetCode practice alone (without talking out loud) cannot paint the whole picture. I cannot stress enough the importance of talking through your solutions out loud, even if it is just in an empty room.&lt;/p&gt;
-
 &lt;h3 id=&#34;behavioral-questions&#34;&gt;Behavioral Questions&lt;/h3&gt;
-
 &lt;p&gt;For my first couple interviews, I thought that I could get by with not practicing any part of the behavioral interview process. &lt;strong&gt;This is not the case&lt;/strong&gt;. During those interviews, I found myself stumbling over simple questions like &amp;ldquo;tell me about a time you disagreed with someone&amp;rdquo; or &amp;ldquo;tell me about the project that you are most proud of&amp;rdquo;.&lt;/p&gt;
-
 &lt;p&gt;After that, I knew that I had to get to work. I made an excel sheet for all major projects I have done (school, work, and personal), and wrote down key aspects from each, such as&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;Leadership displayed&lt;/li&gt;
 &lt;li&gt;Conflicts and how they were resolved&lt;/li&gt;
 &lt;li&gt;Best part of the project&lt;/li&gt;
 &lt;li&gt;Biggest challenge of the project&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;Knowing these made my interview process that much smoother.&lt;/p&gt;
-
 &lt;p&gt;&lt;strong&gt;Bonus&lt;/strong&gt;: make sure to have a 30-second spiel ready for the classic &amp;ldquo;tell me about yourself!&amp;rdquo; It will help to get the interview off to a good start if you really nail this answer.&lt;/p&gt;
-
 &lt;h3 id=&#34;prepare-questions-for-interviewers&#34;&gt;Prepare Questions for Interviewers&lt;/h3&gt;
-
 &lt;p&gt;Companies want to know that you are invested in them, and asking them pointed questions is a great way to send that signal. I did a lot of research beforehand, and would write down non-generic questions about each company to ask during the interview. This is also a great time to ask the tough questions and find out if the interviewer &lt;em&gt;really&lt;/em&gt; enjoys working at that company.&lt;/p&gt;
-
 &lt;p&gt;While the interview process can be extremely stressful, it can also be extremely rewarding if done correctly. Put in the work, don&amp;rsquo;t cut corners, and I promise you will find yourself with a couple of really nice looking offers when it&amp;rsquo;s all over.&lt;/p&gt;
 </description>
     </item>

@@ -82,7 +82,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -571,153 +571,114 @@
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>When it comes to frontend state management libraries, it doesn&rsquo;t get much better than good ol&rsquo; <a href="https://redux.js.org/" target="_blank">Redux</a>. It allows you to define one or more reducers, dispatch updates to a global state, and subscribe to only the parts of state that you care about in each a component.</p>
-
-<p>However, as I have continued to incorporate Redux into smaller personal projects, I have found some of its features to be superfluous to my needs. For example, for small projects that make use of Ajax, I sometimes prefer to separate the global state from the Ajax calls. This makes something like <a href="https://github.com/reduxjs/redux-thunk" target="_blank">redux-thunk</a> unnecessary, meaning that I would not make use of any Redux middleware (fun fact: the redux-thunk library is only <a href="https://github.com/reduxjs/redux-thunk/blob/master/src/index.js" target="_blank">14 lines of source code</a>).</p>
-
+      <p>When it comes to frontend state management libraries, it doesn&rsquo;t get much better than good ol' <a href="https://redux.js.org/">Redux</a>. It allows you to define one or more reducers, dispatch updates to a global state, and subscribe to only the parts of state that you care about in each a component.</p>
+<p>However, as I have continued to incorporate Redux into smaller personal projects, I have found some of its features to be superfluous to my needs. For example, for small projects that make use of Ajax, I sometimes prefer to separate the global state from the Ajax calls. This makes something like <a href="https://github.com/reduxjs/redux-thunk">redux-thunk</a> unnecessary, meaning that I would not make use of any Redux middleware (fun fact: the redux-thunk library is only <a href="https://github.com/reduxjs/redux-thunk/blob/master/src/index.js">14 lines of source code</a>).</p>
 <p>Fortunately, implementing a basic Redux is <em>much</em> simpler than you might think! We just need a custom reducer and a couple of React hooks. This tutorial will show you how to create a simple global state, along with a dispatcher and a way to update that global state. We will be using functional components in this tutorial, and we will create a simple counter which can be incremented and decremented. Let&rsquo;s get started!</p>
-
 <h1 id="the-reducer">The Reducer</h1>
-
 <p>For starters, a reducer is just a function which accepts a current state and an action and then based on that action, returns a new state. That&rsquo;s it. However, without some active management, you would have to keep track of the current state and pass it to the reducer every time you wanted to dispatch an action.</p>
+<p>Fortunately, React already covers a lot of the ground for us with the <a href="https://reactjs.org/docs/hooks-reference.html#usereducer"><code>useReducer</code></a> hook. It accepts two arguments: a reducer and an initial state (it also optionally accepts a lazy state initialization function). The reducer must have the signature described above:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">reducer</span>(<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">action</span>) {
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">state</span>; <span style="color:#75715e">// some new state
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>To begin with, we&rsquo;ll define our reducer in its own file. We will also define the action types for incrementing, decrementing, and setting the counter:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// reducer.js
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">INCREMENT</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;INCREMENT&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">DECREMENT</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;DECREMENT&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">SET_COUNT</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;SET_COUNT&#39;</span>;
 
-<p>Fortunately, React already covers a lot of the ground for us with the <a href="https://reactjs.org/docs/hooks-reference.html#usereducer" target="_blank"><code>useReducer</code></a> hook. It accepts two arguments: a reducer and an initial state (it also optionally accepts a lazy state initialization function). The reducer must have the signature described above:</p>
-
-<pre><code class="language-jsx">function reducer(state, action) {
-  return state; // some new state
-}
-</code></pre>
-
-<p>To begin with, we&rsquo;ll define our reducer in its own file. We will also define the action types for incrementing, decrementing, and setting the counter:</p>
-
-<pre><code class="language-jsx">// reducer.js
-const INCREMENT = 'INCREMENT';
-const DECREMENT = 'DECREMENT';
-const SET_COUNT = 'SET_COUNT';
-
-export default function counter(state, action) {
-  switch (action.type) {
-    case INCREMENT:
-      return state + 1;
-    case DECREMENT:
-      return state - 1;
-    case SET_COUNT:
-      return action.count;
-    default:
-      throw new Error(`Action type ${action.type} not recognized`);
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">counter</span>(<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">action</span>) {
+  <span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">type</span>) {
+    <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">INCREMENT</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">state</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+    <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">DECREMENT</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">state</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+    <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">SET_COUNT</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">count</span>;
+    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">`Action type </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">type</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> not recognized`</span>);
   }
 } 
-</code></pre>
-
-<p>We&rsquo;ll also want to make some <em>action creators,</em> which simplify the process of constructing an action from outside of the scope of the reducer. Actions are just objects which have a <code>type</code> property and, optionally, other properties. To avoid having to create the action object inside of a component, we define certain action creators in the reducer:</p>
-
-<pre><code class="language-jsx">// reducer.js
-export function increment() {
-  return {
-    type: INCREMENT
+</code></pre></div><p>We&rsquo;ll also want to make some <em>action creators,</em> which simplify the process of constructing an action from outside of the scope of the reducer. Actions are just objects which have a <code>type</code> property and, optionally, other properties. To avoid having to create the action object inside of a component, we define certain action creators in the reducer:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// reducer.js
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">increment</span>() {
+  <span style="color:#66d9ef">return</span> {
+    <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">INCREMENT</span>
   };
 }
 
-export function decrement() {
-  return {
-    type: DECREMENT
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">decrement</span>() {
+  <span style="color:#66d9ef">return</span> {
+    <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">DECREMENT</span>
   };
 }
 
-export function setCount(count) {
-  return {
-    type: SET_COUNT,
-    count
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">setCount</span>(<span style="color:#a6e22e">count</span>) {
+  <span style="color:#66d9ef">return</span> {
+    <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">SET_COUNT</span>,
+    <span style="color:#a6e22e">count</span>
   };
 }
-</code></pre>
-
-<p>With the reducer done, we can now begin to make our Redux functionality using a couple useful hooks.</p>
-
+</code></pre></div><p>With the reducer done, we can now begin to make our Redux functionality using a couple useful hooks.</p>
 <h1 id="incorporating-the-reducer">Incorporating the Reducer</h1>
-
 <p>The <code>useReducer</code> hook returns a <code>dispatch</code> function and a reference to the current state. The <code>dispatch</code> function takes care of automatically passing in the current state to the reducer, although we still have to supply the action (this emulates Redux behavior).</p>
-
 <p>In our top-level component where we want the global state to live, we declare our <code>dispatch</code> function and our global state using this hook:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// TopLevelComponent.jsx
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useReducer</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">reducer</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./reducer&#39;</span>;
 
-<pre><code class="language-jsx">// TopLevelComponent.jsx
-import React, { useReducer } from 'react';
-import reducer from './reducer';
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">TopLevelComponent</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">count</span>, <span style="color:#a6e22e">dispatch</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useReducer</span>(<span style="color:#a6e22e">reducer</span>, <span style="color:#ae81ff">0</span>);
 
-export default function TopLevelComponent(props) {
-  const [count, dispatch] = useReducer(reducer, 0);
-
-  return (
-    &lt;p&gt;The current count is {count}.&lt;/p&gt;
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">The</span> <span style="color:#a6e22e">current</span> <span style="color:#a6e22e">count</span> <span style="color:#a6e22e">is</span> {<span style="color:#a6e22e">count</span>}.&lt;/<span style="color:#f92672">p</span>&gt;
   );
 }
-</code></pre>
-
-<p>Then, any time an action is dispatched using the <code>dispatch</code> function returned above, the global <code>count</code> will be updated! Now this is beginning to look a little like Redux. However, if the <code>dispatch</code> function were simply passed down through props, you might think that this looks like plain React: passing down callbacks to update state in a parent component. And you would be right. Using another hook, we can make this app even more Redux-like.</p>
-
+</code></pre></div><p>Then, any time an action is dispatched using the <code>dispatch</code> function returned above, the global <code>count</code> will be updated! Now this is beginning to look a little like Redux. However, if the <code>dispatch</code> function were simply passed down through props, you might think that this looks like plain React: passing down callbacks to update state in a parent component. And you would be right. Using another hook, we can make this app even more Redux-like.</p>
 <h1 id="making-dispatch-available-everywhere">Making <code>dispatch</code> Available Everywhere</h1>
-
 <p>To further emulate Redux, we should make the <code>dispatch</code> function available from any child component without directly passing it down through props. In the parent component, we can provide a context whose value is the <code>dispatch</code> function. In order to be able to access this context later, we will declare it in the reducer file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// reducer.js
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">createContext</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
 
-<pre><code class="language-jsx">// reducer.js
-import { createContext } from 'react';
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">CounterContext</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">createContext</span>(<span style="color:#66d9ef">null</span>);
+</code></pre></div><p>Then, in our top-level component, we will wrap all children in a context provider that will provide the <code>dispatch</code> function to all child components:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// TopLevelComponent.jsx
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useReducer</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">reducer</span>, { <span style="color:#a6e22e">CounterContext</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./reducer&#39;</span>;
 
-export const CounterContext = createContext(null);
-</code></pre>
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">TopLevelComponent</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">count</span>, <span style="color:#a6e22e">dispatch</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useReducer</span>(<span style="color:#a6e22e">reducer</span>, <span style="color:#ae81ff">0</span>);
 
-<p>Then, in our top-level component, we will wrap all children in a context provider that will provide the <code>dispatch</code> function to all child components:</p>
-
-<pre><code class="language-jsx">// TopLevelComponent.jsx
-import React, { useReducer } from 'react';
-import reducer, { CounterContext } from './reducer';
-
-export default function TopLevelComponent(props) {
-  const [count, dispatch] = useReducer(reducer, 0);
-
-  return (
-    &lt;CounterContext.Provider value={dispatch}&gt;
-      &lt;p&gt;The current count is {count}.&lt;/p&gt;
-    &lt;/CounterContext.Provider&gt;
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">CounterContext.Provider</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">dispatch</span>}&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">The</span> <span style="color:#a6e22e">current</span> <span style="color:#a6e22e">count</span> <span style="color:#a6e22e">is</span> {<span style="color:#a6e22e">count</span>}.&lt;/<span style="color:#f92672">p</span>&gt;
+    &lt;/<span style="color:#f92672">CounterContext.Provider</span>&gt;
   );
 }
-</code></pre>
-
-<p>Now, any child component will have access to the <code>dispatch</code> function, which they can use to update the <code>count</code> state globally! If you wish to access <code>count</code> in child components as well, it would be trivial to make another context to provide that value anywhere.</p>
-
+</code></pre></div><p>Now, any child component will have access to the <code>dispatch</code> function, which they can use to update the <code>count</code> state globally! If you wish to access <code>count</code> in child components as well, it would be trivial to make another context to provide that value anywhere.</p>
 <h1 id="dispatching-actions-from-child-components">Dispatching Actions from Child Components</h1>
+<p>Now, for the pièce de résistance! By using the <a href="https://reactjs.org/docs/hooks-reference.html#usecontext"><code>useContext</code></a> hook, we can access the value of the created context from any child component and <code>dispatch</code> actions to the global state, just like Redux:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#75715e">// ChildComponent.jsx
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useContext</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">CounterContext</span>, <span style="color:#a6e22e">increment</span>, <span style="color:#a6e22e">decrement</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;./reducer&#39;</span>;
 
-<p>Now, for the pièce de résistance! By using the <a href="https://reactjs.org/docs/hooks-reference.html#usecontext" target="_blank"><code>useContext</code></a> hook, we can access the value of the created context from any child component and <code>dispatch</code> actions to the global state, just like Redux:</p>
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ChildComponent</span>(<span style="color:#a6e22e">props</span>) {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">dispatch</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useContext</span>(<span style="color:#a6e22e">CounterContext</span>);
 
-<pre><code class="language-jsx">// ChildComponent.jsx
-import React, { useContext } from 'react';
-import { CounterContext, increment, decrement } from './reducer';
-
-export default function ChildComponent(props) {
-  const dispatch = useContext(CounterContext);
-
-  return (
-    &lt;div&gt;
-      &lt;button onClick={() =&gt; dispatch(increment())}&gt;+&lt;/button&gt;
-      &lt;button onClick={() =&gt; dispatch(decrement())}&gt;-&lt;/button&gt;
-    &lt;/div&gt;
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>(<span style="color:#a6e22e">increment</span>())}&gt;<span style="color:#f92672">+</span>&lt;/<span style="color:#f92672">button</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>(<span style="color:#a6e22e">decrement</span>())}&gt;<span style="color:#f92672">-</span>&lt;/<span style="color:#f92672">button</span>&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
   );
 }
-</code></pre>
-
-<p>As you can see, now we can access the <code>dispatch</code> function from anywhere to dispatch actions to the global state without having to pass down callbacks as props.</p>
-
-<hr />
-
+</code></pre></div><p>As you can see, now we can access the <code>dispatch</code> function from anywhere to dispatch actions to the global state without having to pass down callbacks as props.</p>
+<hr>
 <p>As you can see, we have now covered all of our bases in terms of basic Redux functionality. We can:</p>
-
 <ol>
 <li>Define a reducer which updates a global state</li>
 <li>Dispatch actions to update that global state</li>
 <li>Access the <code>dispatch</code> function from any child component</li>
 </ol>
-
 <p>For simple projects, this quasi-Redux implements a lot of the basic functionality without having to incorporate the whole library. Thanks for reading 😄!</p>
 
     </div>
@@ -774,7 +735,7 @@ export default function ChildComponent(props) {
   <div class="media author-card" itemscope itemtype="http://schema.org/Person">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_2.png" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_3.png" itemprop="image" alt="Avatar">
     
 
     <div class="media-body">
@@ -961,7 +922,7 @@ export default function ChildComponent(props) {
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

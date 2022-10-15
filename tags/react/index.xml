@@ -17,71 +17,53 @@
       <link>https://dylandpowers.github.io/post/creating-robust-popovers-in-react/</link>
       <pubDate>Mon, 21 Feb 2022 18:48:03 -0500</pubDate>
       <guid>https://dylandpowers.github.io/post/creating-robust-popovers-in-react/</guid>
-      <description>
-
-&lt;p&gt;Popovers are a crucial part of any modern web application. Simply put, a popover is a small modal that pops over the screen when the user hovers or clicks somewhere. Usually this comes in the form of a menu, but it could also be a drawer popping out from the left or right side of the screen.&lt;/p&gt;
-
-&lt;p&gt;When creating a web application, developers usually reach for a component library like &lt;a href=&#34;https://mui.com/&#34; target=&#34;_blank&#34;&gt;Material UI&lt;/a&gt; or &lt;a href=&#34;https://ant.design/docs/react/introduce&#34; target=&#34;_blank&#34;&gt;Antd&lt;/a&gt;. Recently when playing around with Material (hereafter referred to as MUI), I reached for the &lt;a href=&#34;https://mui.com/components/popover/&#34; target=&#34;_blank&#34;&gt;Popover&lt;/a&gt; component. Here, I’ll discuss the implementation details of this component as to uncover one crucial limitation that necessitated my own custom implementation.&lt;/p&gt;
-
+      <description>&lt;p&gt;Popovers are a crucial part of any modern web application. Simply put, a popover is a small modal that pops over the screen when the user hovers or clicks somewhere. Usually this comes in the form of a menu, but it could also be a drawer popping out from the left or right side of the screen.&lt;/p&gt;
+&lt;p&gt;When creating a web application, developers usually reach for a component library like &lt;a href=&#34;https://mui.com/&#34;&gt;Material UI&lt;/a&gt; or &lt;a href=&#34;https://ant.design/docs/react/introduce&#34;&gt;Antd&lt;/a&gt;. Recently when playing around with Material (hereafter referred to as MUI), I reached for the &lt;a href=&#34;https://mui.com/components/popover/&#34;&gt;Popover&lt;/a&gt; component. Here, I’ll discuss the implementation details of this component as to uncover one crucial limitation that necessitated my own custom implementation.&lt;/p&gt;
 &lt;h1 id=&#34;mui-popover-implementation&#34;&gt;MUI Popover Implementation&lt;/h1&gt;
-
 &lt;p&gt;The way the MUI popover component works is by first receiving an anchor element as a prop. The anchor element is usually whatever &lt;code&gt;div&lt;/code&gt; the click or hover event is coming from; MUI uses this to determine where to place the popover. However, the popover itself does not get attached anywhere in the hierarchy of the anchor element. Instead, it gets attached to a new &lt;code&gt;div&lt;/code&gt; which is a sibling of the root element (usually where &lt;code&gt;ReactDOM.render&lt;/code&gt; is first called).&lt;/p&gt;
-
 &lt;p&gt;Let’s call this new &lt;code&gt;div&lt;/code&gt; &lt;code&gt;root-sibling&lt;/code&gt;. This new &lt;code&gt;div&lt;/code&gt; will take up the entire width and height of the viewport. The reason for this is to register a custom click handler that will cause the popover to close whenever the user clicks anywhere on the screen outside of the popover. Without knowing specifics, I’m assuming this click handler is registered on mount.&lt;/p&gt;
-
 &lt;p&gt;This behavior introduces a crucial limitation - out of the box, we cannot allow the screen to continue to process hover events when the popover is open. For example, say we have a menu which opens a different popover for each menu item on hover. If we use the MUI popover out of the box, then those other menu items will be masked by &lt;code&gt;root-sibling&lt;/code&gt; whenever any popover is open, and nothing will happen when the user hovers those elements.&lt;/p&gt;
-
 &lt;p&gt;Furthermore, setting &lt;code&gt;pointer-events: none&lt;/code&gt; on &lt;code&gt;root-sibling&lt;/code&gt; will not work, because this will cause the popover to just always stay open no matter where the user clicks (I believe the escape key would still work, though). So what are we to do if we want the hover behavior to be preserved?&lt;/p&gt;
-
 &lt;h1 id=&#34;custom-implementation&#34;&gt;Custom Implementation&lt;/h1&gt;
-
 &lt;p&gt;In order to continue to process other hover events &lt;em&gt;and&lt;/em&gt; close the popover whenever the user clicks outside of it, I used a combination of the &lt;code&gt;pointer-events: none&lt;/code&gt; styling and a custom click handler.&lt;/p&gt;
-
 &lt;p&gt;First, we should style the &lt;code&gt;Popover&lt;/code&gt; MUI component with &lt;code&gt;pointer-events: none&lt;/code&gt;. However, we need to take care to still process the click events inside of the popover, otherwise the user will not be able to interact with menu elements. So, on the highest-level &lt;code&gt;div&lt;/code&gt; inside of the &lt;code&gt;Popover&lt;/code&gt; component, make sure to style with &lt;code&gt;pointer-events: auto&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Next, we need to register a custom click handler which will cause the popover to be closed whenever the user clicks outside of it. We will register this on the highest-level &lt;code&gt;div&lt;/code&gt; inside of the component. We will first need a ref for that &lt;code&gt;div&lt;/code&gt;, so that we can check where the click is. Use React’s &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#useref&#34;&gt;&lt;code&gt;useRef&lt;/code&gt;&lt;/a&gt; hook to generate that ref, and then pass it to that &lt;code&gt;div&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// PopoverContent.tsx
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;PopoverContent&lt;/span&gt;() {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useRef&lt;/span&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;HTMLElement&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;|&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;null&lt;/span&gt;&amp;gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;null&lt;/span&gt;);
 
-&lt;p&gt;Next, we need to register a custom click handler which will cause the popover to be closed whenever the user clicks outside of it. We will register this on the highest-level &lt;code&gt;div&lt;/code&gt; inside of the component. We will first need a ref for that &lt;code&gt;div&lt;/code&gt;, so that we can check where the click is. Use React’s &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#useref&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;useRef&lt;/code&gt;&lt;/a&gt; hook to generate that ref, and then pass it to that &lt;code&gt;div&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// PopoverContent.tsx
-export default function PopoverContent() {
-  const ref = useRef&amp;lt;HTMLElement | null&amp;gt;(null);
-
-  return (
-    &amp;lt;div ref={ref}&amp;gt;
-      Content goes here
-    &amp;lt;/div&amp;gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt;}&amp;gt;
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;Content&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;goes&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;here&lt;/span&gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then, on mount, we will register the click handler. We can grab the bounding rectangle for the ref, and then use that to check where the click is. If the click is outside of that rectangle, then we should close the popover, most likely using some prop. We also need to make sure to remove the click handler on unmount. We can do all of this inside of a &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#useeffect&#34;&gt;&lt;code&gt;useEffect&lt;/code&gt;&lt;/a&gt; hook:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// PopoverContent.tsx
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;handleClose&lt;/span&gt; }&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;handleClose&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; () =&amp;gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; } &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;;
 
-&lt;p&gt;Then, on mount, we will register the click handler. We can grab the bounding rectangle for the ref, and then use that to check where the click is. If the click is outside of that rectangle, then we should close the popover, most likely using some prop. We also need to make sure to remove the click handler on unmount. We can do all of this inside of a &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#useeffect&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;useEffect&lt;/code&gt;&lt;/a&gt; hook:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// PopoverContent.tsx
-const { handleClose }: { handleClose: () =&amp;gt; void } = props;
-
-useEffect(() =&amp;gt; {
-  if (!ref || !ref.current) {
-    return;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;useEffect&lt;/span&gt;(() =&amp;gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt;) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;;
   }
 
-  const rect: DOMRect = ref.current.getBoundingClientRect();
-  const eventListener = (event: MouseEvent) =&amp;gt; {
-    if (
-      event.clientX &amp;lt; rect.left ||
-      event.clientX &amp;gt; rect.right ||
-      event.clientY &amp;lt; rect.top ||
-      event.clientY &amp;gt; rect.bottom
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rect&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DOMRect&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;getBoundingClientRect&lt;/span&gt;();
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;eventListener&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;MouseEvent&lt;/span&gt;) =&amp;gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;clientX&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rect&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;left&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;clientX&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rect&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;right&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;clientY&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rect&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;top&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;clientY&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rect&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;bottom&lt;/span&gt;
     ) {
-      handleClose();
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;handleClose&lt;/span&gt;();
     }
   };
 
-  document.addEventListener(&amp;quot;mousedown&amp;quot;, eventListener);
+  document.&lt;span style=&#34;color:#a6e22e&#34;&gt;addEventListener&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;mousedown&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;eventListener&lt;/span&gt;);
 
-  return () =&amp;gt; document.removeEventListener(&amp;quot;mousedown&amp;quot;, eventListener);
-}, [ref, ref.current]);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;And there we have it! Now we will be able to successfully process hover events while preserving the desired click behavior.&lt;/p&gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; () =&amp;gt; document.&lt;span style=&#34;color:#a6e22e&#34;&gt;removeEventListener&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;mousedown&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;eventListener&lt;/span&gt;);
+}, [&lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt;]);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And there we have it! Now we will be able to successfully process hover events while preserving the desired click behavior.&lt;/p&gt;
 </description>
     </item>
     
@@ -90,90 +72,62 @@ useEffect(() =&amp;gt; {
       <link>https://dylandpowers.github.io/post/when-to-use-usecallback/</link>
       <pubDate>Sun, 15 Aug 2021 21:10:54 -0400</pubDate>
       <guid>https://dylandpowers.github.io/post/when-to-use-usecallback/</guid>
-      <description>
-
-&lt;p&gt;I&amp;rsquo;ve worked with React a lot over the past few years. The more I work with it, the more I notice common mistakes that can slow down rendering as they pile up. Granted, in small applications (like most side projects), usually the rendering slowness will go unnoticed due to the size of the application. However, for larger applications, thinking about rendering speed becomes important.&lt;/p&gt;
-
-&lt;p&gt;One issue I see often is wrapping all function declarations in a component inside of a &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usecallback&#34; target=&#34;_blank&#34;&gt;useCallback&lt;/a&gt; hook. As per the React docs:&lt;/p&gt;
-
+      <description>&lt;p&gt;I&amp;rsquo;ve worked with React a lot over the past few years. The more I work with it, the more I notice common mistakes that can slow down rendering as they pile up. Granted, in small applications (like most side projects), usually the rendering slowness will go unnoticed due to the size of the application. However, for larger applications, thinking about rendering speed becomes important.&lt;/p&gt;
+&lt;p&gt;One issue I see often is wrapping all function declarations in a component inside of a &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usecallback&#34;&gt;useCallback&lt;/a&gt; hook. As per the React docs:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;useCallback&lt;/code&gt; will return a memoized version of the callback that only changes if one of the dependencies has changed.&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;p&gt;Essentially, without &lt;code&gt;useCallback&lt;/code&gt;, the function will be recreated on every render. It&amp;rsquo;s important to remember that in JavaScript, functions are first-class objects just like a normal &lt;code&gt;Object&lt;/code&gt; is. This essentially just means that the function can be stored as a variable, passed as an argument to a function, and returned from a function.&lt;/p&gt;
-
 &lt;h1 id=&#34;without-usecallback&#34;&gt;Without &lt;code&gt;useCallback&lt;/code&gt;&lt;/h1&gt;
-
 &lt;p&gt;Let&amp;rsquo;s say we have a function &lt;code&gt;createUser&lt;/code&gt; that is going to create a user by making an API call. The user details are stored in pieces of state within the component.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// SignupPage.jsx
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setEmail&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;);
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setPassword&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// SignupPage.jsx
-const [email, setEmail] = useState(&#39;&#39;);
-const [password, setPassword] = useState(&#39;&#39;);
-
-const createUser = () =&amp;gt; {
-  UserAPI.createUser(email, password);
-  redirectToHome();
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;createUser&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; () =&amp;gt; {
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;UserAPI&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;createUser&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;);
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;redirectToHome&lt;/span&gt;();
 };
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;We will return some JSX that will render the &lt;code&gt;input&lt;/code&gt; elements, so we don&amp;rsquo;t need to rely on other components to render the input form. Whenever a piece of state changes, React will re-render the component. This will recreate (among other things) all functions not wrapped in a &lt;code&gt;useCallback&lt;/code&gt;.&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We will return some JSX that will render the &lt;code&gt;input&lt;/code&gt; elements, so we don&amp;rsquo;t need to rely on other components to render the input form. Whenever a piece of state changes, React will re-render the component. This will recreate (among other things) all functions not wrapped in a &lt;code&gt;useCallback&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;This means that the &lt;code&gt;createUser&lt;/code&gt; function above is created once for each render. This can become a larger performance hit in larger applications, but I&amp;rsquo;ll show in the next section why it isn&amp;rsquo;t the end of the world for this case.&lt;/p&gt;
-
 &lt;h1 id=&#34;with-usecallback&#34;&gt;With &lt;code&gt;useCallback&lt;/code&gt;&lt;/h1&gt;
-
 &lt;p&gt;Alternatively, we can wrap the function in a &lt;code&gt;useCallback&lt;/code&gt; hook provided by the React library. This means that the function will not be re-evaluated unless something in the dependency array changes. Assuming that &lt;code&gt;UserAPI&lt;/code&gt; and the &lt;code&gt;redirectToHome&lt;/code&gt; function are both created outside of the component, we just need to declare &lt;code&gt;email&lt;/code&gt; and &lt;code&gt;password&lt;/code&gt; as dependencies.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// SignupPage.jsx
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setEmail&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;);
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setPassword&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// SignupPage.jsx
-const [email, setEmail] = useState(&#39;&#39;);
-const [password, setPassword] = useState(&#39;&#39;);
-
-const createUser = useCallback(() =&amp;gt; {
-  UserAPI.createUser(email, password);
-  redirectToHome();
-}, [email, password]);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This means that, unless the &lt;code&gt;email&lt;/code&gt; or &lt;code&gt;password&lt;/code&gt; state changes, we will not recreate the &lt;code&gt;createUser&lt;/code&gt; function. For example, if we had some &lt;code&gt;showInfoModal&lt;/code&gt; state that would show some information about signing up, we could change that state without recreating the &lt;code&gt;createUser&lt;/code&gt; function.&lt;/p&gt;
-
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;createUser&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useCallback&lt;/span&gt;(() =&amp;gt; {
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;UserAPI&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;createUser&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;);
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;redirectToHome&lt;/span&gt;();
+}, [&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;]);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This means that, unless the &lt;code&gt;email&lt;/code&gt; or &lt;code&gt;password&lt;/code&gt; state changes, we will not recreate the &lt;code&gt;createUser&lt;/code&gt; function. For example, if we had some &lt;code&gt;showInfoModal&lt;/code&gt; state that would show some information about signing up, we could change that state without recreating the &lt;code&gt;createUser&lt;/code&gt; function.&lt;/p&gt;
 &lt;p&gt;This seems like an improvement, right? Consider the fact that the above code is actually identical to the following:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// SignupPage.jsx
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setEmail&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;);
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setPassword&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// SignupPage.jsx
-const [email, setEmail] = useState(&#39;&#39;);
-const [password, setPassword] = useState(&#39;&#39;);
-
-const nonMemoizedCreateUser = () =&amp;gt; {
-  UserAPI.createUser(email, password);
-  redirectToHome();
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;nonMemoizedCreateUser&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; () =&amp;gt; {
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;UserAPI&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;createUser&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;);
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;redirectToHome&lt;/span&gt;();
 };
 
-const createUser = useCallback(nonMemoizedCreateUser, [email, password]);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;So, the original function is actually still created, and we are doing even more work than before! In this instance, it seems quite wasteful. However, there are situations where &lt;code&gt;useCallback&lt;/code&gt; is worth the extra cost.&lt;/p&gt;
-
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;createUser&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useCallback&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;nonMemoizedCreateUser&lt;/span&gt;, [&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;]);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So, the original function is actually still created, and we are doing even more work than before! In this instance, it seems quite wasteful. However, there are situations where &lt;code&gt;useCallback&lt;/code&gt; is worth the extra cost.&lt;/p&gt;
 &lt;h1 id=&#34;use-it-with-memoized-components&#34;&gt;Use it With Memoized Components&lt;/h1&gt;
-
 &lt;p&gt;The best use case for &lt;code&gt;useCallback&lt;/code&gt; is when creating memoized components; that is, components wrapped in an extra &lt;code&gt;React.memo()&lt;/code&gt; function. This means that the component will not re-render unless the props &lt;em&gt;actually&lt;/em&gt; change (or, of course,
 component-held state changes).&lt;/p&gt;
-
 &lt;p&gt;Consider a situation where we have a separate &lt;code&gt;Button&lt;/code&gt; component which will call the passed-in function when clicked. This component has a single prop representing the &lt;code&gt;createUser&lt;/code&gt; function.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt;, { &lt;span style=&#34;color:#a6e22e&#34;&gt;memo&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React, { memo } from &#39;react&#39;;
-
-const Button = (props) =&amp;gt; {
-  return (
-    &amp;lt;button onclick={props.createUser}&amp;gt;Create User&amp;lt;/button&amp;gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Button&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) =&amp;gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;onclick&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;createUser&lt;/span&gt;}&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Create&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;User&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt;&amp;gt;
   );
 };
 
-export default memo(Button);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This means that the &lt;code&gt;Button&lt;/code&gt; component will not re-render unless the props change (React by default defines a &amp;ldquo;change&amp;rdquo; by shallowly comparing the current props to the previous props). If in the &lt;code&gt;SignupPage&lt;/code&gt; component we do not wrap the function in a &lt;code&gt;useCallback&lt;/code&gt;, then the reference will change every time, causing the &lt;code&gt;Button&lt;/code&gt; component to re-render every time that the &lt;code&gt;SignupPage&lt;/code&gt; component re-renders. However, if we wrap the prop in a &lt;code&gt;useCallback&lt;/code&gt;, then we have much more fine-grained control over when the &lt;code&gt;Button&lt;/code&gt; component re-renders.&lt;/p&gt;
-
-&lt;hr /&gt;
-
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;memo&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;Button&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This means that the &lt;code&gt;Button&lt;/code&gt; component will not re-render unless the props change (React by default defines a &amp;ldquo;change&amp;rdquo; by shallowly comparing the current props to the previous props). If in the &lt;code&gt;SignupPage&lt;/code&gt; component we do not wrap the function in a &lt;code&gt;useCallback&lt;/code&gt;, then the reference will change every time, causing the &lt;code&gt;Button&lt;/code&gt; component to re-render every time that the &lt;code&gt;SignupPage&lt;/code&gt; component re-renders. However, if we wrap the prop in a &lt;code&gt;useCallback&lt;/code&gt;, then we have much more fine-grained control over when the &lt;code&gt;Button&lt;/code&gt; component re-renders.&lt;/p&gt;
+&lt;hr&gt;
 &lt;p&gt;When making decisions on whether or not to use &lt;code&gt;useCallback&lt;/code&gt;, there are always several factors at play. However, when relying on memoized components, wrapping function props in &lt;code&gt;useCallback&lt;/code&gt;s is always a safe bet.&lt;/p&gt;
 </description>
     </item>
@@ -183,93 +137,61 @@ export default memo(Button);
       <link>https://dylandpowers.github.io/post/essential-npm-packages-for-react-beginners/</link>
       <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
       <guid>https://dylandpowers.github.io/post/essential-npm-packages-for-react-beginners/</guid>
-      <description>
-
-&lt;p&gt;When I was first starting out in React development, I had little to no knowledge about the ecosystem in general. Not knowing the necessary tools available in the ecosystem definitely led to increased time-to-completion for personal projects. In this post, I&amp;rsquo;ll discuss NPM packages that I use every day in my personal React projects which have sped up development time drastically, and are great for beginners.&lt;/p&gt;
-
-&lt;h1 id=&#34;create-react-app-https-www-npmjs-com-package-create-react-app&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/create-react-app&#34; target=&#34;_blank&#34;&gt;create-react-app&lt;/a&gt;&lt;/h1&gt;
-
+      <description>&lt;p&gt;When I was first starting out in React development, I had little to no knowledge about the ecosystem in general. Not knowing the necessary tools available in the ecosystem definitely led to increased time-to-completion for personal projects. In this post, I&amp;rsquo;ll discuss NPM packages that I use every day in my personal React projects which have sped up development time drastically, and are great for beginners.&lt;/p&gt;
+&lt;h1 id=&#34;create-react-apphttpswwwnpmjscompackagecreate-react-app&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/create-react-app&#34;&gt;create-react-app&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;This is the #1 package out there for bootstrapping React applications. It allows you to create scaffolds for React applications with a simple command: &lt;code&gt;create-react-app &amp;lt;project name&amp;gt;&lt;/code&gt;. This package is maintained by Facebook, so you can be sure that it will always contain the most recent optimizations.&lt;/p&gt;
-
-&lt;h1 id=&#34;antd-https-www-npmjs-com-package-antd&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/antd&#34; target=&#34;_blank&#34;&gt;antd&lt;/a&gt;&lt;/h1&gt;
-
-&lt;p&gt;The &lt;code&gt;antd&lt;/code&gt; package, short for Ant Design, is a library of React components created by &lt;a href=&#34;https://www.antgroup.com/en&#34; target=&#34;_blank&#34;&gt;Ant Financial&lt;/a&gt;. Creating UI components can be an extremely time consuming part of development, and self-created components don&amp;rsquo;t make for a great user experience if you don&amp;rsquo;t have great design skills (like myself).&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;antd&lt;/code&gt; provides simple, out-of-the-box components for everything from lists to tables to rating systems. Everything is standardized which makes for a &lt;em&gt;great&lt;/em&gt; user experience, and you can even override the CSS variables using something like &lt;a href=&#34;https://www.npmjs.com/package/craco&#34; target=&#34;_blank&#34;&gt;craco&lt;/a&gt;. I&amp;rsquo;ve made several websites with &lt;code&gt;antd&lt;/code&gt; components and I always have a great time using it.&lt;/p&gt;
-
-&lt;h1 id=&#34;styled-components-https-styled-components-com&#34;&gt;&lt;a href=&#34;https://styled-components.com/&#34; target=&#34;_blank&#34;&gt;styled-components&lt;/a&gt;&lt;/h1&gt;
-
+&lt;h1 id=&#34;antdhttpswwwnpmjscompackageantd&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/antd&#34;&gt;antd&lt;/a&gt;&lt;/h1&gt;
+&lt;p&gt;The &lt;code&gt;antd&lt;/code&gt; package, short for Ant Design, is a library of React components created by &lt;a href=&#34;https://www.antgroup.com/en&#34;&gt;Ant Financial&lt;/a&gt;. Creating UI components can be an extremely time consuming part of development, and self-created components don&amp;rsquo;t make for a great user experience if you don&amp;rsquo;t have great design skills (like myself).&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;antd&lt;/code&gt; provides simple, out-of-the-box components for everything from lists to tables to rating systems. Everything is standardized which makes for a &lt;em&gt;great&lt;/em&gt; user experience, and you can even override the CSS variables using something like &lt;a href=&#34;https://www.npmjs.com/package/craco&#34;&gt;craco&lt;/a&gt;. I&amp;rsquo;ve made several websites with &lt;code&gt;antd&lt;/code&gt; components and I always have a great time using it.&lt;/p&gt;
+&lt;h1 id=&#34;styled-componentshttpsstyled-componentscom&#34;&gt;&lt;a href=&#34;https://styled-components.com/&#34;&gt;styled-components&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;&lt;code&gt;styled-components&lt;/code&gt; is a library for styling React components (or standard HTML elements) directly in your component file. By default, it exports a function &lt;code&gt;styled&lt;/code&gt; which accepts a React component as an argument and applies extra styling on top of it. For example, we can add extra styles to &lt;code&gt;antd&lt;/code&gt;&amp;rsquo;s &lt;code&gt;Button&lt;/code&gt; component like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;Button&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;antd&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;styled&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;styled-components&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import { Button } from &#39;antd&#39;;
-import styled from &#39;styled-components&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;PaddedButton&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;styled&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;Button&lt;/span&gt;)&lt;span style=&#34;color:#e6db74&#34;&gt;`
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  padding: 10px;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There is a short-hand for applying the styling on HTML elements where you can just use a &lt;code&gt;.&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;styled&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;styled-components&amp;#39;&lt;/span&gt;;
 
-const PaddedButton = styled(Button)`
-  padding: 10px;
-`;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;There is a short-hand for applying the styling on HTML elements where you can just use a &lt;code&gt;.&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import styled from &#39;styled-components&#39;;
-
-const RedText = styled.p`
-  color: red;
-`;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I love &lt;code&gt;styled-components&lt;/code&gt; because I can style the components in the way I need without ever leaving the component file. In my opinion, the close coupling of component&amp;rsquo;s styles to their state management makes for a simpler development workflow.&lt;/p&gt;
-
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RedText&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;styled&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;`
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  color: red;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I love &lt;code&gt;styled-components&lt;/code&gt; because I can style the components in the way I need without ever leaving the component file. In my opinion, the close coupling of component&amp;rsquo;s styles to their state management makes for a simpler development workflow.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; be sure to always define your styled components &lt;em&gt;outside&lt;/em&gt; of the component that uses them, so that they aren&amp;rsquo;t re-computed on every render.&lt;/p&gt;
-
-&lt;h1 id=&#34;react-router-dom-https-reactrouter-com&#34;&gt;&lt;a href=&#34;https://reactrouter.com/&#34; target=&#34;_blank&#34;&gt;react-router-dom&lt;/a&gt;&lt;/h1&gt;
-
+&lt;h1 id=&#34;react-router-domhttpsreactroutercom&#34;&gt;&lt;a href=&#34;https://reactrouter.com/&#34;&gt;react-router-dom&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;This is simply the easiest and best routing package out there. It gives you a set of navigational components that you can use to declare different routes in your application like the main page, a &lt;code&gt;/login&lt;/code&gt; page, a &lt;code&gt;/profile&lt;/code&gt; page, etc. You declare your different routes with &lt;code&gt;Route&lt;/code&gt; components, and then designate which component they should render:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;Route&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;Switch&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;Router&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-router-dom&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LoginPage&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./LoginPage&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import { Route, Switch, Router } from &#39;react-router-dom&#39;;
-import LoginPage from &#39;./LoginPage&#39;;
-
-export default function App(props) {
-  return (
-    &amp;lt;Router&amp;gt;
-      &amp;lt;Switch&amp;gt;
-        &amp;lt;Route exact path=&amp;quot;/login&amp;quot; component={LoginPage} /&amp;gt;
-      &amp;lt;/Switch&amp;gt;
-    &amp;lt;/Router&amp;gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;App&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Router&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Switch&lt;/span&gt;&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Route&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;exact&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;path&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/login&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;LoginPage&lt;/span&gt;} /&amp;gt;
+      &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;Switch&lt;/span&gt;&amp;gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;Router&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I&amp;rsquo;ve also written &lt;a href=&#34;https://dylanpowers.me/post/protected-routes-in-react/&#34; target=&#34;_blank&#34;&gt;separate post&lt;/a&gt; on how to make protected routes using this package.&lt;/p&gt;
-
-&lt;h1 id=&#34;firebase-https-www-npmjs-com-package-firebase&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/firebase&#34; target=&#34;_blank&#34;&gt;firebase&lt;/a&gt;&lt;/h1&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I&amp;rsquo;ve also written &lt;a href=&#34;https://dylanpowers.me/post/protected-routes-in-react/&#34;&gt;separate post&lt;/a&gt; on how to make protected routes using this package.&lt;/p&gt;
+&lt;h1 id=&#34;firebasehttpswwwnpmjscompackagefirebase&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/firebase&#34;&gt;firebase&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;Firebase is more just than a package - it provides tools for everything that basic applications need like authentication, storage, and much more. It provides a declarative and simple API that makes app development incredibly simple.&lt;/p&gt;
-
-&lt;p&gt;To use this package, you&amp;rsquo;ll need to create a firebase account and project. After that, you can set up authentication as well as a real-time datastore or a collection-like datastore similar to &lt;a href=&#34;https://www.mongodb.com/&#34; target=&#34;_blank&#34;&gt;MongoDB&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h1 id=&#34;axios-https-www-npmjs-com-package-axios&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/axios&#34; target=&#34;_blank&#34;&gt;axios&lt;/a&gt;&lt;/h1&gt;
-
+&lt;p&gt;To use this package, you&amp;rsquo;ll need to create a firebase account and project. After that, you can set up authentication as well as a real-time datastore or a collection-like datastore similar to &lt;a href=&#34;https://www.mongodb.com/&#34;&gt;MongoDB&lt;/a&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;axioshttpswwwnpmjscompackageaxios&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/axios&#34;&gt;axios&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;Axios is a simple HTTP client for making API requests from the browser. It&amp;rsquo;s also promise-based which means you can add success callbacks with ease.&lt;/p&gt;
-
-&lt;h1 id=&#34;classnames-https-www-npmjs-com-package-classnames&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/classnames&#34; target=&#34;_blank&#34;&gt;classnames&lt;/a&gt;&lt;/h1&gt;
-
+&lt;h1 id=&#34;classnameshttpswwwnpmjscompackageclassnames&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/classnames&#34;&gt;classnames&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;Classnames is an incredible simple yet extremely powerful library. It does one thing and it does it well - conditionally combining CSS class names based on a set of criteria. It exports a function which takes a single object argument where the keys are the class names and the values are booleans representing whether or not to apply the class name. Here&amp;rsquo;s a simple example where something should have the &lt;code&gt;highlighted&lt;/code&gt; class if a piece of state is &lt;code&gt;true&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;classNames&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;classnames&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import classNames from &#39;classnames&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;List&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;isHighlighted&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setIsHighlighted&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;);
 
-export default function List(props) {
-  const [isHighlighted, setIsHighlighted] = useState(false);
-
-  const listItemClassName = classNames({
-    &#39;list-item&#39;: true,
-    &#39;highlighted&#39;: isHighlighted
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;listItemClassName&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;classNames&lt;/span&gt;({
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;list-item&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;highlighted&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;isHighlighted&lt;/span&gt;
   });
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;hr /&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
 &lt;p&gt;With these packages, you can supercharge your React development. Go out and develop!&lt;/p&gt;
 </description>
     </item>
@@ -279,160 +201,127 @@ export default function List(props) {
       <link>https://dylandpowers.github.io/post/using-context-to-prevent-unnecessary-re-renders/</link>
       <pubDate>Sun, 09 May 2021 22:49:47 -0400</pubDate>
       <guid>https://dylandpowers.github.io/post/using-context-to-prevent-unnecessary-re-renders/</guid>
-      <description>
-
-&lt;p&gt;With the rising popularity of React, we are in an era of the most responsive user interfaces we have ever seen. React uses a virtual DOM, and for every render it runs calculations to determine which parts of the actual DOM need to get updated. This means that React &lt;em&gt;only re-renders&lt;/em&gt; components that need to be re-rendered, and nothing more.&lt;/p&gt;
-
+      <description>&lt;p&gt;With the rising popularity of React, we are in an era of the most responsive user interfaces we have ever seen. React uses a virtual DOM, and for every render it runs calculations to determine which parts of the actual DOM need to get updated. This means that React &lt;em&gt;only re-renders&lt;/em&gt; components that need to be re-rendered, and nothing more.&lt;/p&gt;
 &lt;p&gt;However, that doesn&amp;rsquo;t mean we shouldn&amp;rsquo;t introduce optimizations of our own! Too many re-renders can lead to performance issues, so we should optimize wherever we can. One common pitfall I see in React applications is what I call &lt;em&gt;messenger components&lt;/em&gt;, which are components that pass some props from a parent to a child, but do not actually do anything with those props. For example, consider the following three components.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;fun&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ction&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Parent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;fun ction Parent(props) {
-  const foo = 1;
-  const bar = 2;
-
-  return (
-    &amp;lt;Child foo={foo} bar={bar} /&amp;gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Child&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;} &lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;} /&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Child(props) {
-  return (
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Child&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
     &amp;lt;&amp;gt;
-      &amp;lt;p&amp;gt;Foo is {props.foo}&amp;lt;/p&amp;gt;
-      &amp;lt;Grandchild bar={props.bar} /&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;is&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Grandchild&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;} /&amp;gt;
     &amp;lt;/&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Grandchild(props) {
-  return (
-    &amp;lt;p&amp;gt;Bar is {props.bar}&amp;lt;/p&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Grandchild&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Bar&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;is&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In this situation, &lt;code&gt;Child&lt;/code&gt; receives both &lt;code&gt;foo&lt;/code&gt; and &lt;code&gt;bar&lt;/code&gt; as props, but only truly &amp;ldquo;cares&amp;rdquo; about the value of &lt;code&gt;foo&lt;/code&gt;; &lt;code&gt;Grandchild&lt;/code&gt; cares about the value of &lt;code&gt;bar&lt;/code&gt;. In this case, &lt;code&gt;Child&lt;/code&gt; is a messenger component for the &lt;code&gt;bar&lt;/code&gt; prop. &lt;code&gt;Child&lt;/code&gt; should only re-render when the value of &lt;code&gt;foo&lt;/code&gt; updates, but in this case it will also re-render when &lt;code&gt;bar&lt;/code&gt; updates. How can we fix this?&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this situation, &lt;code&gt;Child&lt;/code&gt; receives both &lt;code&gt;foo&lt;/code&gt; and &lt;code&gt;bar&lt;/code&gt; as props, but only truly &amp;ldquo;cares&amp;rdquo; about the value of &lt;code&gt;foo&lt;/code&gt;; &lt;code&gt;Grandchild&lt;/code&gt; cares about the value of &lt;code&gt;bar&lt;/code&gt;. In this case, &lt;code&gt;Child&lt;/code&gt; is a messenger component for the &lt;code&gt;bar&lt;/code&gt; prop. &lt;code&gt;Child&lt;/code&gt; should only re-render when the value of &lt;code&gt;foo&lt;/code&gt; updates, but in this case it will also re-render when &lt;code&gt;bar&lt;/code&gt; updates. How can we fix this?&lt;/p&gt;
 &lt;h1 id=&#34;the-context-api&#34;&gt;The Context API&lt;/h1&gt;
-
-&lt;p&gt;Using React&amp;rsquo;s &lt;a href=&#34;https://reactjs.org/docs/context.html&#34; target=&#34;_blank&#34;&gt;Context API&lt;/a&gt;, we can broadcast changes to values, and only components that directly subscribe to that piece of context will receive the new value. This solves the problem of messenger components re-rendering unnecessarily, because we no longer need to pass props down - we can simply directly subscribe to the value in &lt;code&gt;Grandchild&lt;/code&gt;. To demonstrate this, I will add &lt;a href=&#34;https://reactjs.org/docs/glossary.html#refs&#34; target=&#34;_blank&#34;&gt;refs&lt;/a&gt; to show the number of re-renders for each component before and after adding context.&lt;/p&gt;
-
+&lt;p&gt;Using React&amp;rsquo;s &lt;a href=&#34;https://reactjs.org/docs/context.html&#34;&gt;Context API&lt;/a&gt;, we can broadcast changes to values, and only components that directly subscribe to that piece of context will receive the new value. This solves the problem of messenger components re-rendering unnecessarily, because we no longer need to pass props down - we can simply directly subscribe to the value in &lt;code&gt;Grandchild&lt;/code&gt;. To demonstrate this, I will add &lt;a href=&#34;https://reactjs.org/docs/glossary.html#refs&#34;&gt;refs&lt;/a&gt; to show the number of re-renders for each component before and after adding context.&lt;/p&gt;
 &lt;h1 id=&#34;before&#34;&gt;Before&lt;/h1&gt;
+&lt;p&gt;Using the current system of prop drilling, we can see how &lt;code&gt;Child&lt;/code&gt; will re-render every time either prop is updated. If you like, use &lt;a href=&#34;https://github.com/facebook/create-react-app&#34;&gt;create-react-app&lt;/a&gt; to bootstrap an app to see the renders in action.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Parent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setFoo&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setBar&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
 
-&lt;p&gt;Using the current system of prop drilling, we can see how &lt;code&gt;Child&lt;/code&gt; will re-render every time either prop is updated. If you like, use &lt;a href=&#34;https://github.com/facebook/create-react-app&#34; target=&#34;_blank&#34;&gt;create-react-app&lt;/a&gt; to bootstrap an app to see the renders in action.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Parent(props) {
-  const [foo, setFoo] = useState(0);
-  const [bar, setBar] = useState(0);
-
-  function incrementFoo() {
-    setFoo((prev) =&amp;gt; prev + 1);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;incrementFoo&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;setFoo&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;prev&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;prev&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;);
   }
 
-  function incrementBar() {
-    setBar((prev) =&amp;gt; prev + 1);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;incrementBar&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;setBar&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;prev&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;prev&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;);
   }
 
-  return (
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
     &amp;lt;&amp;gt;
-      &amp;lt;button onClick={incrementFoo}&amp;gt;Increment Foo&amp;lt;/button&amp;gt;
-      &amp;lt;button onClick={incrementBar}&amp;gt;Increment Bar&amp;lt;/button&amp;gt;
-      &amp;lt;Child foo={foo} bar={bar} /&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;onClick&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;incrementFoo&lt;/span&gt;}&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Increment&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;onClick&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;incrementBar&lt;/span&gt;}&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Increment&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Bar&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Child&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;} &lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;} /&amp;gt;
     &amp;lt;/&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Child&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useRef&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Child(props) {
-  const renders = useRef(0);
-
-  return (
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
     &amp;lt;&amp;gt;
-      &amp;lt;p&amp;gt;Foo (in Child): {props.foo}&amp;lt;/p&amp;gt;
-      &amp;lt;p&amp;gt;Child renders: {renders.current++}&amp;lt;/p&amp;gt;
-      &amp;lt;Grandchild bar={bar} /&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Child&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Child&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Grandchild&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;} /&amp;gt;
     &amp;lt;/&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Grandchild&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useRef&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Grandchild(props) {
-  const renders = useRef(0);
-
-  return (
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
     &amp;lt;&amp;gt;
-      &amp;lt;p&amp;gt;Bar (in Grandchild): {props.bar}&amp;lt;/p&amp;gt;
-      &amp;lt;p&amp;gt;Grandchild renders: {renders.current++}&amp;lt;/p&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Bar&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Grandchild&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Grandchild&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
     &amp;lt;/&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If you run this application, you will notice that the number of renders for the &lt;code&gt;Child&lt;/code&gt; and &lt;code&gt;Grandchild&lt;/code&gt; components will always be the same. However, since &lt;code&gt;Child&lt;/code&gt; doesn&amp;rsquo;t need to update when &lt;code&gt;bar&lt;/code&gt; updates, the number of re-renders shouldn&amp;rsquo;t be the same for the two components.&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If you run this application, you will notice that the number of renders for the &lt;code&gt;Child&lt;/code&gt; and &lt;code&gt;Grandchild&lt;/code&gt; components will always be the same. However, since &lt;code&gt;Child&lt;/code&gt; doesn&amp;rsquo;t need to update when &lt;code&gt;bar&lt;/code&gt; updates, the number of re-renders shouldn&amp;rsquo;t be the same for the two components.&lt;/p&gt;
 &lt;p&gt;But wait, why don&amp;rsquo;t we just memoize &lt;code&gt;Child&lt;/code&gt; so that it only re-renders when &lt;code&gt;foo&lt;/code&gt; updates? Beware of this approach, because it is only half of the solution! Memoizing &lt;code&gt;Child&lt;/code&gt; to not re-render when &lt;code&gt;bar&lt;/code&gt; is updated leaves &lt;em&gt;nothing to re-render &lt;code&gt;Grandchild&lt;/code&gt;,&lt;/em&gt; so this will result in unintended consequences: &lt;code&gt;Grandchild&lt;/code&gt; would only re-render when &lt;code&gt;foo&lt;/code&gt; is updated.&lt;/p&gt;
-
 &lt;h1 id=&#34;after&#34;&gt;After&lt;/h1&gt;
-
 &lt;p&gt;Using a combination of memoization and the Context API, we can prevent &lt;code&gt;Child&lt;/code&gt; from re-rendering unnecessarily. The following application demonstrates this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BarContext&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;createContext&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;null&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const BarContext = createContext(null);
+&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Parent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setFoo&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setBar&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
 
-function Parent(props) {
-  const [foo, setFoo] = useState(0);
-  const [bar, setBar] = useState(0);
-
-  function incrementFoo() {
-    setFoo((prev) =&amp;gt; prev + 1);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;incrementFoo&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;setFoo&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;prev&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;prev&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;);
   }
 
-  function incrementBar() {
-    setBar((prev) =&amp;gt; prev + 1);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;incrementBar&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;setBar&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;prev&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;prev&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;);
   }
 
-  return (
-    &amp;lt;BarContext.Provider value={bar}&amp;gt;
-      &amp;lt;button onClick={incrementFoo}&amp;gt;Increment Foo&amp;lt;/button&amp;gt;
-      &amp;lt;button onClick={incrementBar}&amp;gt;Increment Bar&amp;lt;/button&amp;gt;
-      &amp;lt;MemoizedChild foo={foo} /&amp;gt;
-    &amp;lt;/BarContext.Provider&amp;gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;BarContext.Provider&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;}&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;onClick&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;incrementFoo&lt;/span&gt;}&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Increment&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;onClick&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;incrementBar&lt;/span&gt;}&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Increment&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Bar&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;MemoizedChild&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;} /&amp;gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;BarContext.Provider&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Child&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useRef&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Child(props) {
-  const renders = useRef(0);
-
-  return (
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
     &amp;lt;&amp;gt;
-      &amp;lt;p&amp;gt;Foo (in Child): {props.foo}&amp;lt;/p&amp;gt;
-      &amp;lt;p&amp;gt;Child renders: {renders.current++}&amp;lt;/p&amp;gt;
-      &amp;lt;Grandchild /&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Child&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Child&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Grandchild&lt;/span&gt; /&amp;gt;
     &amp;lt;/&amp;gt;
   );
 }
 
-const MemoizedChild = memo(Child);
-&lt;/code&gt;&lt;/pre&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;MemoizedChild&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;memo&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;Child&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Grandchild&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useRef&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useContext&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;BarContext&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function Grandchild(props) {
-  const renders = useRef(0);
-  const bar = useContext(BarContext);
-
-  return (
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
     &amp;lt;&amp;gt;
-      &amp;lt;p&amp;gt;Bar (in Grandchild): {bar}&amp;lt;/p&amp;gt;
-      &amp;lt;p&amp;gt;Grandchild renders: {renders.current++}&amp;lt;/p&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Bar&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Grandchild&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Grandchild&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;renders&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
     &amp;lt;/&amp;gt;
     );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As you can see, we made two updates. First, we used a piece of context to hold the reference to &lt;code&gt;bar&lt;/code&gt;, and we have &lt;code&gt;Grandchild&lt;/code&gt; subscribe to that piece of context using the &lt;code&gt;useContext&lt;/code&gt; hook. However, this is only half of the equation; if we do not memoize &lt;code&gt;Child&lt;/code&gt;, then anytime &lt;code&gt;bar&lt;/code&gt; is updated in &lt;code&gt;Parent&lt;/code&gt;, &lt;strong&gt;&lt;code&gt;Child&lt;/code&gt; will re-render.&lt;/strong&gt; In order to prevent this, we use the &lt;a href=&#34;https://reactjs.org/docs/react-api.html#reactmemo&#34; target=&#34;_blank&#34;&gt;memo&lt;/a&gt; function to create a memoized version of the &lt;code&gt;Child&lt;/code&gt; component that will only re-render when the props change.&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;As you can see, we made two updates. First, we used a piece of context to hold the reference to &lt;code&gt;bar&lt;/code&gt;, and we have &lt;code&gt;Grandchild&lt;/code&gt; subscribe to that piece of context using the &lt;code&gt;useContext&lt;/code&gt; hook. However, this is only half of the equation; if we do not memoize &lt;code&gt;Child&lt;/code&gt;, then anytime &lt;code&gt;bar&lt;/code&gt; is updated in &lt;code&gt;Parent&lt;/code&gt;, &lt;strong&gt;&lt;code&gt;Child&lt;/code&gt; will re-render.&lt;/strong&gt; In order to prevent this, we use the &lt;a href=&#34;https://reactjs.org/docs/react-api.html#reactmemo&#34;&gt;memo&lt;/a&gt; function to create a memoized version of the &lt;code&gt;Child&lt;/code&gt; component that will only re-render when the props change.&lt;/p&gt;
 &lt;p&gt;And voila! We have successfully eliminated unnecessary messenger re-renders with the Context API and some simple memoization.&lt;/p&gt;
-
 &lt;p&gt;I would be remiss not to say that for most applications, re-renders don&amp;rsquo;t cause much of a performance issue because most applications don&amp;rsquo;t involve a lot of front-end computation. However, for applications with a lot of animations or drag-and-drops, it&amp;rsquo;s more than worth it to eliminate unnecessary re-renders wherever you can. Happy coding!&lt;/p&gt;
 </description>
     </item>
@@ -442,43 +331,28 @@ const MemoizedChild = memo(Child);
       <link>https://dylandpowers.github.io/project/koru-meditation/</link>
       <pubDate>Wed, 17 Feb 2021 22:57:04 -0500</pubDate>
       <guid>https://dylandpowers.github.io/project/koru-meditation/</guid>
-      <description>&lt;p&gt;Find the website &lt;a href=&#34;http://www.korumeditation.com/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;This is a website much like the popular Koru Meditation app. I discovered &lt;a href=&#34;https://korumindfulness.org/&#34; target=&#34;_blank&#34;&gt;Koru&lt;/a&gt; while a student at Duke University when I took a free four-session class to learn how to meditate with mindfulness. The app helped me to track my meditation sessions, and it was also stock-full of guided meditations. However, I grew tired of constantly having to use my phone, especially as I wanted to type more and more in my reflections.&lt;/p&gt;
-
+      <description>&lt;p&gt;Find the website &lt;a href=&#34;http://www.korumeditation.com/&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This is a website much like the popular Koru Meditation app. I discovered &lt;a href=&#34;https://korumindfulness.org/&#34;&gt;Koru&lt;/a&gt; while a student at Duke University when I took a free four-session class to learn how to meditate with mindfulness. The app helped me to track my meditation sessions, and it was also stock-full of guided meditations. However, I grew tired of constantly having to use my phone, especially as I wanted to type more and more in my reflections.&lt;/p&gt;
 &lt;p&gt;So, I set out to make a website! The website has many of the same features as the app:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;The ability to run through a full meditation session. This involves writing down two gratitudes, selecting the meditation type and length, meditating, reflecting, selecting skills used and selecting a mindful action for the day. Here is the first stage:&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&#34;meditation.png&#34; alt=&#34;Meditation Screen&#34; /&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;img src=&#34;meditation.png&#34; alt=&#34;Meditation Screen&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;A calendar to track past meditation sessions. Each day may hold multiple sessions.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&#34;calendar.png&#34; alt=&#34;Calendar&#34; /&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;img src=&#34;calendar.png&#34; alt=&#34;Calendar&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Additionally, when clicking on a session, a drawer will expand showing the details of that session.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;drawer.png&#34; alt=&#34;Drawer&#34; /&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;img src=&#34;drawer.png&#34; alt=&#34;Drawer&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;A gratitude river, which shows all public gratitudes in the last 24 hours. Users can choose to not show their gratitudes on the river by marking them as private.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&#34;river.png&#34; alt=&#34;Gratitude River&#34; /&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;img src=&#34;river.png&#34; alt=&#34;Gratitude River&#34;&gt;&lt;/p&gt;
 &lt;p&gt;The website also has an authentication system where users can sign up, log in, and log out.&lt;/p&gt;
-
-&lt;p&gt;I built the website with the MERN stack (&lt;a href=&#34;https://www.mongodb.com/&#34; target=&#34;_blank&#34;&gt;MongoDB&lt;/a&gt;, &lt;a href=&#34;https://expressjs.com/&#34; target=&#34;_blank&#34;&gt;ExpressJS&lt;/a&gt;, &lt;a href=&#34;https://reactjs.org/&#34; target=&#34;_blank&#34;&gt;React&lt;/a&gt;, &lt;a href=&#34;https://nodejs.org/en/&#34; target=&#34;_blank&#34;&gt;Node.js&lt;/a&gt;). It is hosted on &lt;a href=&#34;https://heroku.com&#34; target=&#34;_blank&#34;&gt;Heroku&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The frontend uses &lt;a href=&#34;https://redux.js.org/&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt; for state management and &lt;a href=&#34;https://styled-components.com/&#34; target=&#34;_blank&#34;&gt;styled-components&lt;/a&gt; for css-in-js styling. It also uses &lt;a href=&#34;https://github.com/reduxjs/redux-thunk&#34; target=&#34;_blank&#34;&gt;Redux thunk&lt;/a&gt;, an awesome library for dispatching asynchronous actions in Redux.&lt;/p&gt;
-
-&lt;p&gt;The backend uses &lt;a href=&#34;http://www.passportjs.org/&#34; target=&#34;_blank&#34;&gt;Passport&lt;/a&gt; for identity management.&lt;/p&gt;
-
-&lt;p&gt;For more details look at &lt;a href=&#34;https://github.com/dylandpowers/koru&#34; target=&#34;_blank&#34;&gt;the code&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I built the website with the MERN stack (&lt;a href=&#34;https://www.mongodb.com/&#34;&gt;MongoDB&lt;/a&gt;, &lt;a href=&#34;https://expressjs.com/&#34;&gt;ExpressJS&lt;/a&gt;, &lt;a href=&#34;https://reactjs.org/&#34;&gt;React&lt;/a&gt;, &lt;a href=&#34;https://nodejs.org/en/&#34;&gt;Node.js&lt;/a&gt;). It is hosted on &lt;a href=&#34;https://heroku.com&#34;&gt;Heroku&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The frontend uses &lt;a href=&#34;https://redux.js.org/&#34;&gt;Redux&lt;/a&gt; for state management and &lt;a href=&#34;https://styled-components.com/&#34;&gt;styled-components&lt;/a&gt; for css-in-js styling. It also uses &lt;a href=&#34;https://github.com/reduxjs/redux-thunk&#34;&gt;Redux thunk&lt;/a&gt;, an awesome library for dispatching asynchronous actions in Redux.&lt;/p&gt;
+&lt;p&gt;The backend uses &lt;a href=&#34;http://www.passportjs.org/&#34;&gt;Passport&lt;/a&gt; for identity management.&lt;/p&gt;
+&lt;p&gt;For more details look at &lt;a href=&#34;https://github.com/dylandpowers/koru&#34;&gt;the code&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
     
@@ -487,153 +361,114 @@ const MemoizedChild = memo(Child);
       <link>https://dylandpowers.github.io/post/redux-without-redux-how-to-create-redux-like-functionality-using-react/</link>
       <pubDate>Tue, 02 Feb 2021 21:03:31 -0500</pubDate>
       <guid>https://dylandpowers.github.io/post/redux-without-redux-how-to-create-redux-like-functionality-using-react/</guid>
-      <description>
-
-&lt;p&gt;When it comes to frontend state management libraries, it doesn&amp;rsquo;t get much better than good ol&amp;rsquo; &lt;a href=&#34;https://redux.js.org/&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt;. It allows you to define one or more reducers, dispatch updates to a global state, and subscribe to only the parts of state that you care about in each a component.&lt;/p&gt;
-
-&lt;p&gt;However, as I have continued to incorporate Redux into smaller personal projects, I have found some of its features to be superfluous to my needs. For example, for small projects that make use of Ajax, I sometimes prefer to separate the global state from the Ajax calls. This makes something like &lt;a href=&#34;https://github.com/reduxjs/redux-thunk&#34; target=&#34;_blank&#34;&gt;redux-thunk&lt;/a&gt; unnecessary, meaning that I would not make use of any Redux middleware (fun fact: the redux-thunk library is only &lt;a href=&#34;https://github.com/reduxjs/redux-thunk/blob/master/src/index.js&#34; target=&#34;_blank&#34;&gt;14 lines of source code&lt;/a&gt;).&lt;/p&gt;
-
+      <description>&lt;p&gt;When it comes to frontend state management libraries, it doesn&amp;rsquo;t get much better than good ol&#39; &lt;a href=&#34;https://redux.js.org/&#34;&gt;Redux&lt;/a&gt;. It allows you to define one or more reducers, dispatch updates to a global state, and subscribe to only the parts of state that you care about in each a component.&lt;/p&gt;
+&lt;p&gt;However, as I have continued to incorporate Redux into smaller personal projects, I have found some of its features to be superfluous to my needs. For example, for small projects that make use of Ajax, I sometimes prefer to separate the global state from the Ajax calls. This makes something like &lt;a href=&#34;https://github.com/reduxjs/redux-thunk&#34;&gt;redux-thunk&lt;/a&gt; unnecessary, meaning that I would not make use of any Redux middleware (fun fact: the redux-thunk library is only &lt;a href=&#34;https://github.com/reduxjs/redux-thunk/blob/master/src/index.js&#34;&gt;14 lines of source code&lt;/a&gt;).&lt;/p&gt;
 &lt;p&gt;Fortunately, implementing a basic Redux is &lt;em&gt;much&lt;/em&gt; simpler than you might think! We just need a custom reducer and a couple of React hooks. This tutorial will show you how to create a simple global state, along with a dispatcher and a way to update that global state. We will be using functional components in this tutorial, and we will create a simple counter which can be incremented and decremented. Let&amp;rsquo;s get started!&lt;/p&gt;
-
 &lt;h1 id=&#34;the-reducer&#34;&gt;The Reducer&lt;/h1&gt;
-
 &lt;p&gt;For starters, a reducer is just a function which accepts a current state and an action and then based on that action, returns a new state. That&amp;rsquo;s it. However, without some active management, you would have to keep track of the current state and pass it to the reducer every time you wanted to dispatch an action.&lt;/p&gt;
+&lt;p&gt;Fortunately, React already covers a lot of the ground for us with the &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usereducer&#34;&gt;&lt;code&gt;useReducer&lt;/code&gt;&lt;/a&gt; hook. It accepts two arguments: a reducer and an initial state (it also optionally accepts a lazy state initialization function). The reducer must have the signature described above:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;reducer&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;action&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;; &lt;span style=&#34;color:#75715e&#34;&gt;// some new state
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To begin with, we&amp;rsquo;ll define our reducer in its own file. We will also define the action types for incrementing, decrementing, and setting the counter:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// reducer.js
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;INCREMENT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;INCREMENT&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DECREMENT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;DECREMENT&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SET_COUNT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;SET_COUNT&amp;#39;&lt;/span&gt;;
 
-&lt;p&gt;Fortunately, React already covers a lot of the ground for us with the &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usereducer&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;useReducer&lt;/code&gt;&lt;/a&gt; hook. It accepts two arguments: a reducer and an initial state (it also optionally accepts a lazy state initialization function). The reducer must have the signature described above:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;function reducer(state, action) {
-  return state; // some new state
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;To begin with, we&amp;rsquo;ll define our reducer in its own file. We will also define the action types for incrementing, decrementing, and setting the counter:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// reducer.js
-const INCREMENT = &#39;INCREMENT&#39;;
-const DECREMENT = &#39;DECREMENT&#39;;
-const SET_COUNT = &#39;SET_COUNT&#39;;
-
-export default function counter(state, action) {
-  switch (action.type) {
-    case INCREMENT:
-      return state + 1;
-    case DECREMENT:
-      return state - 1;
-    case SET_COUNT:
-      return action.count;
-    default:
-      throw new Error(`Action type ${action.type} not recognized`);
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;counter&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;action&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;action&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;INCREMENT&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DECREMENT&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SET_COUNT&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;action&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;throw&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Error(&lt;span style=&#34;color:#e6db74&#34;&gt;`Action type &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;action&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; not recognized`&lt;/span&gt;);
   }
 } 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;We&amp;rsquo;ll also want to make some &lt;em&gt;action creators,&lt;/em&gt; which simplify the process of constructing an action from outside of the scope of the reducer. Actions are just objects which have a &lt;code&gt;type&lt;/code&gt; property and, optionally, other properties. To avoid having to create the action object inside of a component, we define certain action creators in the reducer:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// reducer.js
-export function increment() {
-  return {
-    type: INCREMENT
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll also want to make some &lt;em&gt;action creators,&lt;/em&gt; which simplify the process of constructing an action from outside of the scope of the reducer. Actions are just objects which have a &lt;code&gt;type&lt;/code&gt; property and, optionally, other properties. To avoid having to create the action object inside of a component, we define certain action creators in the reducer:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// reducer.js
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;increment&lt;/span&gt;() {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;INCREMENT&lt;/span&gt;
   };
 }
 
-export function decrement() {
-  return {
-    type: DECREMENT
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;decrement&lt;/span&gt;() {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DECREMENT&lt;/span&gt;
   };
 }
 
-export function setCount(count) {
-  return {
-    type: SET_COUNT,
-    count
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;setCount&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SET_COUNT&lt;/span&gt;,
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;
   };
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;With the reducer done, we can now begin to make our Redux functionality using a couple useful hooks.&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With the reducer done, we can now begin to make our Redux functionality using a couple useful hooks.&lt;/p&gt;
 &lt;h1 id=&#34;incorporating-the-reducer&#34;&gt;Incorporating the Reducer&lt;/h1&gt;
-
 &lt;p&gt;The &lt;code&gt;useReducer&lt;/code&gt; hook returns a &lt;code&gt;dispatch&lt;/code&gt; function and a reference to the current state. The &lt;code&gt;dispatch&lt;/code&gt; function takes care of automatically passing in the current state to the reducer, although we still have to supply the action (this emulates Redux behavior).&lt;/p&gt;
-
 &lt;p&gt;In our top-level component where we want the global state to live, we declare our &lt;code&gt;dispatch&lt;/code&gt; function and our global state using this hook:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// TopLevelComponent.jsx
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt;, { &lt;span style=&#34;color:#a6e22e&#34;&gt;useReducer&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;reducer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./reducer&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// TopLevelComponent.jsx
-import React, { useReducer } from &#39;react&#39;;
-import reducer from &#39;./reducer&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TopLevelComponent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useReducer&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;reducer&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
 
-export default function TopLevelComponent(props) {
-  const [count, dispatch] = useReducer(reducer, 0);
-
-  return (
-    &amp;lt;p&amp;gt;The current count is {count}.&amp;lt;/p&amp;gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;The&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;is&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;}.&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then, any time an action is dispatched using the &lt;code&gt;dispatch&lt;/code&gt; function returned above, the global &lt;code&gt;count&lt;/code&gt; will be updated! Now this is beginning to look a little like Redux. However, if the &lt;code&gt;dispatch&lt;/code&gt; function were simply passed down through props, you might think that this looks like plain React: passing down callbacks to update state in a parent component. And you would be right. Using another hook, we can make this app even more Redux-like.&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then, any time an action is dispatched using the &lt;code&gt;dispatch&lt;/code&gt; function returned above, the global &lt;code&gt;count&lt;/code&gt; will be updated! Now this is beginning to look a little like Redux. However, if the &lt;code&gt;dispatch&lt;/code&gt; function were simply passed down through props, you might think that this looks like plain React: passing down callbacks to update state in a parent component. And you would be right. Using another hook, we can make this app even more Redux-like.&lt;/p&gt;
 &lt;h1 id=&#34;making-dispatch-available-everywhere&#34;&gt;Making &lt;code&gt;dispatch&lt;/code&gt; Available Everywhere&lt;/h1&gt;
-
 &lt;p&gt;To further emulate Redux, we should make the &lt;code&gt;dispatch&lt;/code&gt; function available from any child component without directly passing it down through props. In the parent component, we can provide a context whose value is the &lt;code&gt;dispatch&lt;/code&gt; function. In order to be able to access this context later, we will declare it in the reducer file:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// reducer.js
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;createContext&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// reducer.js
-import { createContext } from &#39;react&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;CounterContext&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;createContext&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;null&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then, in our top-level component, we will wrap all children in a context provider that will provide the &lt;code&gt;dispatch&lt;/code&gt; function to all child components:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// TopLevelComponent.jsx
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt;, { &lt;span style=&#34;color:#a6e22e&#34;&gt;useReducer&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;reducer&lt;/span&gt;, { &lt;span style=&#34;color:#a6e22e&#34;&gt;CounterContext&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./reducer&amp;#39;&lt;/span&gt;;
 
-export const CounterContext = createContext(null);
-&lt;/code&gt;&lt;/pre&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TopLevelComponent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useReducer&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;reducer&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
 
-&lt;p&gt;Then, in our top-level component, we will wrap all children in a context provider that will provide the &lt;code&gt;dispatch&lt;/code&gt; function to all child components:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// TopLevelComponent.jsx
-import React, { useReducer } from &#39;react&#39;;
-import reducer, { CounterContext } from &#39;./reducer&#39;;
-
-export default function TopLevelComponent(props) {
-  const [count, dispatch] = useReducer(reducer, 0);
-
-  return (
-    &amp;lt;CounterContext.Provider value={dispatch}&amp;gt;
-      &amp;lt;p&amp;gt;The current count is {count}.&amp;lt;/p&amp;gt;
-    &amp;lt;/CounterContext.Provider&amp;gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;CounterContext.Provider&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;}&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;The&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;current&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;is&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;}.&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;CounterContext.Provider&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now, any child component will have access to the &lt;code&gt;dispatch&lt;/code&gt; function, which they can use to update the &lt;code&gt;count&lt;/code&gt; state globally! If you wish to access &lt;code&gt;count&lt;/code&gt; in child components as well, it would be trivial to make another context to provide that value anywhere.&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now, any child component will have access to the &lt;code&gt;dispatch&lt;/code&gt; function, which they can use to update the &lt;code&gt;count&lt;/code&gt; state globally! If you wish to access &lt;code&gt;count&lt;/code&gt; in child components as well, it would be trivial to make another context to provide that value anywhere.&lt;/p&gt;
 &lt;h1 id=&#34;dispatching-actions-from-child-components&#34;&gt;Dispatching Actions from Child Components&lt;/h1&gt;
+&lt;p&gt;Now, for the pièce de résistance! By using the &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usecontext&#34;&gt;&lt;code&gt;useContext&lt;/code&gt;&lt;/a&gt; hook, we can access the value of the created context from any child component and &lt;code&gt;dispatch&lt;/code&gt; actions to the global state, just like Redux:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// ChildComponent.jsx
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt;, { &lt;span style=&#34;color:#a6e22e&#34;&gt;useContext&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;CounterContext&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;increment&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;decrement&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./reducer&amp;#39;&lt;/span&gt;;
 
-&lt;p&gt;Now, for the pièce de résistance! By using the &lt;a href=&#34;https://reactjs.org/docs/hooks-reference.html#usecontext&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;useContext&lt;/code&gt;&lt;/a&gt; hook, we can access the value of the created context from any child component and &lt;code&gt;dispatch&lt;/code&gt; actions to the global state, just like Redux:&lt;/p&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ChildComponent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useContext&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;CounterContext&lt;/span&gt;);
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;// ChildComponent.jsx
-import React, { useContext } from &#39;react&#39;;
-import { CounterContext, increment, decrement } from &#39;./reducer&#39;;
-
-export default function ChildComponent(props) {
-  const dispatch = useContext(CounterContext);
-
-  return (
-    &amp;lt;div&amp;gt;
-      &amp;lt;button onClick={() =&amp;gt; dispatch(increment())}&amp;gt;+&amp;lt;/button&amp;gt;
-      &amp;lt;button onClick={() =&amp;gt; dispatch(decrement())}&amp;gt;-&amp;lt;/button&amp;gt;
-    &amp;lt;/div&amp;gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;onClick&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{() =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;increment&lt;/span&gt;())}&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;onClick&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{() =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;decrement&lt;/span&gt;())}&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;button&lt;/span&gt;&amp;gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As you can see, now we can access the &lt;code&gt;dispatch&lt;/code&gt; function from anywhere to dispatch actions to the global state without having to pass down callbacks as props.&lt;/p&gt;
-
-&lt;hr /&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;As you can see, now we can access the &lt;code&gt;dispatch&lt;/code&gt; function from anywhere to dispatch actions to the global state without having to pass down callbacks as props.&lt;/p&gt;
+&lt;hr&gt;
 &lt;p&gt;As you can see, we have now covered all of our bases in terms of basic Redux functionality. We can:&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;Define a reducer which updates a global state&lt;/li&gt;
 &lt;li&gt;Dispatch actions to update that global state&lt;/li&gt;
 &lt;li&gt;Access the &lt;code&gt;dispatch&lt;/code&gt; function from any child component&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;For simple projects, this quasi-Redux implements a lot of the basic functionality without having to incorporate the whole library. Thanks for reading 😄!&lt;/p&gt;
 </description>
     </item>
@@ -643,120 +478,86 @@ export default function ChildComponent(props) {
       <link>https://dylandpowers.github.io/post/protected-routes-in-react/</link>
       <pubDate>Tue, 08 Sep 2020 10:49:45 -0400</pubDate>
       <guid>https://dylandpowers.github.io/post/protected-routes-in-react/</guid>
-      <description>
-
-&lt;p&gt;If you have ever made a modern single-page web app using React, odds are you used &lt;a href=&#34;https://reactrouter.com/&#34; target=&#34;_blank&#34;&gt;react-router-dom&lt;/a&gt; for client-side routing. In this tutorial, I will demonstrate how to protect routes such that only logged-in users can navigate to certain places. For example, you don&amp;rsquo;t want every user to be able to navigate to &lt;code&gt;/dashboard&lt;/code&gt;, but anybody should be able to hit &lt;code&gt;/login&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;This tutorial assumes that you have basic familiarity with react-router-dom and how to set up a basic router. If not, please read its &lt;a href=&#34;https://reactrouter.com/web/guides/quick-start&#34; target=&#34;_blank&#34;&gt;quick start page&lt;/a&gt; before moving on. This article also assumes that you have a simple way to determine if a user is logged in or not, whether that be through &lt;a href=&#34;https://jwt.io/&#34; target=&#34;_blank&#34;&gt;JSON web tokens&lt;/a&gt;, &lt;a href=&#34;https://redux.js.org/&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt;, or something else.&lt;/p&gt;
-
+      <description>&lt;p&gt;If you have ever made a modern single-page web app using React, odds are you used &lt;a href=&#34;https://reactrouter.com/&#34;&gt;react-router-dom&lt;/a&gt; for client-side routing. In this tutorial, I will demonstrate how to protect routes such that only logged-in users can navigate to certain places. For example, you don&amp;rsquo;t want every user to be able to navigate to &lt;code&gt;/dashboard&lt;/code&gt;, but anybody should be able to hit &lt;code&gt;/login&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This tutorial assumes that you have basic familiarity with react-router-dom and how to set up a basic router. If not, please read its &lt;a href=&#34;https://reactrouter.com/web/guides/quick-start&#34;&gt;quick start page&lt;/a&gt; before moving on. This article also assumes that you have a simple way to determine if a user is logged in or not, whether that be through &lt;a href=&#34;https://jwt.io/&#34;&gt;JSON web tokens&lt;/a&gt;, &lt;a href=&#34;https://redux.js.org/&#34;&gt;Redux&lt;/a&gt;, or something else.&lt;/p&gt;
 &lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;
-
 &lt;p&gt;A traditional React router without protected routes might look something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; {
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;BrowserRouter&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;Switch&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;Route&lt;/span&gt;
+} &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-router-dom&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import {
-  BrowserRouter,
-  Switch,
-  Route
-} from &#39;react-router-dom&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LoginPage&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./components/LoginPage&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DashboardPage&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./components/DashboardPage&amp;#39;&lt;/span&gt;;
 
-import LoginPage from &#39;./components/LoginPage&#39;;
-import DashboardPage from &#39;./components/DashboardPage&#39;;
-
-export default function Router() {
-  return (
-    &amp;lt;BrowserRouter&amp;gt;
-      &amp;lt;Switch&amp;gt;
-        &amp;lt;Route to=&amp;quot;/login&amp;quot; component={LoginPage} /&amp;gt;
-        &amp;lt;Route to=&amp;quot;/dashboard&amp;quot; component={DashboardPage} /&amp;gt;
-        &amp;lt;Route component={DashboardPage} /&amp;gt;
-      &amp;lt;/Switch&amp;gt;
-    &amp;lt;/BrowserRouter&amp;gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Router&lt;/span&gt;() {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;BrowserRouter&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Switch&lt;/span&gt;&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Route&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;to&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/login&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;LoginPage&lt;/span&gt;} /&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Route&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;to&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/dashboard&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;DashboardPage&lt;/span&gt;} /&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Route&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;DashboardPage&lt;/span&gt;} /&amp;gt;
+      &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;Switch&lt;/span&gt;&amp;gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;BrowserRouter&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;There is an issue with this setup; if a user tries to navigate to &lt;code&gt;/dashboard&lt;/code&gt;, they &lt;strong&gt;will&lt;/strong&gt; be able to do so without logging in. Especially if the dashboard contains sensitive information, this is dangerous behavior. To remedy this, we will be replacing the &lt;code&gt;Route&lt;/code&gt; components with references to our new &lt;code&gt;ProtectedRoute&lt;/code&gt; components, which will redirect to a different page (in our case, &lt;code&gt;/login&lt;/code&gt;) if the user is not logged in.&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There is an issue with this setup; if a user tries to navigate to &lt;code&gt;/dashboard&lt;/code&gt;, they &lt;strong&gt;will&lt;/strong&gt; be able to do so without logging in. Especially if the dashboard contains sensitive information, this is dangerous behavior. To remedy this, we will be replacing the &lt;code&gt;Route&lt;/code&gt; components with references to our new &lt;code&gt;ProtectedRoute&lt;/code&gt; components, which will redirect to a different page (in our case, &lt;code&gt;/login&lt;/code&gt;) if the user is not logged in.&lt;/p&gt;
 &lt;h1 id=&#34;creating-the-component&#34;&gt;Creating the Component&lt;/h1&gt;
-
 &lt;p&gt;First, we will create the &lt;code&gt;ProtectedRoute&lt;/code&gt; component. In this tutorial I will be using a functional component, but class-based components work as well. Create a new file &lt;code&gt;ProtectedRoute.js&lt;/code&gt; and place the following inside of it:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;export default function ProtectedRoute({ component: Component, ...rest }) { }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This means that our &lt;code&gt;ProtectedRoute&lt;/code&gt; will expect a &lt;code&gt;component&lt;/code&gt; prop, much like how &lt;code&gt;Route&lt;/code&gt; from react-router-dom takes a &lt;code&gt;component&lt;/code&gt; prop. The &lt;code&gt;...rest&lt;/code&gt; part refers to the rest of the props that can be passed to &lt;code&gt;ProtectedRoute&lt;/code&gt; besides the &lt;code&gt;component&lt;/code&gt;.&lt;/p&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ProtectedRoute&lt;/span&gt;({ &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;, ...&lt;span style=&#34;color:#a6e22e&#34;&gt;rest&lt;/span&gt; }) { }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This means that our &lt;code&gt;ProtectedRoute&lt;/code&gt; will expect a &lt;code&gt;component&lt;/code&gt; prop, much like how &lt;code&gt;Route&lt;/code&gt; from react-router-dom takes a &lt;code&gt;component&lt;/code&gt; prop. The &lt;code&gt;...rest&lt;/code&gt; part refers to the rest of the props that can be passed to &lt;code&gt;ProtectedRoute&lt;/code&gt; besides the &lt;code&gt;component&lt;/code&gt;.&lt;/p&gt;
 &lt;h1 id=&#34;importing-auth-logic&#34;&gt;Importing Auth Logic&lt;/h1&gt;
-
 &lt;p&gt;Next, we need to import auth logic into this module to determine whether or not the user is logged in. As I mentioned earlier, I use JSON web tokens, but as long as you have a function that returns a boolean indicating whether or not the user is logged in, everything will work great. At this point, our file will look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;isAuthenticated&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;../auth/jwt&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import { isAuthenticated } from &#39;../auth/jwt&#39;;
-
-export default function ProtectedRoute({ component: Component, ...rest }) { }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h1 id=&#34;protecting-the-route&#34;&gt;Protecting the Route&lt;/h1&gt;
-
-&lt;p&gt;These next 5 lines of code are where the real magic happens. We will be using react-router-dom&amp;rsquo;s &lt;a href=&#34;https://reactrouter.com/web/api/Redirect&#34; target=&#34;_blank&#34;&gt;Redirect&lt;/a&gt; component to redirect to a universally accessible page if the user is not logged in. Otherwise, we will return its &lt;a href=&#34;https://reactrouter.com/web/api/Route&#34; target=&#34;_blank&#34;&gt;Route&lt;/a&gt; component, which is what you see in a regular React router.&lt;/p&gt;
-
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ProtectedRoute&lt;/span&gt;({ &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;, ...&lt;span style=&#34;color:#a6e22e&#34;&gt;rest&lt;/span&gt; }) { }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;protecting-the-route&#34;&gt;Protecting the Route&lt;/h1&gt;
+&lt;p&gt;These next 5 lines of code are where the real magic happens. We will be using react-router-dom&amp;rsquo;s &lt;a href=&#34;https://reactrouter.com/web/api/Redirect&#34;&gt;Redirect&lt;/a&gt; component to redirect to a universally accessible page if the user is not logged in. Otherwise, we will return its &lt;a href=&#34;https://reactrouter.com/web/api/Route&#34;&gt;Route&lt;/a&gt; component, which is what you see in a regular React router.&lt;/p&gt;
 &lt;p&gt;We will pass the &lt;code&gt;...rest&lt;/code&gt; parameter to the &lt;code&gt;Route&lt;/code&gt; component, which means that everything that we pass to &lt;code&gt;ProtectedRoute&lt;/code&gt; (except for the &lt;code&gt;component&lt;/code&gt; prop) will then be passed to the &lt;code&gt;Route&lt;/code&gt; component. We will take advantage of &lt;code&gt;Route&lt;/code&gt;&amp;rsquo;s &lt;code&gt;render&lt;/code&gt; prop to make it render the component passed in to our protected route:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Route&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;...rest&lt;/span&gt;} &lt;span style=&#34;color:#a6e22e&#34;&gt;render&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) =&amp;gt; &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Component&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;...props&lt;/span&gt;} /&amp;gt;} /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Of course, we will only return this route if the user is logged in. If not, we will return a &lt;code&gt;Redirect&lt;/code&gt; to the login page. After adding the logic and the imports in the file, it should look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;Redirect&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;Route&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-router-dom&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;&amp;lt;Route {...rest} render={(props) =&amp;gt; &amp;lt;Component {...props} /&amp;gt;} /&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Of course, we will only return this route if the user is logged in. If not, we will return a &lt;code&gt;Redirect&lt;/code&gt; to the login page. After adding the logic and the imports in the file, it should look like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import { Redirect, Route } from &#39;react-router-dom&#39;;
-
-export default function ProtectedRoute({ component: Component, ...rest }) {
-  return isAuthenticated() ? (
-    &amp;lt;Route {...rest} render={(props) =&amp;gt; &amp;lt;Component {...props} /&amp;gt;} /&amp;gt;
-  ) : (
-    &amp;lt;Redirect to=&amp;quot;/login&amp;quot; /&amp;gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ProtectedRoute&lt;/span&gt;({ &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;, ...&lt;span style=&#34;color:#a6e22e&#34;&gt;rest&lt;/span&gt; }) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;isAuthenticated&lt;/span&gt;() &lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Route&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;...rest&lt;/span&gt;} &lt;span style=&#34;color:#a6e22e&#34;&gt;render&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) =&amp;gt; &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Component&lt;/span&gt; {&lt;span style=&#34;color:#a6e22e&#34;&gt;...props&lt;/span&gt;} /&amp;gt;} /&amp;gt;
+  ) &lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Redirect&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;to&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/login&amp;#34;&lt;/span&gt; /&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Alternatively, if you do not want to &lt;em&gt;always&lt;/em&gt; redirect to the login page, consider adding adding a prop like &lt;code&gt;redirectRoute&lt;/code&gt; to the component:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;export default function ProtectedRoute({ component: Component, redirectRoute, ...rest }) {
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;And then the redirect component would read &lt;code&gt;&amp;lt;Redirect to={redirectRoute} /&amp;gt;&lt;/code&gt;.&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Alternatively, if you do not want to &lt;em&gt;always&lt;/em&gt; redirect to the login page, consider adding adding a prop like &lt;code&gt;redirectRoute&lt;/code&gt; to the component:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ProtectedRoute&lt;/span&gt;({ &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;redirectRoute&lt;/span&gt;, ...&lt;span style=&#34;color:#a6e22e&#34;&gt;rest&lt;/span&gt; }) {
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And then the redirect component would read &lt;code&gt;&amp;lt;Redirect to={redirectRoute} /&amp;gt;&lt;/code&gt;.&lt;/p&gt;
 &lt;h1 id=&#34;putting-it-all-together&#34;&gt;Putting it All Together&lt;/h1&gt;
-
 &lt;p&gt;Now, anytime we want to protect a route, we can use our &lt;code&gt;ProtectedRoute&lt;/code&gt; component instead of the provided &lt;code&gt;Route&lt;/code&gt; component. As a result, the router shown in the overview would now look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; {
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;BrowserRouter&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;Switch&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;Route&lt;/span&gt;
+} &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-router-dom&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import {
-  BrowserRouter,
-  Switch,
-  Route
-} from &#39;react-router-dom&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LoginPage&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./components/LoginPage&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DashboardPage&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./components/DashboardPage&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ProtectedRoute&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./utils/ProtectedRoute&amp;#39;&lt;/span&gt;;
 
-import LoginPage from &#39;./components/LoginPage&#39;;
-import DashboardPage from &#39;./components/DashboardPage&#39;;
-import ProtectedRoute from &#39;./utils/ProtectedRoute&#39;;
-
-export default function Router() {
-  return (
-    &amp;lt;BrowserRouter&amp;gt;
-      &amp;lt;Switch&amp;gt;
-        &amp;lt;Route to=&amp;quot;/login&amp;quot; component={LoginPage} /&amp;gt;
-        &amp;lt;ProtectedRoute to=&amp;quot;/dashboard&amp;quot; component={DashboardPage} /&amp;gt;
-        &amp;lt;ProtectedRoute component={DashboardPage} /&amp;gt;
-      &amp;lt;/Switch&amp;gt;
-    &amp;lt;/BrowserRouter&amp;gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Router&lt;/span&gt;() {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;BrowserRouter&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Switch&lt;/span&gt;&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Route&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;to&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/login&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;LoginPage&lt;/span&gt;} /&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;ProtectedRoute&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;to&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/dashboard&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;DashboardPage&lt;/span&gt;} /&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;ProtectedRoute&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;DashboardPage&lt;/span&gt;} /&amp;gt;
+      &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;Switch&lt;/span&gt;&amp;gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;BrowserRouter&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Voilà! You now have the ability to make protected routes in React. Go protect those web apps!&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Voilà! You now have the ability to make protected routes in React. Go protect those web apps!&lt;/p&gt;
 </description>
     </item>
     
@@ -765,273 +566,216 @@ export default function Router() {
       <link>https://dylandpowers.github.io/post/how-to-use-react-redux-firebase/</link>
       <pubDate>Wed, 24 Jun 2020 10:25:29 -0400</pubDate>
       <guid>https://dylandpowers.github.io/post/how-to-use-react-redux-firebase/</guid>
-      <description>
-
-&lt;p&gt;In this post, I will show you how to use the &lt;a href=&#34;https://www.npmjs.com/package/react-redux-firebase&#34; target=&#34;_blank&#34;&gt;react-redux-firebase&lt;/a&gt; package to incorporate Redux bindings for Firebase into your React project. This allows you to incorporate Firebase and Firestore data  into global state without any extra work, as well as handle auth in a super simple way. If you are unfamiliar with &lt;a href=&#34;https://reactjs.org/&#34; target=&#34;_blank&#34;&gt;React&lt;/a&gt;, &lt;a href=&#34;https://redux.js.org&#34; target=&#34;_blank&#34;&gt;Redux&lt;/a&gt;, or &lt;a href=&#34;https://firebase.google.com/&#34; target=&#34;_blank&#34;&gt;Firebase&lt;/a&gt;, please spend some time familiarizing yourself with those before jumping in.&lt;/p&gt;
-
-&lt;p&gt;This is &lt;strong&gt;not&lt;/strong&gt; a beginning-to-end tutorial; rather, I will show you how the &lt;code&gt;react-redux-firebase&lt;/code&gt; (RRF) package to make your app flow much simpler. For setup instructions, check out &lt;a href=&#34;https://www.npmjs.com/package/react-redux-firebase&#34; target=&#34;_blank&#34;&gt;the documentation&lt;/a&gt;.&lt;/p&gt;
-
+      <description>&lt;p&gt;In this post, I will show you how to use the &lt;a href=&#34;https://www.npmjs.com/package/react-redux-firebase&#34;&gt;react-redux-firebase&lt;/a&gt; package to incorporate Redux bindings for Firebase into your React project. This allows you to incorporate Firebase and Firestore data  into global state without any extra work, as well as handle auth in a super simple way. If you are unfamiliar with &lt;a href=&#34;https://reactjs.org/&#34;&gt;React&lt;/a&gt;, &lt;a href=&#34;https://redux.js.org&#34;&gt;Redux&lt;/a&gt;, or &lt;a href=&#34;https://firebase.google.com/&#34;&gt;Firebase&lt;/a&gt;, please spend some time familiarizing yourself with those before jumping in.&lt;/p&gt;
+&lt;p&gt;This is &lt;strong&gt;not&lt;/strong&gt; a beginning-to-end tutorial; rather, I will show you how the &lt;code&gt;react-redux-firebase&lt;/code&gt; (RRF) package to make your app flow much simpler. For setup instructions, check out &lt;a href=&#34;https://www.npmjs.com/package/react-redux-firebase&#34;&gt;the documentation&lt;/a&gt;.&lt;/p&gt;
 &lt;h1 id=&#34;auth&#34;&gt;Auth&lt;/h1&gt;
-
 &lt;h3 id=&#34;sign-in&#34;&gt;Sign In&lt;/h3&gt;
-
 &lt;p&gt;First, I will show you how this package makes auth in your application so much simpler. Without RRF, you would have to perform the sign in flow and then &lt;code&gt;dispatch&lt;/code&gt; an action to the store with the user information; then, any time you needed that, you would have to use a &lt;code&gt;useSelector&lt;/code&gt; hook to get that sign in information. It might look something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;firebase&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;useDispatch&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-redux&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import firebase from &#39;firebase&#39;;
-import { useDispatch } from &#39;react-redux&#39;;
-
-export default function Component() {
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;() {
 	
-  const dispatch = useDispatch();
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useDispatch&lt;/span&gt;();
 	
-  function signIn(email, password) {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((userCredential) =&amp;gt; dispatch({
-        type: &#39;AUTH&#39;,
-        user: userCredential
-      })).catch((err) =&amp;gt; console.error(err));
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;signIn&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;) {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;auth&lt;/span&gt;().&lt;span style=&#34;color:#a6e22e&#34;&gt;signInWithEmailAndPassword&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;)
+      .&lt;span style=&#34;color:#a6e22e&#34;&gt;then&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;userCredential&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;({
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;AUTH&amp;#39;&lt;/span&gt;,
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;user&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;userCredential&lt;/span&gt;
+      })).&lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;console&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;error&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;));
   }
 
-  function signOut() {
-    firebase.auth().signOut()
-      .then(() =&amp;gt; dispatch({
-        type: &#39;AUTH&#39;,
-        user: undefined
-      })).catch((err) =&amp;gt; console.error(err));
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;signOut&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;auth&lt;/span&gt;().&lt;span style=&#34;color:#a6e22e&#34;&gt;signOut&lt;/span&gt;()
+      .&lt;span style=&#34;color:#a6e22e&#34;&gt;then&lt;/span&gt;(() =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;({
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;AUTH&amp;#39;&lt;/span&gt;,
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;user&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;undefined&lt;/span&gt;
+      })).&lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;console&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;error&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;));
   }
 
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then when you want to query for the currently signed-in user in another component, you would do something like&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;user&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;auth&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;However, when you use the &lt;code&gt;useFirebase&lt;/code&gt; hook provided by &lt;code&gt;react-redux-firebase&lt;/code&gt;, you don&amp;rsquo;t have to dispatch any actions:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;useFirebase&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-redux-firebase&amp;#39;&lt;/span&gt;;
 
-&lt;p&gt;Then when you want to query for the currently signed-in user in another component, you would do something like&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const user = useSelector((state) =&amp;gt; state.auth);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;However, when you use the &lt;code&gt;useFirebase&lt;/code&gt; hook provided by &lt;code&gt;react-redux-firebase&lt;/code&gt;, you don&amp;rsquo;t have to dispatch any actions:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import { useFirebase } from &#39;react-redux-firebase&#39;;
-
-export default function Component() {
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;() {
 	
-  const firebase = useFirebase();
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useFirebase&lt;/span&gt;();
 
-  function signIn(email, password) {
-    firebase.signIn({
-      email,
-      password
-    }).catch((err) =&amp;gt; console.error(err));
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;signIn&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;) {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;signIn&lt;/span&gt;({
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;,
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;
+    }).&lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;console&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;error&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;));
   }
 
-  function signOut() {
-    firebase.signOut()
-      .catch((err) =&amp;gt; console.error(err));
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;signOut&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;signOut&lt;/span&gt;()
+      .&lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;console&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;error&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;));
   }
 
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;That&amp;rsquo;s it! No extra state for you to handle, RRF does it all internally. Then, simply query for the currently signed-in user as such:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const user = useSelector((state) =&amp;gt; state.firebase.auth);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;registration&#34;&gt;Registration&lt;/h3&gt;
-
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That&amp;rsquo;s it! No extra state for you to handle, RRF does it all internally. Then, simply query for the currently signed-in user as such:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;user&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;auth&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;registration&#34;&gt;Registration&lt;/h3&gt;
 &lt;p&gt;If you also want to store some extra data on the side, such as user &lt;code&gt;firstName&lt;/code&gt; and &lt;code&gt;lastName&lt;/code&gt;, you specify that when you sign up a user, as the second argument to the &lt;code&gt;createUser()&lt;/code&gt; call. &lt;strong&gt;This makes that information readily available in the store as part of the&lt;/strong&gt; &lt;code&gt;profile&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;useFirebase&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-redux-firebase&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import { useFirebase } from &#39;react-redux-firebase&#39;;
-
-export default function Component() {
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;() {
 	
-  const firebase = useFirebase();
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useFirebase&lt;/span&gt;();
 
-  function register(email, password, firstName, lastName) {
-    firebase.createUser({
-      email,
-      password
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;register&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;firstName&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;lastName&lt;/span&gt;) {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;createUser&lt;/span&gt;({
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;,
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;password&lt;/span&gt;
     },
     {
-      email,
-      firstName,
-      lastName
-    }).catch((err) =&amp;gt; console.error(err));
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;,
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;firstName&lt;/span&gt;,
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;lastName&lt;/span&gt;
+    }).&lt;span style=&#34;color:#66d9ef&#34;&gt;catch&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;console&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;error&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;));
   }
 
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In this example, &lt;code&gt;email&lt;/code&gt;, &lt;code&gt;firstName&lt;/code&gt;, and &lt;code&gt;lastName&lt;/code&gt; are all stored as part of the user&amp;rsquo;s &lt;code&gt;profile&lt;/code&gt;. You can access this information anywhere using the &lt;code&gt;profile&lt;/code&gt; part of the store:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const { email, firstName, lastName } = useSelector((state) =&amp;gt; state.firebase.profile);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Isn&amp;rsquo;t that awesome?&lt;/p&gt;
-
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this example, &lt;code&gt;email&lt;/code&gt;, &lt;code&gt;firstName&lt;/code&gt;, and &lt;code&gt;lastName&lt;/code&gt; are all stored as part of the user&amp;rsquo;s &lt;code&gt;profile&lt;/code&gt;. You can access this information anywhere using the &lt;code&gt;profile&lt;/code&gt; part of the store:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;email&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;firstName&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;lastName&lt;/span&gt; } &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;profile&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Isn&amp;rsquo;t that awesome?&lt;/p&gt;
 &lt;h1 id=&#34;data-storage&#34;&gt;Data Storage&lt;/h1&gt;
-
 &lt;h3 id=&#34;cloud-firestore&#34;&gt;Cloud Firestore&lt;/h3&gt;
-
 &lt;p&gt;Firestore, being a document-oriented database, is my preference when developing an app on top of Firebase. The Firestore JavaScript SDK provides listeners that automatically listen for changes in Firestore documents. However, if you want to listen for changes to an entire collection and update state accordingly, the code becomes quite clunky:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;useDispatch&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-redux&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;firebase&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import { useDispatch, useSelector } from &#39;react-redux&#39;;
-import firebase from &#39;firebase&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;() {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useDispatch&lt;/span&gt;();
 
-export default function Component() {
-  const dispatch = useDispatch();
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt;);
 
-  const todos = useSelector((state) =&amp;gt; state.todos);
-
-  firebase.firestore().collection(&#39;todos&#39;)
-    .onSnapshot((querySnapshot) =&amp;gt; {
-      const updatedTodos = {};
-      querySnapshot.forEach((doc) =&amp;gt; {
-        updatedTodos[doc.id] = doc.data();
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firestore&lt;/span&gt;().&lt;span style=&#34;color:#a6e22e&#34;&gt;collection&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;todos&amp;#39;&lt;/span&gt;)
+    .&lt;span style=&#34;color:#a6e22e&#34;&gt;onSnapshot&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;querySnapshot&lt;/span&gt;) =&amp;gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;updatedTodos&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {};
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;querySnapshot&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;forEach&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;doc&lt;/span&gt;) =&amp;gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;updatedTodos&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;doc&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doc&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;();
       });
-      dispatch({
-        type: &#39;TODOS_UPDATED&#39;,
-        todos: updatedTodos
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;({
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;TODOS_UPDATED&amp;#39;&lt;/span&gt;,
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;updatedTodos&lt;/span&gt;
       });
     });
 
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;However, with RRF&amp;rsquo;s &lt;code&gt;useFirestoreConnect&lt;/code&gt; hook, you can attach a listener that will automatically listen and unlisten as needed, &lt;em&gt;and&lt;/em&gt; you can make the data a part of Redux state.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;useFirestoreConnect&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-redux-firebase&amp;#39;&lt;/span&gt;;
 
-&lt;p&gt;However, with RRF&amp;rsquo;s &lt;code&gt;useFirestoreConnect&lt;/code&gt; hook, you can attach a listener that will automatically listen and unlisten as needed, &lt;em&gt;and&lt;/em&gt; you can make the data a part of Redux state.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import { useFirestoreConnect } from &#39;react-redux-firebase&#39;;
-
-export default function Component() {
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;() {
 	
-  useFirestoreConnect({
-    collection: &#39;todos&#39;
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;useFirestoreConnect&lt;/span&gt;({
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;collection&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;todos&amp;#39;&lt;/span&gt;
   });
 
-  const todos = useSelector((state) =&amp;gt; state.firestore.data.todos);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firestore&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt;);
 
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In the two above examples, both &lt;code&gt;todos&lt;/code&gt; variables with evaluate to the same thing; there are two obvious differences:&lt;/p&gt;
-
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the two above examples, both &lt;code&gt;todos&lt;/code&gt; variables with evaluate to the same thing; there are two obvious differences:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;The first example involves much more code, and is much harder to read.&lt;/li&gt;
 &lt;li&gt;The second example requires no manual global state management, as that is managed by the hook.&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;This extremely useful hook also offers three other really cool features:&lt;/p&gt;
-
 &lt;ol&gt;
-&lt;li&gt;&lt;p&gt;If you have a nested collection, you can choose how the listener stores the collection as part of global state. For example, if you have a nested collection &lt;code&gt;baz&lt;/code&gt; which is located at &lt;code&gt;foo/bar/baz&lt;/code&gt;, then without this feature you would have to select the collection as follows:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;const baz = useSelector((state) =&amp;gt; state.firestore.data.foo.bar.baz);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;However, using the &lt;code&gt;storeAs&lt;/code&gt; argument, you can easily change it to anything you like:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;useFirestoreConnect({
-  collection: &#39;foo/bar/baz&#39;,
-  storeAs: &#39;baz&#39;
+&lt;li&gt;
+&lt;p&gt;If you have a nested collection, you can choose how the listener stores the collection as part of global state. For example, if you have a nested collection &lt;code&gt;baz&lt;/code&gt; which is located at &lt;code&gt;foo/bar/baz&lt;/code&gt;, then without this feature you would have to select the collection as follows:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;baz&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firestore&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;baz&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;However, using the &lt;code&gt;storeAs&lt;/code&gt; argument, you can easily change it to anything you like:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;useFirestoreConnect&lt;/span&gt;({
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;collection&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;foo/bar/baz&amp;#39;&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;storeAs&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;baz&amp;#39;&lt;/span&gt;
 });
 
-const baz = useSelector((state) =&amp;gt; state.firestore.data.baz);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;If you use the &lt;code&gt;ordered&lt;/code&gt; property of &lt;code&gt;firestore&lt;/code&gt; instead of &lt;code&gt;data&lt;/code&gt;, the data will become sorted. To change how the data is sorted, pass an &lt;code&gt;orderBy&lt;/code&gt; argument to the hook:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;useFirestoreConnect({
-  collection: &#39;foo/bar/baz&#39;,
-  orderBy: &#39;createdAt&#39;,
-  storeAs: &#39;baz&#39;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;baz&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firestore&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;baz&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If you use the &lt;code&gt;ordered&lt;/code&gt; property of &lt;code&gt;firestore&lt;/code&gt; instead of &lt;code&gt;data&lt;/code&gt;, the data will become sorted. To change how the data is sorted, pass an &lt;code&gt;orderBy&lt;/code&gt; argument to the hook:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;useFirestoreConnect&lt;/span&gt;({
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;collection&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;foo/bar/baz&amp;#39;&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;orderBy&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;createdAt&amp;#39;&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;storeAs&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;baz&amp;#39;&lt;/span&gt;
 });
 
-const baz = useSelector((state) =&amp;gt; state.firestore.ordered.baz);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;If you just want to listen to a specific document (rather than an entire collection), that&amp;rsquo;s entirely possible too. You will still have to select the individual document, but the listener will only listen to the single document, not the entire collection:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;useFirestoreConnect({
-  collection: &#39;foo&#39;,
-  doc: &#39;bar&#39;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;baz&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firestore&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;ordered&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;baz&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If you just want to listen to a specific document (rather than an entire collection), that&amp;rsquo;s entirely possible too. You will still have to select the individual document, but the listener will only listen to the single document, not the entire collection:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;useFirestoreConnect&lt;/span&gt;({
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;collection&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;doc&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;
 });
 
-const bar = useSelector((state) =&amp;gt; state.firestore.data.foo[&#39;bar&#39;]);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bar&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firestore&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;]);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;Absolutely amazing.&lt;/p&gt;
-
 &lt;h3 id=&#34;real-time-database&#34;&gt;Real-time Database&lt;/h3&gt;
-
 &lt;p&gt;The custom hook &lt;code&gt;useFirebaseConnect&lt;/code&gt; for listening to the real-time database is very similar to the above example, with a few differences based on the general difference between the two query languages. Before RRF, you would have to fetch data from a path like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;useDispatch&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-redux&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;firebase&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import { useDispatch, useSelector } from &#39;react-redux&#39;;
-import firebase from &#39;firebase&#39;;
-
-export default function Component() {
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;() {
 	
-  const dispatch = useDispatch();
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useDispatch&lt;/span&gt;();
 
-  const todos = useSelector((state) =&amp;gt; state.todos);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt;);
 
-  firebase.database().ref(&#39;todos&#39;)
-    .on(&#39;value&#39;, (snapshot) =&amp;gt; {
-      dispatch({
-        type: &#39;TODOS_UPDATED&#39;,
-        todos: snapshot.val()
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;database&lt;/span&gt;().&lt;span style=&#34;color:#a6e22e&#34;&gt;ref&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;todos&amp;#39;&lt;/span&gt;)
+    .&lt;span style=&#34;color:#a6e22e&#34;&gt;on&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;value&amp;#39;&lt;/span&gt;, (&lt;span style=&#34;color:#a6e22e&#34;&gt;snapshot&lt;/span&gt;) =&amp;gt; {
+      &lt;span style=&#34;color:#a6e22e&#34;&gt;dispatch&lt;/span&gt;({
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;TODOS_UPDATED&amp;#39;&lt;/span&gt;,
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;snapshot&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt;()
       });
     });
 
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;However, by using the &lt;code&gt;useFirebaseConnect&lt;/code&gt; hook, we no longer have to manually manage global state. Instead, the hook manages listening and unlistening as well as updating our global state:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;React&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-redux&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;useFirebaseConnect&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-redux-firebase&amp;#39;&lt;/span&gt;;
 
-&lt;p&gt;However, by using the &lt;code&gt;useFirebaseConnect&lt;/code&gt; hook, we no longer have to manually manage global state. Instead, the hook manages listening and unlistening as well as updating our global state:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import React from &#39;react&#39;;
-import { useSelector } from &#39;react-redux&#39;;
-import { useFirebaseConnect } from &#39;react-redux-firebase&#39;;
-
-export default function Component() {
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Component&lt;/span&gt;() {
 	
-  useFirebaseConnect({
-    path: &#39;todos&#39;
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;useFirebaseConnect&lt;/span&gt;({
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;path&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;todos&amp;#39;&lt;/span&gt;
   });
 
-  const todos = useSelector((state) =&amp;gt; state.firebase.data.todos);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt;);
 
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Isn&amp;rsquo;t that much cleaner? You can also use special &lt;a href=&#34;https://firebase.google.com/docs/reference/js/firebase.database.Query&#34; target=&#34;_blank&#34;&gt;query parameters&lt;/a&gt; to change how the data is sorted, among other things:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;useFirebaseConnect({
-  path: &#39;todos&#39;,
-  queryParams: [&amp;quot;orderByKey&amp;quot;]
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Isn&amp;rsquo;t that much cleaner? You can also use special &lt;a href=&#34;https://firebase.google.com/docs/reference/js/firebase.database.Query&#34;&gt;query parameters&lt;/a&gt; to change how the data is sorted, among other things:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;useFirebaseConnect&lt;/span&gt;({
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;path&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;todos&amp;#39;&lt;/span&gt;,
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;queryParams&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;orderByKey&amp;#34;&lt;/span&gt;]
 });
 
-const todos = useSelector((state) =&amp;gt; state.firebase.ordered.todos);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Basically, anything that you could do with the standard SDK, the hook exposes to you as well.&lt;/p&gt;
-
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useSelector&lt;/span&gt;((&lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;) =&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;state&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;firebase&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;ordered&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;todos&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Basically, anything that you could do with the standard SDK, the hook exposes to you as well.&lt;/p&gt;
 &lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
-
 &lt;p&gt;If you&amp;rsquo;re developing an app with React, Redux, and Firebase, then you should be using this library to make your code much cleaner. Auth has never been simpler. Plus, the custom Firebase and Firestore hooks do so much extra leg work for you, so you can focus on writing application code.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Note: header image taken from &lt;a href=&#34;https://www.youtube.com/watch?v=TlpX0aMYmrk&#34; target=&#34;_blank&#34;&gt;this tutorial&lt;/a&gt; from &lt;a href=&#34;https://www.youtube.com/channel/UCIWTUpwIzh_P73LlbX20VQA&#34; target=&#34;_blank&#34;&gt;Aberraouf Zine&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Note: header image taken from &lt;a href=&#34;https://www.youtube.com/watch?v=TlpX0aMYmrk&#34;&gt;this tutorial&lt;/a&gt; from &lt;a href=&#34;https://www.youtube.com/channel/UCIWTUpwIzh_P73LlbX20VQA&#34;&gt;Aberraouf Zine&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 </description>
     </item>
     

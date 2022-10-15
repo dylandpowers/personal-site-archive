@@ -82,7 +82,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -567,42 +567,23 @@
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>Perhaps made most famous by Facebook&rsquo;s &ldquo;Move Fast, Break Things&rdquo; mantra, the philosophy of iterating extremely quickly has become proliferate in the tech world. Tools like JIRA, GitHub, and suites of CI/CD tools give teams no excuse to not push out products and updates as quickly as they can. However, as an organization grows, developers need to take into account scalability and flexibility of codebases. As such (at least from what I have observed), larger organizations tend to slow down over time to accommodate more scrutinous code reviews and technological research.</p>
-
-<p><img src="featured.jpg" alt="ourspace" /></p>
-
-<p>Over the past five months, I have been a Software Engineer for <a href="https://ourspaceapp.com/" target="_blank">OurSpace</a>, a real-time Q&amp;A platform for locations and spaces. Currently, we have released a full working product at Duke University, and we plan to expand as we continue to perfect our core product. Working on a startup means that we <em>do</em> move extremely quickly; a lot quicker than anything I am used to. This might mean pushing out hundreds of lines of code every day to meet our strict deadlines and release goals. As such, we often do not have time to waste with overly scrutinous code reviews and setting up rigorous CI/CD pipelines.</p>
-
+      <p>Perhaps made most famous by Facebook&rsquo;s &ldquo;Move Fast, Break Things&rdquo; mantra, the philosophy of iterating extremely quickly has become proliferate in the tech world. Tools like JIRA, GitHub, and suites of CI/CD tools give teams no excuse to not push out products and updates as quickly as they can. However, as an organization grows, developers need to take into account scalability and flexibility of codebases. As such (at least from what I have observed), larger organizations tend to slow down over time to accommodate more scrutinous code reviews and technological research.</p>
+<p><img src="featured.jpg" alt="ourspace"></p>
+<p>Over the past five months, I have been a Software Engineer for <a href="https://ourspaceapp.com/">OurSpace</a>, a real-time Q&amp;A platform for locations and spaces. Currently, we have released a full working product at Duke University, and we plan to expand as we continue to perfect our core product. Working on a startup means that we <em>do</em> move extremely quickly; a lot quicker than anything I am used to. This might mean pushing out hundreds of lines of code every day to meet our strict deadlines and release goals. As such, we often do not have time to waste with overly scrutinous code reviews and setting up rigorous CI/CD pipelines.</p>
 <p>At least, that&rsquo;s what I thought at first. Since then, I have realized that while we do need to hit deadlines, investing a little bit more time into flexibility really pays off in the long run. In this article, I aim to explain why it&rsquo;s important to strike that balance between moving quickly and developing flexible, robust code.</p>
-
 <h3 id="creating-reusable-interfaces">Creating Reusable Interfaces</h3>
-
 <p>Part of the excitement of working on a startup is the freedom in choosing which technologies to use - this also means switching technologies often. This means that, especially on the server-side, creating reusable interfaces is invaluable, as it allows future devs to easily swap out implementations.</p>
-
 <p>When developing quickly, it&rsquo;s really easy to fall into the mindset of &ldquo;I&rsquo;m just going to make a class that works right now, so there&rsquo;s no need to create an interface.&rdquo; Yes, the development process will be easier <em>now</em>, but what happens in the future when another developer has to swap out the implementation? They will spend at least twice as long as they would if you had just made an interface.</p>
-
-<p>To give you an example: when we first started on this journey, we used Google&rsquo;s <a href="https://firebase.google.com/docs/firestore" target="_blank">Cloud Firestore</a> for all of our data storage. This meant clients on the backend for communicating with our Firestore. Luckily enough, our early developers created a <code>DbClient</code> interface that  declared methods for communicating with <em>whatever</em> db we chose, so when we finally made the choice to migrate to <a href="https://www.mongodb.com/" target="_blank">MongoDB</a>, the transition was effortless. Even though we lost some early development time creating these interfaces, we more than made up for it by saving a plethora of time swapping out our implementation.</p>
-
-<p><img src="mongodb.jpg" alt="mongodb" /></p>
-
+<p>To give you an example: when we first started on this journey, we used Google&rsquo;s <a href="https://firebase.google.com/docs/firestore">Cloud Firestore</a> for all of our data storage. This meant clients on the backend for communicating with our Firestore. Luckily enough, our early developers created a <code>DbClient</code> interface that  declared methods for communicating with <em>whatever</em> db we chose, so when we finally made the choice to migrate to <a href="https://www.mongodb.com/">MongoDB</a>, the transition was effortless. Even though we lost some early development time creating these interfaces, we more than made up for it by saving a plethora of time swapping out our implementation.</p>
+<p><img src="mongodb.jpg" alt="mongodb"></p>
 <h3 id="documenting-patterns">Documenting Patterns</h3>
-
 <p>Writing good documentation is yet another action that most reserve for medium-to-large companies only. It&rsquo;s also something that takes time which could be &ldquo;better spent&rdquo; working on features and moving us toward our project goals. However, despite the initial overhead, writing down our most-used design patterns in plain English has saved us countless time.</p>
-
 <p>I recommend creating a wiki for all different areas of development; for us, that includes server-side, our iOS client, and DevOps, among others. In that wiki, write down all of the common practices used throughout the organization so that developers can turn to it when initially planning out a feature. This saves developers a lot of time that would otherwise be spent either brainstorming a new design (convoluting the existing codebase) or mapping out existing code to understand how a design works. Writing it down in plain English will take 5-10 minutes, but will save developers hours of time in the future.</p>
-
 <h3 id="automating-processes">Automating Processes</h3>
-
 <p>This should go without saying, but always reserve time at the beginning to automate <strong>everything</strong>. Run tests on every push. Connect GitHub to your messaging platform to get notifications whenever a PR is created. Deploy whenever a PR is closed. While this may cost some time at the beginning doing research on automation tools, the amount of time saved is astronomical. Please, set some time aside right now, and ask how you can best automate your current workflow.</p>
-
-<p><img src="cicd.jpg" alt="cicd" /></p>
-
-<p>Protip: <a href="https://github.com/features/actions" target="_blank">GitHub Actions</a> are a really cool and easy way to automate workflows if you use GitHub for hosting.</p>
-
-<hr />
-
+<p><img src="cicd.jpg" alt="cicd"></p>
+<p>Protip: <a href="https://github.com/features/actions">GitHub Actions</a> are a really cool and easy way to automate workflows if you use GitHub for hosting.</p>
+<hr>
 <p>Working on a startup has been incredibly challenging given the required speed of development. However, as I continue to develop mass amounts of code daily, I thank my past self for designing things well enough to make development for present-day me much easier. When embarking on this long, rewarding journey, don&rsquo;t fall into the &ldquo;move fast&rdquo; mentality unless you append &ldquo;in an well-thought out manner&rdquo; to the end of it.</p>
 
     </div>
@@ -639,7 +620,7 @@
   <div class="media author-card" itemscope itemtype="http://schema.org/Person">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_2.png" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_3.png" itemprop="image" alt="Avatar">
     
 
     <div class="media-body">
@@ -812,7 +793,7 @@
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

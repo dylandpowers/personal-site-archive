@@ -82,7 +82,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.3072054fc61fe865aa34bcb366de141d.css">
+  <link rel="stylesheet" href="/css/academic.min.3523c37c33b0d223e65c10a678ce41d9.css">
 
   
 
@@ -571,273 +571,216 @@
   <div class="article-container">
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>In this post, I will show you how to use the <a href="https://www.npmjs.com/package/react-redux-firebase" target="_blank">react-redux-firebase</a> package to incorporate Redux bindings for Firebase into your React project. This allows you to incorporate Firebase and Firestore data  into global state without any extra work, as well as handle auth in a super simple way. If you are unfamiliar with <a href="https://reactjs.org/" target="_blank">React</a>, <a href="https://redux.js.org" target="_blank">Redux</a>, or <a href="https://firebase.google.com/" target="_blank">Firebase</a>, please spend some time familiarizing yourself with those before jumping in.</p>
-
-<p>This is <strong>not</strong> a beginning-to-end tutorial; rather, I will show you how the <code>react-redux-firebase</code> (RRF) package to make your app flow much simpler. For setup instructions, check out <a href="https://www.npmjs.com/package/react-redux-firebase" target="_blank">the documentation</a>.</p>
-
+      <p>In this post, I will show you how to use the <a href="https://www.npmjs.com/package/react-redux-firebase">react-redux-firebase</a> package to incorporate Redux bindings for Firebase into your React project. This allows you to incorporate Firebase and Firestore data  into global state without any extra work, as well as handle auth in a super simple way. If you are unfamiliar with <a href="https://reactjs.org/">React</a>, <a href="https://redux.js.org">Redux</a>, or <a href="https://firebase.google.com/">Firebase</a>, please spend some time familiarizing yourself with those before jumping in.</p>
+<p>This is <strong>not</strong> a beginning-to-end tutorial; rather, I will show you how the <code>react-redux-firebase</code> (RRF) package to make your app flow much simpler. For setup instructions, check out <a href="https://www.npmjs.com/package/react-redux-firebase">the documentation</a>.</p>
 <h1 id="auth">Auth</h1>
-
 <h3 id="sign-in">Sign In</h3>
-
 <p>First, I will show you how this package makes auth in your application so much simpler. Without RRF, you would have to perform the sign in flow and then <code>dispatch</code> an action to the store with the user information; then, any time you needed that, you would have to use a <code>useSelector</code> hook to get that sign in information. It might look something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">firebase</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;firebase&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">useDispatch</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-redux&#39;</span>;
 
-<pre><code class="language-jsx">import React from 'react';
-import firebase from 'firebase';
-import { useDispatch } from 'react-redux';
-
-export default function Component() {
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Component</span>() {
 	
-  const dispatch = useDispatch();
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">dispatch</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useDispatch</span>();
 	
-  function signIn(email, password) {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((userCredential) =&gt; dispatch({
-        type: 'AUTH',
-        user: userCredential
-      })).catch((err) =&gt; console.error(err));
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">signIn</span>(<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>) {
+    <span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">auth</span>().<span style="color:#a6e22e">signInWithEmailAndPassword</span>(<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>)
+      .<span style="color:#a6e22e">then</span>((<span style="color:#a6e22e">userCredential</span>) =&gt; <span style="color:#a6e22e">dispatch</span>({
+        <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;AUTH&#39;</span>,
+        <span style="color:#a6e22e">user</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">userCredential</span>
+      })).<span style="color:#66d9ef">catch</span>((<span style="color:#a6e22e">err</span>) =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#a6e22e">err</span>));
   }
 
-  function signOut() {
-    firebase.auth().signOut()
-      .then(() =&gt; dispatch({
-        type: 'AUTH',
-        user: undefined
-      })).catch((err) =&gt; console.error(err));
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">signOut</span>() {
+    <span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">auth</span>().<span style="color:#a6e22e">signOut</span>()
+      .<span style="color:#a6e22e">then</span>(() =&gt; <span style="color:#a6e22e">dispatch</span>({
+        <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;AUTH&#39;</span>,
+        <span style="color:#a6e22e">user</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">undefined</span>
+      })).<span style="color:#66d9ef">catch</span>((<span style="color:#a6e22e">err</span>) =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#a6e22e">err</span>));
   }
 
-  // ...
-}
-</code></pre>
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>Then when you want to query for the currently signed-in user in another component, you would do something like</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">auth</span>);
+</code></pre></div><p>However, when you use the <code>useFirebase</code> hook provided by <code>react-redux-firebase</code>, you don&rsquo;t have to dispatch any actions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">useFirebase</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-redux-firebase&#39;</span>;
 
-<p>Then when you want to query for the currently signed-in user in another component, you would do something like</p>
-
-<pre><code class="language-jsx">const user = useSelector((state) =&gt; state.auth);
-</code></pre>
-
-<p>However, when you use the <code>useFirebase</code> hook provided by <code>react-redux-firebase</code>, you don&rsquo;t have to dispatch any actions:</p>
-
-<pre><code class="language-jsx">import React from 'react';
-import { useFirebase } from 'react-redux-firebase';
-
-export default function Component() {
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Component</span>() {
 	
-  const firebase = useFirebase();
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">firebase</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useFirebase</span>();
 
-  function signIn(email, password) {
-    firebase.signIn({
-      email,
-      password
-    }).catch((err) =&gt; console.error(err));
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">signIn</span>(<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>) {
+    <span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">signIn</span>({
+      <span style="color:#a6e22e">email</span>,
+      <span style="color:#a6e22e">password</span>
+    }).<span style="color:#66d9ef">catch</span>((<span style="color:#a6e22e">err</span>) =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#a6e22e">err</span>));
   }
 
-  function signOut() {
-    firebase.signOut()
-      .catch((err) =&gt; console.error(err));
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">signOut</span>() {
+    <span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">signOut</span>()
+      .<span style="color:#66d9ef">catch</span>((<span style="color:#a6e22e">err</span>) =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#a6e22e">err</span>));
   }
 
-  // ...
-}
-</code></pre>
-
-<p>That&rsquo;s it! No extra state for you to handle, RRF does it all internally. Then, simply query for the currently signed-in user as such:</p>
-
-<pre><code class="language-jsx">const user = useSelector((state) =&gt; state.firebase.auth);
-</code></pre>
-
-<h3 id="registration">Registration</h3>
-
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>That&rsquo;s it! No extra state for you to handle, RRF does it all internally. Then, simply query for the currently signed-in user as such:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">auth</span>);
+</code></pre></div><h3 id="registration">Registration</h3>
 <p>If you also want to store some extra data on the side, such as user <code>firstName</code> and <code>lastName</code>, you specify that when you sign up a user, as the second argument to the <code>createUser()</code> call. <strong>This makes that information readily available in the store as part of the</strong> <code>profile</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">useFirebase</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-redux-firebase&#39;</span>;
 
-<pre><code class="language-jsx">import React from 'react';
-import { useFirebase } from 'react-redux-firebase';
-
-export default function Component() {
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Component</span>() {
 	
-  const firebase = useFirebase();
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">firebase</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useFirebase</span>();
 
-  function register(email, password, firstName, lastName) {
-    firebase.createUser({
-      email,
-      password
+  <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">register</span>(<span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">password</span>, <span style="color:#a6e22e">firstName</span>, <span style="color:#a6e22e">lastName</span>) {
+    <span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">createUser</span>({
+      <span style="color:#a6e22e">email</span>,
+      <span style="color:#a6e22e">password</span>
     },
     {
-      email,
-      firstName,
-      lastName
-    }).catch((err) =&gt; console.error(err));
+      <span style="color:#a6e22e">email</span>,
+      <span style="color:#a6e22e">firstName</span>,
+      <span style="color:#a6e22e">lastName</span>
+    }).<span style="color:#66d9ef">catch</span>((<span style="color:#a6e22e">err</span>) =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#a6e22e">err</span>));
   }
 
-  // ...
-}
-</code></pre>
-
-<p>In this example, <code>email</code>, <code>firstName</code>, and <code>lastName</code> are all stored as part of the user&rsquo;s <code>profile</code>. You can access this information anywhere using the <code>profile</code> part of the store:</p>
-
-<pre><code class="language-jsx">const { email, firstName, lastName } = useSelector((state) =&gt; state.firebase.profile);
-</code></pre>
-
-<p>Isn&rsquo;t that awesome?</p>
-
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>In this example, <code>email</code>, <code>firstName</code>, and <code>lastName</code> are all stored as part of the user&rsquo;s <code>profile</code>. You can access this information anywhere using the <code>profile</code> part of the store:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">email</span>, <span style="color:#a6e22e">firstName</span>, <span style="color:#a6e22e">lastName</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">profile</span>);
+</code></pre></div><p>Isn&rsquo;t that awesome?</p>
 <h1 id="data-storage">Data Storage</h1>
-
 <h3 id="cloud-firestore">Cloud Firestore</h3>
-
 <p>Firestore, being a document-oriented database, is my preference when developing an app on top of Firebase. The Firestore JavaScript SDK provides listeners that automatically listen for changes in Firestore documents. However, if you want to listen for changes to an entire collection and update state accordingly, the code becomes quite clunky:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">useDispatch</span>, <span style="color:#a6e22e">useSelector</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-redux&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">firebase</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;firebase&#39;</span>;
 
-<pre><code class="language-jsx">import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import firebase from 'firebase';
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Component</span>() {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">dispatch</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useDispatch</span>();
 
-export default function Component() {
-  const dispatch = useDispatch();
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">todos</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">todos</span>);
 
-  const todos = useSelector((state) =&gt; state.todos);
-
-  firebase.firestore().collection('todos')
-    .onSnapshot((querySnapshot) =&gt; {
-      const updatedTodos = {};
-      querySnapshot.forEach((doc) =&gt; {
-        updatedTodos[doc.id] = doc.data();
+  <span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">firestore</span>().<span style="color:#a6e22e">collection</span>(<span style="color:#e6db74">&#39;todos&#39;</span>)
+    .<span style="color:#a6e22e">onSnapshot</span>((<span style="color:#a6e22e">querySnapshot</span>) =&gt; {
+      <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">updatedTodos</span> <span style="color:#f92672">=</span> {};
+      <span style="color:#a6e22e">querySnapshot</span>.<span style="color:#a6e22e">forEach</span>((<span style="color:#a6e22e">doc</span>) =&gt; {
+        <span style="color:#a6e22e">updatedTodos</span>[<span style="color:#a6e22e">doc</span>.<span style="color:#a6e22e">id</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">doc</span>.<span style="color:#a6e22e">data</span>();
       });
-      dispatch({
-        type: 'TODOS_UPDATED',
-        todos: updatedTodos
+      <span style="color:#a6e22e">dispatch</span>({
+        <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;TODOS_UPDATED&#39;</span>,
+        <span style="color:#a6e22e">todos</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">updatedTodos</span>
       });
     });
 
-  // ...
-}
-</code></pre>
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>However, with RRF&rsquo;s <code>useFirestoreConnect</code> hook, you can attach a listener that will automatically listen and unlisten as needed, <em>and</em> you can make the data a part of Redux state.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">useFirestoreConnect</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-redux-firebase&#39;</span>;
 
-<p>However, with RRF&rsquo;s <code>useFirestoreConnect</code> hook, you can attach a listener that will automatically listen and unlisten as needed, <em>and</em> you can make the data a part of Redux state.</p>
-
-<pre><code class="language-jsx">import React from 'react';
-import { useFirestoreConnect } from 'react-redux-firebase';
-
-export default function Component() {
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Component</span>() {
 	
-  useFirestoreConnect({
-    collection: 'todos'
+  <span style="color:#a6e22e">useFirestoreConnect</span>({
+    <span style="color:#a6e22e">collection</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;todos&#39;</span>
   });
 
-  const todos = useSelector((state) =&gt; state.firestore.data.todos);
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">todos</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firestore</span>.<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">todos</span>);
 
-  // ...
-}
-</code></pre>
-
-<p>In the two above examples, both <code>todos</code> variables with evaluate to the same thing; there are two obvious differences:</p>
-
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>In the two above examples, both <code>todos</code> variables with evaluate to the same thing; there are two obvious differences:</p>
 <ol>
 <li>The first example involves much more code, and is much harder to read.</li>
 <li>The second example requires no manual global state management, as that is managed by the hook.</li>
 </ol>
-
 <p>This extremely useful hook also offers three other really cool features:</p>
-
 <ol>
-<li><p>If you have a nested collection, you can choose how the listener stores the collection as part of global state. For example, if you have a nested collection <code>baz</code> which is located at <code>foo/bar/baz</code>, then without this feature you would have to select the collection as follows:</p>
-
-<pre><code class="language-jsx">const baz = useSelector((state) =&gt; state.firestore.data.foo.bar.baz);
-</code></pre>
-
-<p>However, using the <code>storeAs</code> argument, you can easily change it to anything you like:</p>
-
-<pre><code class="language-jsx">useFirestoreConnect({
-  collection: 'foo/bar/baz',
-  storeAs: 'baz'
+<li>
+<p>If you have a nested collection, you can choose how the listener stores the collection as part of global state. For example, if you have a nested collection <code>baz</code> which is located at <code>foo/bar/baz</code>, then without this feature you would have to select the collection as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">baz</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firestore</span>.<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">foo</span>.<span style="color:#a6e22e">bar</span>.<span style="color:#a6e22e">baz</span>);
+</code></pre></div><p>However, using the <code>storeAs</code> argument, you can easily change it to anything you like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#a6e22e">useFirestoreConnect</span>({
+  <span style="color:#a6e22e">collection</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;foo/bar/baz&#39;</span>,
+  <span style="color:#a6e22e">storeAs</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;baz&#39;</span>
 });
 
-const baz = useSelector((state) =&gt; state.firestore.data.baz);
-</code></pre></li>
-
-<li><p>If you use the <code>ordered</code> property of <code>firestore</code> instead of <code>data</code>, the data will become sorted. To change how the data is sorted, pass an <code>orderBy</code> argument to the hook:</p>
-
-<pre><code class="language-jsx">useFirestoreConnect({
-  collection: 'foo/bar/baz',
-  orderBy: 'createdAt',
-  storeAs: 'baz'
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">baz</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firestore</span>.<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">baz</span>);
+</code></pre></div></li>
+<li>
+<p>If you use the <code>ordered</code> property of <code>firestore</code> instead of <code>data</code>, the data will become sorted. To change how the data is sorted, pass an <code>orderBy</code> argument to the hook:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#a6e22e">useFirestoreConnect</span>({
+  <span style="color:#a6e22e">collection</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;foo/bar/baz&#39;</span>,
+  <span style="color:#a6e22e">orderBy</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;createdAt&#39;</span>,
+  <span style="color:#a6e22e">storeAs</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;baz&#39;</span>
 });
 
-const baz = useSelector((state) =&gt; state.firestore.ordered.baz);
-</code></pre></li>
-
-<li><p>If you just want to listen to a specific document (rather than an entire collection), that&rsquo;s entirely possible too. You will still have to select the individual document, but the listener will only listen to the single document, not the entire collection:</p>
-
-<pre><code class="language-jsx">useFirestoreConnect({
-  collection: 'foo',
-  doc: 'bar'
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">baz</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firestore</span>.<span style="color:#a6e22e">ordered</span>.<span style="color:#a6e22e">baz</span>);
+</code></pre></div></li>
+<li>
+<p>If you just want to listen to a specific document (rather than an entire collection), that&rsquo;s entirely possible too. You will still have to select the individual document, but the listener will only listen to the single document, not the entire collection:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#a6e22e">useFirestoreConnect</span>({
+  <span style="color:#a6e22e">collection</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;foo&#39;</span>,
+  <span style="color:#a6e22e">doc</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;bar&#39;</span>
 });
 
-const bar = useSelector((state) =&gt; state.firestore.data.foo['bar']);
-</code></pre></li>
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">bar</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firestore</span>.<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">foo</span>[<span style="color:#e6db74">&#39;bar&#39;</span>]);
+</code></pre></div></li>
 </ol>
-
 <p>Absolutely amazing.</p>
-
 <h3 id="real-time-database">Real-time Database</h3>
-
 <p>The custom hook <code>useFirebaseConnect</code> for listening to the real-time database is very similar to the above example, with a few differences based on the general difference between the two query languages. Before RRF, you would have to fetch data from a path like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">useDispatch</span>, <span style="color:#a6e22e">useSelector</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-redux&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">firebase</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;firebase&#39;</span>;
 
-<pre><code class="language-jsx">import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import firebase from 'firebase';
-
-export default function Component() {
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Component</span>() {
 	
-  const dispatch = useDispatch();
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">dispatch</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useDispatch</span>();
 
-  const todos = useSelector((state) =&gt; state.todos);
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">todos</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">todos</span>);
 
-  firebase.database().ref('todos')
-    .on('value', (snapshot) =&gt; {
-      dispatch({
-        type: 'TODOS_UPDATED',
-        todos: snapshot.val()
+  <span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">database</span>().<span style="color:#a6e22e">ref</span>(<span style="color:#e6db74">&#39;todos&#39;</span>)
+    .<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;value&#39;</span>, (<span style="color:#a6e22e">snapshot</span>) =&gt; {
+      <span style="color:#a6e22e">dispatch</span>({
+        <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;TODOS_UPDATED&#39;</span>,
+        <span style="color:#a6e22e">todos</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">snapshot</span>.<span style="color:#a6e22e">val</span>()
       });
     });
 
-  // ...
-}
-</code></pre>
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>However, by using the <code>useFirebaseConnect</code> hook, we no longer have to manually manage global state. Instead, the hook manages listening and unlistening as well as updating our global state:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">useSelector</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-redux&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">useFirebaseConnect</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-redux-firebase&#39;</span>;
 
-<p>However, by using the <code>useFirebaseConnect</code> hook, we no longer have to manually manage global state. Instead, the hook manages listening and unlistening as well as updating our global state:</p>
-
-<pre><code class="language-jsx">import React from 'react';
-import { useSelector } from 'react-redux';
-import { useFirebaseConnect } from 'react-redux-firebase';
-
-export default function Component() {
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Component</span>() {
 	
-  useFirebaseConnect({
-    path: 'todos'
+  <span style="color:#a6e22e">useFirebaseConnect</span>({
+    <span style="color:#a6e22e">path</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;todos&#39;</span>
   });
 
-  const todos = useSelector((state) =&gt; state.firebase.data.todos);
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">todos</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">todos</span>);
 
-  // ...
-}
-</code></pre>
-
-<p>Isn&rsquo;t that much cleaner? You can also use special <a href="https://firebase.google.com/docs/reference/js/firebase.database.Query" target="_blank">query parameters</a> to change how the data is sorted, among other things:</p>
-
-<pre><code class="language-jsx">useFirebaseConnect({
-  path: 'todos',
-  queryParams: [&quot;orderByKey&quot;]
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>Isn&rsquo;t that much cleaner? You can also use special <a href="https://firebase.google.com/docs/reference/js/firebase.database.Query">query parameters</a> to change how the data is sorted, among other things:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#a6e22e">useFirebaseConnect</span>({
+  <span style="color:#a6e22e">path</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;todos&#39;</span>,
+  <span style="color:#a6e22e">queryParams</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;orderByKey&#34;</span>]
 });
 
-const todos = useSelector((state) =&gt; state.firebase.ordered.todos);
-</code></pre>
-
-<p>Basically, anything that you could do with the standard SDK, the hook exposes to you as well.</p>
-
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">todos</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useSelector</span>((<span style="color:#a6e22e">state</span>) =&gt; <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">firebase</span>.<span style="color:#a6e22e">ordered</span>.<span style="color:#a6e22e">todos</span>);
+</code></pre></div><p>Basically, anything that you could do with the standard SDK, the hook exposes to you as well.</p>
 <h1 id="conclusion">Conclusion</h1>
-
 <p>If you&rsquo;re developing an app with React, Redux, and Firebase, then you should be using this library to make your code much cleaner. Auth has never been simpler. Plus, the custom Firebase and Firestore hooks do so much extra leg work for you, so you can focus on writing application code.</p>
-
-<p><em>Note: header image taken from <a href="https://www.youtube.com/watch?v=TlpX0aMYmrk" target="_blank">this tutorial</a> from <a href="https://www.youtube.com/channel/UCIWTUpwIzh_P73LlbX20VQA" target="_blank">Aberraouf Zine</a>.</em></p>
+<p><em>Note: header image taken from <a href="https://www.youtube.com/watch?v=TlpX0aMYmrk">this tutorial</a> from <a href="https://www.youtube.com/channel/UCIWTUpwIzh_P73LlbX20VQA">Aberraouf Zine</a>.</em></p>
 
     </div>
 
@@ -899,7 +842,7 @@ const todos = useSelector((state) =&gt; state.firebase.ordered.todos);
   <div class="media author-card" itemscope itemtype="http://schema.org/Person">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_2.png" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu42b8eb9db929b08b309bfc601d27a140_1054508_250x250_fill_lanczos_center_3.png" itemprop="image" alt="Avatar">
     
 
     <div class="media-body">
@@ -1082,7 +1025,7 @@ const todos = useSelector((state) =&gt; state.firebase.ordered.todos);
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.b22d2266dab94c8508ae1f0cf6b7056c.js"></script>
 
     
 

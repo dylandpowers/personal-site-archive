@@ -17,93 +17,61 @@
       <link>https://dylandpowers.github.io/post/essential-npm-packages-for-react-beginners/</link>
       <pubDate>Sun, 08 Aug 2021 16:20:12 -0400</pubDate>
       <guid>https://dylandpowers.github.io/post/essential-npm-packages-for-react-beginners/</guid>
-      <description>
-
-&lt;p&gt;When I was first starting out in React development, I had little to no knowledge about the ecosystem in general. Not knowing the necessary tools available in the ecosystem definitely led to increased time-to-completion for personal projects. In this post, I&amp;rsquo;ll discuss NPM packages that I use every day in my personal React projects which have sped up development time drastically, and are great for beginners.&lt;/p&gt;
-
-&lt;h1 id=&#34;create-react-app-https-www-npmjs-com-package-create-react-app&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/create-react-app&#34; target=&#34;_blank&#34;&gt;create-react-app&lt;/a&gt;&lt;/h1&gt;
-
+      <description>&lt;p&gt;When I was first starting out in React development, I had little to no knowledge about the ecosystem in general. Not knowing the necessary tools available in the ecosystem definitely led to increased time-to-completion for personal projects. In this post, I&amp;rsquo;ll discuss NPM packages that I use every day in my personal React projects which have sped up development time drastically, and are great for beginners.&lt;/p&gt;
+&lt;h1 id=&#34;create-react-apphttpswwwnpmjscompackagecreate-react-app&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/create-react-app&#34;&gt;create-react-app&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;This is the #1 package out there for bootstrapping React applications. It allows you to create scaffolds for React applications with a simple command: &lt;code&gt;create-react-app &amp;lt;project name&amp;gt;&lt;/code&gt;. This package is maintained by Facebook, so you can be sure that it will always contain the most recent optimizations.&lt;/p&gt;
-
-&lt;h1 id=&#34;antd-https-www-npmjs-com-package-antd&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/antd&#34; target=&#34;_blank&#34;&gt;antd&lt;/a&gt;&lt;/h1&gt;
-
-&lt;p&gt;The &lt;code&gt;antd&lt;/code&gt; package, short for Ant Design, is a library of React components created by &lt;a href=&#34;https://www.antgroup.com/en&#34; target=&#34;_blank&#34;&gt;Ant Financial&lt;/a&gt;. Creating UI components can be an extremely time consuming part of development, and self-created components don&amp;rsquo;t make for a great user experience if you don&amp;rsquo;t have great design skills (like myself).&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;antd&lt;/code&gt; provides simple, out-of-the-box components for everything from lists to tables to rating systems. Everything is standardized which makes for a &lt;em&gt;great&lt;/em&gt; user experience, and you can even override the CSS variables using something like &lt;a href=&#34;https://www.npmjs.com/package/craco&#34; target=&#34;_blank&#34;&gt;craco&lt;/a&gt;. I&amp;rsquo;ve made several websites with &lt;code&gt;antd&lt;/code&gt; components and I always have a great time using it.&lt;/p&gt;
-
-&lt;h1 id=&#34;styled-components-https-styled-components-com&#34;&gt;&lt;a href=&#34;https://styled-components.com/&#34; target=&#34;_blank&#34;&gt;styled-components&lt;/a&gt;&lt;/h1&gt;
-
+&lt;h1 id=&#34;antdhttpswwwnpmjscompackageantd&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/antd&#34;&gt;antd&lt;/a&gt;&lt;/h1&gt;
+&lt;p&gt;The &lt;code&gt;antd&lt;/code&gt; package, short for Ant Design, is a library of React components created by &lt;a href=&#34;https://www.antgroup.com/en&#34;&gt;Ant Financial&lt;/a&gt;. Creating UI components can be an extremely time consuming part of development, and self-created components don&amp;rsquo;t make for a great user experience if you don&amp;rsquo;t have great design skills (like myself).&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;antd&lt;/code&gt; provides simple, out-of-the-box components for everything from lists to tables to rating systems. Everything is standardized which makes for a &lt;em&gt;great&lt;/em&gt; user experience, and you can even override the CSS variables using something like &lt;a href=&#34;https://www.npmjs.com/package/craco&#34;&gt;craco&lt;/a&gt;. I&amp;rsquo;ve made several websites with &lt;code&gt;antd&lt;/code&gt; components and I always have a great time using it.&lt;/p&gt;
+&lt;h1 id=&#34;styled-componentshttpsstyled-componentscom&#34;&gt;&lt;a href=&#34;https://styled-components.com/&#34;&gt;styled-components&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;&lt;code&gt;styled-components&lt;/code&gt; is a library for styling React components (or standard HTML elements) directly in your component file. By default, it exports a function &lt;code&gt;styled&lt;/code&gt; which accepts a React component as an argument and applies extra styling on top of it. For example, we can add extra styles to &lt;code&gt;antd&lt;/code&gt;&amp;rsquo;s &lt;code&gt;Button&lt;/code&gt; component like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;Button&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;antd&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;styled&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;styled-components&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import { Button } from &#39;antd&#39;;
-import styled from &#39;styled-components&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;PaddedButton&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;styled&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;Button&lt;/span&gt;)&lt;span style=&#34;color:#e6db74&#34;&gt;`
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  padding: 10px;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There is a short-hand for applying the styling on HTML elements where you can just use a &lt;code&gt;.&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;styled&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;styled-components&amp;#39;&lt;/span&gt;;
 
-const PaddedButton = styled(Button)`
-  padding: 10px;
-`;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;There is a short-hand for applying the styling on HTML elements where you can just use a &lt;code&gt;.&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import styled from &#39;styled-components&#39;;
-
-const RedText = styled.p`
-  color: red;
-`;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I love &lt;code&gt;styled-components&lt;/code&gt; because I can style the components in the way I need without ever leaving the component file. In my opinion, the close coupling of component&amp;rsquo;s styles to their state management makes for a simpler development workflow.&lt;/p&gt;
-
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RedText&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;styled&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;`
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  color: red;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I love &lt;code&gt;styled-components&lt;/code&gt; because I can style the components in the way I need without ever leaving the component file. In my opinion, the close coupling of component&amp;rsquo;s styles to their state management makes for a simpler development workflow.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; be sure to always define your styled components &lt;em&gt;outside&lt;/em&gt; of the component that uses them, so that they aren&amp;rsquo;t re-computed on every render.&lt;/p&gt;
-
-&lt;h1 id=&#34;react-router-dom-https-reactrouter-com&#34;&gt;&lt;a href=&#34;https://reactrouter.com/&#34; target=&#34;_blank&#34;&gt;react-router-dom&lt;/a&gt;&lt;/h1&gt;
-
+&lt;h1 id=&#34;react-router-domhttpsreactroutercom&#34;&gt;&lt;a href=&#34;https://reactrouter.com/&#34;&gt;react-router-dom&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;This is simply the easiest and best routing package out there. It gives you a set of navigational components that you can use to declare different routes in your application like the main page, a &lt;code&gt;/login&lt;/code&gt; page, a &lt;code&gt;/profile&lt;/code&gt; page, etc. You declare your different routes with &lt;code&gt;Route&lt;/code&gt; components, and then designate which component they should render:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; { &lt;span style=&#34;color:#a6e22e&#34;&gt;Route&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;Switch&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;Router&lt;/span&gt; } &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;react-router-dom&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LoginPage&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;./LoginPage&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import { Route, Switch, Router } from &#39;react-router-dom&#39;;
-import LoginPage from &#39;./LoginPage&#39;;
-
-export default function App(props) {
-  return (
-    &amp;lt;Router&amp;gt;
-      &amp;lt;Switch&amp;gt;
-        &amp;lt;Route exact path=&amp;quot;/login&amp;quot; component={LoginPage} /&amp;gt;
-      &amp;lt;/Switch&amp;gt;
-    &amp;lt;/Router&amp;gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;App&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Router&lt;/span&gt;&amp;gt;
+      &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Switch&lt;/span&gt;&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;Route&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;exact&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;path&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/login&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;component&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;{&lt;span style=&#34;color:#a6e22e&#34;&gt;LoginPage&lt;/span&gt;} /&amp;gt;
+      &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;Switch&lt;/span&gt;&amp;gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;Router&lt;/span&gt;&amp;gt;
   );
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I&amp;rsquo;ve also written &lt;a href=&#34;https://dylanpowers.me/post/protected-routes-in-react/&#34; target=&#34;_blank&#34;&gt;separate post&lt;/a&gt; on how to make protected routes using this package.&lt;/p&gt;
-
-&lt;h1 id=&#34;firebase-https-www-npmjs-com-package-firebase&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/firebase&#34; target=&#34;_blank&#34;&gt;firebase&lt;/a&gt;&lt;/h1&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I&amp;rsquo;ve also written &lt;a href=&#34;https://dylanpowers.me/post/protected-routes-in-react/&#34;&gt;separate post&lt;/a&gt; on how to make protected routes using this package.&lt;/p&gt;
+&lt;h1 id=&#34;firebasehttpswwwnpmjscompackagefirebase&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/firebase&#34;&gt;firebase&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;Firebase is more just than a package - it provides tools for everything that basic applications need like authentication, storage, and much more. It provides a declarative and simple API that makes app development incredibly simple.&lt;/p&gt;
-
-&lt;p&gt;To use this package, you&amp;rsquo;ll need to create a firebase account and project. After that, you can set up authentication as well as a real-time datastore or a collection-like datastore similar to &lt;a href=&#34;https://www.mongodb.com/&#34; target=&#34;_blank&#34;&gt;MongoDB&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h1 id=&#34;axios-https-www-npmjs-com-package-axios&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/axios&#34; target=&#34;_blank&#34;&gt;axios&lt;/a&gt;&lt;/h1&gt;
-
+&lt;p&gt;To use this package, you&amp;rsquo;ll need to create a firebase account and project. After that, you can set up authentication as well as a real-time datastore or a collection-like datastore similar to &lt;a href=&#34;https://www.mongodb.com/&#34;&gt;MongoDB&lt;/a&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;axioshttpswwwnpmjscompackageaxios&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/axios&#34;&gt;axios&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;Axios is a simple HTTP client for making API requests from the browser. It&amp;rsquo;s also promise-based which means you can add success callbacks with ease.&lt;/p&gt;
-
-&lt;h1 id=&#34;classnames-https-www-npmjs-com-package-classnames&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/classnames&#34; target=&#34;_blank&#34;&gt;classnames&lt;/a&gt;&lt;/h1&gt;
-
+&lt;h1 id=&#34;classnameshttpswwwnpmjscompackageclassnames&#34;&gt;&lt;a href=&#34;https://www.npmjs.com/package/classnames&#34;&gt;classnames&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;Classnames is an incredible simple yet extremely powerful library. It does one thing and it does it well - conditionally combining CSS class names based on a set of criteria. It exports a function which takes a single object argument where the keys are the class names and the values are booleans representing whether or not to apply the class name. Here&amp;rsquo;s a simple example where something should have the &lt;code&gt;highlighted&lt;/code&gt; class if a piece of state is &lt;code&gt;true&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;classNames&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;classnames&amp;#39;&lt;/span&gt;;
 
-&lt;pre&gt;&lt;code class=&#34;language-jsx&#34;&gt;import classNames from &#39;classnames&#39;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;List&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;props&lt;/span&gt;) {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; [&lt;span style=&#34;color:#a6e22e&#34;&gt;isHighlighted&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;setIsHighlighted&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;useState&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;);
 
-export default function List(props) {
-  const [isHighlighted, setIsHighlighted] = useState(false);
-
-  const listItemClassName = classNames({
-    &#39;list-item&#39;: true,
-    &#39;highlighted&#39;: isHighlighted
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;listItemClassName&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;classNames&lt;/span&gt;({
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;list-item&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;highlighted&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;isHighlighted&lt;/span&gt;
   });
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;hr /&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
 &lt;p&gt;With these packages, you can supercharge your React development. Go out and develop!&lt;/p&gt;
 </description>
     </item>
